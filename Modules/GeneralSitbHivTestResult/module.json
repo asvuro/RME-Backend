@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbHivTestResult",
+    "alias": "generalsitbhivtestresult",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbHivTestResult\\Providers\\GeneralSitbHivTestResultServiceProvider"
+    ],
+    "files": []
+}

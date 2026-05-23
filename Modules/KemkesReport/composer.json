@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/kemkesreport",
+    "description": "RL SIRS lokal — port informasi.executeBedMonitorKemkes/executeIndikatorRS/listKunjunganRIKemkes simgos2",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\KemkesReport\\": "app/",
+            "Modules\\KemkesReport\\Database\\Factories\\": "database/factories/",
+            "Modules\\KemkesReport\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\KemkesReport\\Tests\\": "tests/"
+        }
+    }
+}

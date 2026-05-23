@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalreturncancellationreason",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralReturnCancellationReason\\": "app/",
+            "Modules\\GeneralReturnCancellationReason\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralReturnCancellationReason\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralReturnCancellationReason\\Tests\\": "tests/"
+        }
+    }
+}

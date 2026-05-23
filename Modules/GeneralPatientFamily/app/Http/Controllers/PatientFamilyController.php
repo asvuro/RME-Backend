@@ -4,47 +4,66 @@ namespace Modules\GeneralPatientFamily\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\GeneralPatientFamily\Http\Requests\StorePatientFamilyRequest;
-use Modules\GeneralPatientFamily\Http\Requests\UpdatePatientFamilyRequest;
-use Modules\GeneralPatientFamily\Http\Resources\PatientFamilyResource;
 use Modules\GeneralPatientFamily\Models\PatientFamily;
 
 class PatientFamilyController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $query = PatientFamily::query();
-
-        if ($request->filled('patient_id')) {
-            $query->where('patient_id', $request->integer('patient_id'));
-        }
-
-        return PatientFamilyResource::collection($query->latest()->paginate($request->integer('per_page', 15)));
+        return response()->json(['data' => PatientFamily::all()]);
     }
 
-    public function store(StorePatientFamilyRequest $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $family = PatientFamily::create($request->validated());
+        $validated = $request->validate([
+            'patient_id' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'relationship' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
 
-        return (new PatientFamilyResource($family))->response()->setStatusCode(201);
+        $model = PatientFamily::create($validated);
+        return response()->json(['data' => $model], 201);
     }
 
-    public function show(PatientFamily $patient_family): PatientFamilyResource
+    /**
+     * Show the specified resource.
+     */
+    public function show($id)
     {
-        return new PatientFamilyResource($patient_family);
+        return response()->json(['data' => PatientFamily::findOrFail($id)]);
     }
 
-    public function update(UpdatePatientFamilyRequest $request, PatientFamily $patient_family): PatientFamilyResource
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
     {
-        $patient_family->update($request->validated());
+        $validated = $request->validate([
+            'patient_id' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'relationship' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
 
-        return new PatientFamilyResource($patient_family->fresh());
+        $model = PatientFamily::findOrFail($id);
+        $model->update($validated);
+        return response()->json(['data' => $model]);
     }
 
-    public function destroy(PatientFamily $patient_family)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
     {
-        $patient_family->delete();
-
+        $model = PatientFamily::findOrFail($id);
+        $model->delete();
         return response()->json(null, 204);
     }
 }

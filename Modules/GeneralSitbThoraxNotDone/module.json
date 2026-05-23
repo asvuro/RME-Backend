@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbThoraxNotDone",
+    "alias": "generalsitbthoraxnotdone",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbThoraxNotDone\\Providers\\GeneralSitbThoraxNotDoneServiceProvider"
+    ],
+    "files": []
+}

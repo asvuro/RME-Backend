@@ -1,0 +1,11 @@
+{
+    "name": "GeneralMixtureInstruction",
+    "alias": "generalmixtureinstruction",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralMixtureInstruction\\Providers\\GeneralMixtureInstructionServiceProvider"
+    ],
+    "files": []
+}

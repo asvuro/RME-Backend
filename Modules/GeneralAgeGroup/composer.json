@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalagegroup",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralAgeGroup\\": "app/",
+            "Modules\\GeneralAgeGroup\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralAgeGroup\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralAgeGroup\\Tests\\": "tests/"
+        }
+    }
+}

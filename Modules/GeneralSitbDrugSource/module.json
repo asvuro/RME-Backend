@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbDrugSource",
+    "alias": "generalsitbdrugsource",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbDrugSource\\Providers\\GeneralSitbDrugSourceServiceProvider"
+    ],
+    "files": []
+}

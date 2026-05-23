@@ -1,0 +1,11 @@
+{
+    "name": "GeneralFamilyRelationship",
+    "alias": "generalfamilyrelationship",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralFamilyRelationship\\Providers\\GeneralFamilyRelationshipServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,142 @@
+<?php
+
+namespace Modules\LayananPharmacyDispense\Services;
+
+use App\Events\PrescriptionDispensed;
+use App\Modules\Contracts\BillingGate;
+use App\Modules\Contracts\HospitalConfig;
+use App\Modules\Contracts\StockGate;
+use Illuminate\Support\Facades\DB;
+use Modules\Auth\Models\User;
+use Modules\LayananPharmacyDispense\Models\PharmacyDispense;
+use Modules\LayananPrescriptionInitialReview\Models\PrescriptionInitialReview;
+use Modules\LayananPrescription\Models\Prescription;
+use Modules\PendaftaranGuarantor\Models\Guarantor;
+use Modules\GeneralWard\Models\Ward;
+
+/**
+ * Alur pelayanan farmasi end-to-end (port storeOrderResepDiFarmasi +
+ * finalPelayananFarmasi simgos2, versi kode Laravel testable).
+ *
+ * Satu panggilan dispense() menjalankan gerbang berurutan ala simgos2:
+ * status resep → telaah awal → restriksi penjamin → farmasi eksekutif →
+ * stok; lalu efek: kurangi stok, catat dispense, posting tagihan via
+ * BillingGate::postServiceItem, tandai resep terlayani, dispatch event
+ * DI LUAR transaksi.
+ */
+class DispenseService
+{
+    public function __construct(
+        protected StockGate $stock,
+        protected BillingGate $billing,
+        protected HospitalConfig $config,
+    ) {}
+
+    public function dispense(Prescription $prescription, User $user): PharmacyDispense
+    {
+        // 1) Gerbang status resep: hanya resep hidup yang bisa dilayani,
+        //    dan satu resep hanya sekali (port STATUS order_resep=2 di SP).
+        abort_if(in_array($prescription->status, ['dispensed', 'cancelled'], true), 422, 'Resep sudah '.$prescription->status.' - tidak bisa dilayani lagi.');
+
+        // 2) Gerbang telaah awal (config 54: telaah akhir wajib bersih).
+        $this->assertScreeningPassed($prescription);
+
+        // Data kunjungan & penjamin untuk gerbang 3-5.
+        $visit = $prescription->visit()->firstOrFail();
+
+        // 3) Gerbang restriksi penjamin (PropertiConfig 125 hidup):
+        //    daftar payer_type yang dilarang melayani lewat resep biasa.
+        $restrictedPayers = (array) $this->config->get('restriction.restricted_payers_prescription', []);
+        if ($restrictedPayers !== []) {
+            $terlarang = Guarantor::query()
+                ->where('registration_id', $visit->registration_id)
+                ->where('status', 'active')
+                ->whereIn('payer_type', $restrictedPayers)
+                ->exists();
+            abort_if($terlarang, 422, 'Penjamin pasien direstriksi untuk pelayanan resep (aturan RS).');
+        }
+
+        // 4) Gerbang farmasi eksekutif (PropertiConfig 94/95): ruangan asal
+        //    yang memakai depo eksekutif harus terdaftar di allowed_origins.
+        $executiveRooms = (array) $this->config->get('pharmacy.executive_rooms', []);
+        if ($executiveRooms !== [] && in_array($visit->ward_id, array_map(intval(...), $executiveRooms), true)) {
+            $allowedOrigins = array_map(intval(...), (array) $this->config->get('pharmacy.executive_allowed_origins', []));
+            abort_if(! in_array($visit->ward_id, $allowedOrigins, true), 422, 'Unit asal tidak berhak memakai farmasi eksekutif.');
+        }
+
+        // Ward penyimpanan obat: ikut ward kunjungan (rawat inap) atau ward pertama
+        // untuk rawat jalan tanpa ward - disimpulkan sekali sebelum transaksi.
+        $wardId = $visit->ward_id
+            ?? Ward::query()->value('id');
+
+        // 5-7) Efek dalam SATU transaksi; event menyusul setelah commit.
+        $items = $prescription->items()->with('item')->get();
+
+        $dispense = DB::transaction(function () use ($prescription, $user, $wardId, $items) {
+            $totalQuantity = 0;
+
+            foreach ($items as $item) {
+                $quantity = max(1, (int) $item->quantity);
+                $totalQuantity += $quantity;
+
+                // 5) Gerbang stok + pengurangan (gerbang negatif hidup di
+                //    WardStockService sesuai pharmacy.allow_order_out_of_stock).
+                if ($wardId !== null) {
+                    $this->stock->adjust(
+                        (int) $wardId,
+                        (int) $item->item_id,
+                        'out',
+                        $quantity,
+                        $user,
+                        "Dispense resep {$prescription->prescription_number}",
+                    );
+                }
+
+                // 6) Posting tagihan via kontrak mesin billing (#9).
+                $unitPrice = (float) ($item->item?->sell_price ?? 0);
+                $this->billing->postServiceItem(
+                    (int) $prescription->visit_id,
+                    "Obat: {$item->drug_name}",
+                    'medicine',
+                    $quantity,
+                    $unitPrice,
+                );
+            }
+
+            // 7) Catat dispense + finalisasi status (finalPelayananFarmasi).
+            $record = PharmacyDispense::create([
+                'prescription_id' => $prescription->id,
+                'dispensed_by' => $user->id,
+                'dispensed_at' => now(),
+                'quantity' => $totalQuantity,
+                'status' => 'dispensed',
+            ]);
+
+            $prescription->update(['status' => 'dispensed']);
+
+            return $record;
+        });
+
+        // Event di luar transaksi: listener hanya menyentuh data yang sudah commit.
+        PrescriptionDispensed::dispatch($dispense->refresh());
+
+        return $dispense;
+    }
+
+    /** Gerbang telaah: wajib ada review lulus; config 54 menambah syarat issues kosong. */
+    protected function assertScreeningPassed(Prescription $prescription): void
+    {
+        $review = PrescriptionInitialReview::query()
+            ->where('prescription_id', $prescription->id)
+            ->latest('id')
+            ->first();
+
+        abort_if($review === null, 422, 'Resep belum ditelaah apoteker.');
+
+        abort_if(! $review->is_appropriate, 422, 'Hasil telaah resep: TIDAK sesuai - tidak bisa dilayani.');
+
+        if ((bool) $this->config->get('pharmacy.screening_requires_all_checked', true)) {
+            abort_if(filled($review->issues_found), 422, 'Telaah masih mencatat masalah yang belum diselesaikan.');
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaldischargecondition",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralDischargeCondition\\": "app/",
+            "Modules\\GeneralDischargeCondition\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralDischargeCondition\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralDischargeCondition\\Tests\\": "tests/"
+        }
+    }
+}

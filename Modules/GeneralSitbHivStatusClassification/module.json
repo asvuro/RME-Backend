@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbHivStatusClassification",
+    "alias": "generalsitbhivstatusclassification",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbHivStatusClassification\\Providers\\GeneralSitbHivStatusClassificationServiceProvider"
+    ],
+    "files": []
+}

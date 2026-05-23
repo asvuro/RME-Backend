@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/dashboardcore",
+    "description": "Dashboard inti RS — KPI okupansi/kunjungan/tagihan/farmasi satu endpoint",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\DashboardCore\\": "app/",
+            "Modules\\DashboardCore\\Database\\Factories\\": "database/factories/",
+            "Modules\\DashboardCore\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\DashboardCore\\Tests\\": "tests/"
+        }
+    }
+}

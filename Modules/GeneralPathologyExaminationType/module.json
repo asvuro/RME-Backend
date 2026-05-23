@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPathologyExaminationType",
+    "alias": "generalpathologyexaminationtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPathologyExaminationType\\Providers\\GeneralPathologyExaminationTypeServiceProvider"
+    ],
+    "files": []
+}

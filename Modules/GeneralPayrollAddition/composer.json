@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalpayrolladdition",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralPayrollAddition\\": "app/",
+            "Modules\\GeneralPayrollAddition\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralPayrollAddition\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralPayrollAddition\\Tests\\": "tests/"
+        }
+    }
+}

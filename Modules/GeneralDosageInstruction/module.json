@@ -1,0 +1,11 @@
+{
+    "name": "GeneralDosageInstruction",
+    "alias": "generaldosageinstruction",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralDosageInstruction\\Providers\\GeneralDosageInstructionServiceProvider"
+    ],
+    "files": []
+}

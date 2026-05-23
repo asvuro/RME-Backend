@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaltbpatientcategory",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralTbPatientCategory\\": "app/",
+            "Modules\\GeneralTbPatientCategory\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralTbPatientCategory\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralTbPatientCategory\\Tests\\": "tests/"
+        }
+    }
+}

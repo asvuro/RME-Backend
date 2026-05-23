@@ -1,0 +1,11 @@
+{
+    "name": "GeneralTariffType",
+    "alias": "generaltarifftype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralTariffType\\Providers\\GeneralTariffTypeServiceProvider"
+    ],
+    "files": []
+}

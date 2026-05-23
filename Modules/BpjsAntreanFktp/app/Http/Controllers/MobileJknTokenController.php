@@ -23,18 +23,25 @@ class MobileJknTokenController extends Controller
 
         $config = config('bpjs.families.antrean_fktp');
 
-        if (! $username || ! $password || $username !== $config['inbound_username'] || $password !== $config['inbound_password']) {
+        if (
+            ! $username || ! $password
+            || ! hash_equals((string) ($config['inbound_username'] ?? ''), $username)
+            || ! hash_equals((string) ($config['inbound_password'] ?? ''), $password)
+        ) {
             return response()->json(['metadata' => ['message' => 'Invalid credentials', 'code' => 401]], 401);
         }
 
+        $plainTextToken = Str::random(60);
+
         $token = MobileJknToken::create([
             'username' => $username,
-            'token' => Str::random(40),
+            // Only the sha256 digest is persisted; the plaintext token is shown once.
+            'token' => hash('sha256', $plainTextToken),
             'expires_at' => now()->addHours(12),
         ]);
 
         return response()->json([
-            'response' => ['token' => $token->token],
+            'response' => ['token' => $plainTextToken],
             'metadata' => ['message' => 'Ok', 'code' => 200],
         ]);
     }

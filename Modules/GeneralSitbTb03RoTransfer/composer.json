@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbtb03rotransfer",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbTb03RoTransfer\\": "app/",
+            "Modules\\GeneralSitbTb03RoTransfer\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbTb03RoTransfer\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbTb03RoTransfer\\Tests\\": "tests/"
+        }
+    }
+}

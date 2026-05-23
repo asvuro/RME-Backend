@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbTreatmentStatus",
+    "alias": "generalsitbtreatmentstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbTreatmentStatus\\Providers\\GeneralSitbTreatmentStatusServiceProvider"
+    ],
+    "files": []
+}

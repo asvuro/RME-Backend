@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalcontacttype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralContactType\\": "app/",
+            "Modules\\GeneralContactType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralContactType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralContactType\\Tests\\": "tests/"
+        }
+    }
+}

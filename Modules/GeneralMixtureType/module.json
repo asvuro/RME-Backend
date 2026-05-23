@@ -1,0 +1,11 @@
+{
+    "name": "GeneralMixtureType",
+    "alias": "generalmixturetype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralMixtureType\\Providers\\GeneralMixtureTypeServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalmixtureinstruction",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralMixtureInstruction\\": "app/",
+            "Modules\\GeneralMixtureInstruction\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralMixtureInstruction\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralMixtureInstruction\\Tests\\": "tests/"
+        }
+    }
+}

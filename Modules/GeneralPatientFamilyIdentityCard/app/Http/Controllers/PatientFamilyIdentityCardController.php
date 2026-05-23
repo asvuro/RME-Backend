@@ -4,47 +4,54 @@ namespace Modules\GeneralPatientFamilyIdentityCard\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\GeneralPatientFamilyIdentityCard\Http\Requests\StorePatientFamilyIdentityCardRequest;
-use Modules\GeneralPatientFamilyIdentityCard\Http\Requests\UpdatePatientFamilyIdentityCardRequest;
-use Modules\GeneralPatientFamilyIdentityCard\Http\Resources\PatientFamilyIdentityCardResource;
 use Modules\GeneralPatientFamilyIdentityCard\Models\PatientFamilyIdentityCard;
 
 class PatientFamilyIdentityCardController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $query = PatientFamilyIdentityCard::query();
-
-        if ($request->filled('patient_family_id')) {
-            $query->where('patient_family_id', $request->integer('patient_family_id'));
-        }
-
-        return PatientFamilyIdentityCardResource::collection($query->latest()->paginate($request->integer('per_page', 15)));
+        return response()->json(['data' => PatientFamilyIdentityCard::all()]);
     }
 
-    public function store(StorePatientFamilyIdentityCardRequest $request)
+    public function store(Request $request)
     {
-        $card = PatientFamilyIdentityCard::create($request->validated());
+        $validated = $request->validate([
+            'patient_family_id' => 'required|integer',
+            'identity_type' => 'required|string|max:255',
+            'identity_number' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
 
-        return (new PatientFamilyIdentityCardResource($card))->response()->setStatusCode(201);
+        $model = PatientFamilyIdentityCard::create($validated);
+        return response()->json(['data' => $model], 201);
     }
 
-    public function show(PatientFamilyIdentityCard $patient_family_identity_card): PatientFamilyIdentityCardResource
+    public function show($id)
     {
-        return new PatientFamilyIdentityCardResource($patient_family_identity_card);
+        return response()->json(['data' => PatientFamilyIdentityCard::findOrFail($id)]);
     }
 
-    public function update(UpdatePatientFamilyIdentityCardRequest $request, PatientFamilyIdentityCard $patient_family_identity_card): PatientFamilyIdentityCardResource
+    public function update(Request $request, $id)
     {
-        $patient_family_identity_card->update($request->validated());
+        $validated = $request->validate([
+            'patient_family_id' => 'required|integer',
+            'identity_type' => 'required|string|max:255',
+            'identity_number' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
 
-        return new PatientFamilyIdentityCardResource($patient_family_identity_card->fresh());
+        $model = PatientFamilyIdentityCard::findOrFail($id);
+        $model->update($validated);
+        return response()->json(['data' => $model]);
     }
 
-    public function destroy(PatientFamilyIdentityCard $patient_family_identity_card)
+    public function destroy($id)
     {
-        $patient_family_identity_card->delete();
-
+        $model = PatientFamilyIdentityCard::findOrFail($id);
+        $model->delete();
         return response()->json(null, 204);
     }
 }

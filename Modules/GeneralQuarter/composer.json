@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalquarter",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralQuarter\\": "app/",
+            "Modules\\GeneralQuarter\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralQuarter\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralQuarter\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralQuarter",
+    "alias": "generalquarter",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralQuarter\\Providers\\GeneralQuarterServiceProvider"
+    ],
+    "files": []
+}

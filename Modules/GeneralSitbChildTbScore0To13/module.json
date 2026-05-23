@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbChildTbScore0To13",
+    "alias": "generalsitbchildtbscore0to13",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbChildTbScore0To13\\Providers\\GeneralSitbChildTbScore0To13ServiceProvider"
+    ],
+    "files": []
+}

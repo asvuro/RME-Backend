@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbTreatmentOutcome",
+    "alias": "generalsitbtreatmentoutcome",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbTreatmentOutcome\\Providers\\GeneralSitbTreatmentOutcomeServiceProvider"
+    ],
+    "files": []
+}

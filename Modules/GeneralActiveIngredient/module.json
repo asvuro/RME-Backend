@@ -1,0 +1,11 @@
+{
+    "name": "GeneralActiveIngredient",
+    "alias": "generalactiveingredient",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralActiveIngredient\\Providers\\GeneralActiveIngredientServiceProvider"
+    ],
+    "files": []
+}

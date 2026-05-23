@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalyesnooption",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralYesNoOption\\": "app/",
+            "Modules\\GeneralYesNoOption\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralYesNoOption\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralYesNoOption\\Tests\\": "tests/"
+        }
+    }
+}

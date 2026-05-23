@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalpainonsettype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralPainOnsetType\\": "app/",
+            "Modules\\GeneralPainOnsetType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralPainOnsetType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralPainOnsetType\\Tests\\": "tests/"
+        }
+    }
+}

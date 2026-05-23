@@ -1,0 +1,52 @@
+<?php
+
+namespace Modules\GeneralUserGroup\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\GeneralUserGroup\Models\UserGroup;
+
+class UserGroupController extends Controller
+{
+    public function index()
+    {
+        return UserGroup::query()->orderBy('name')->paginate(15);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:user_groups,name'],
+            'code' => ['nullable', 'string', 'max:10', 'unique:user_groups,code'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        return response()->json(UserGroup::create($data)->refresh(), 201);
+    }
+
+    public function show(UserGroup $userGroup): UserGroup
+    {
+        return $userGroup;
+    }
+
+    public function update(Request $request, UserGroup $userGroup): UserGroup
+    {
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('user_groups', 'name')->ignore($userGroup->id)],
+            'code' => ['nullable', 'string', 'max:10', Rule::unique('user_groups', 'code')->ignore($userGroup->id)],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        $userGroup->update($data);
+
+        return $userGroup;
+    }
+
+    public function destroy(UserGroup $userGroup)
+    {
+        $userGroup->delete();
+
+        return response()->json(null, 204);
+    }
+}

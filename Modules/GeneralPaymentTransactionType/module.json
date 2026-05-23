@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPaymentTransactionType",
+    "alias": "generalpaymenttransactiontype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPaymentTransactionType\\Providers\\GeneralPaymentTransactionTypeServiceProvider"
+    ],
+    "files": []
+}

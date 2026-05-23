@@ -1,0 +1,11 @@
+{
+    "name": "GeneralGoodsReceiptCancellationReason",
+    "alias": "generalgoodsreceiptcancellationreason",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralGoodsReceiptCancellationReason\\Providers\\GeneralGoodsReceiptCancellationReasonServiceProvider"
+    ],
+    "files": []
+}

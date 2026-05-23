@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbAnatomyClassification",
+    "alias": "generalsitbanatomyclassification",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbAnatomyClassification\\Providers\\GeneralSitbAnatomyClassificationServiceProvider"
+    ],
+    "files": []
+}

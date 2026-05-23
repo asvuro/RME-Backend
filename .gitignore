@@ -1,7 +1,6 @@
 *.log
 .DS_Store
 .env
-.codegraph
 .env.backup
 .env.production
 .phpactor.json
@@ -27,4 +26,4 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 AGENT_REPORT.md
-/storage/framework/cache/phpstan
+/scratch

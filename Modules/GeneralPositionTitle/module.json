@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPositionTitle",
+    "alias": "generalpositiontitle",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPositionTitle\\Providers\\GeneralPositionTitleServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralIdentityCardType",
+    "alias": "generalidentitycardtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralIdentityCardType\\Providers\\GeneralIdentityCardTypeServiceProvider"
+    ],
+    "files": []
+}

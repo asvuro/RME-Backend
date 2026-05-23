@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPrintType",
+    "alias": "generalprinttype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPrintType\\Providers\\GeneralPrintTypeServiceProvider"
+    ],
+    "files": []
+}

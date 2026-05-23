@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbPreCulture",
+    "alias": "generalsitbpreculture",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbPreCulture\\Providers\\GeneralSitbPreCultureServiceProvider"
+    ],
+    "files": []
+}

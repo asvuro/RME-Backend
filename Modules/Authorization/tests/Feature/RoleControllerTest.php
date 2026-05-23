@@ -34,6 +34,40 @@ class RoleControllerTest extends TestCase
         $this->assertDatabaseHas('roles', ['name' => 'admin']);
     }
 
+    public function test_it_rejects_role_with_duplicate_name(): void
+    {
+        $this->actingUser();
+        Role::create(['name' => 'admin']);
+
+        $response = $this->postJson('/api/v1/roles', ['name' => 'admin']);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('name');
+    }
+
+    public function test_it_rejects_role_with_unknown_permission(): void
+    {
+        $this->actingUser();
+
+        $response = $this->postJson('/api/v1/roles', [
+            'name' => 'admin',
+            'permissions' => ['tidak-ada'],
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('permissions.0');
+    }
+
+    public function test_it_ignores_duplicate_name_on_update_of_same_role(): void
+    {
+        $this->actingUser();
+        $role = Role::create(['name' => 'staff']);
+
+        $response = $this->putJson("/api/v1/roles/{$role->id}", [
+            'name' => 'staff',
+        ]);
+
+        $response->assertOk();
+    }
+
     public function test_it_lists_roles(): void
     {
         $this->actingUser();

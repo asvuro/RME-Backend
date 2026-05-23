@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbpretcm",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbPreTcm\\": "app/",
+            "Modules\\GeneralSitbPreTcm\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbPreTcm\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbPreTcm\\Tests\\": "tests/"
+        }
+    }
+}

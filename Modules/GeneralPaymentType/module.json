@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPaymentType",
+    "alias": "generalpaymenttype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPaymentType\\Providers\\GeneralPaymentTypeServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralBridgeType",
+    "alias": "generalbridgetype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralBridgeType\\Providers\\GeneralBridgeTypeServiceProvider"
+    ],
+    "files": []
+}

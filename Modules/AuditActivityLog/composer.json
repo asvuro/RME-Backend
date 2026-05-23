@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/auditactivitylog",
+    "description": "Jejak aktivitas CRUD & milestone domain — port logs.pengguna_akses_log simgos2",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\AuditActivityLog\\": "app/",
+            "Modules\\AuditActivityLog\\Database\\Factories\\": "database/factories/",
+            "Modules\\AuditActivityLog\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\AuditActivityLog\\Tests\\": "tests/"
+        }
+    }
+}

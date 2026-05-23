@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaldiscounttype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralDiscountType\\": "app/",
+            "Modules\\GeneralDiscountType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralDiscountType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralDiscountType\\Tests\\": "tests/"
+        }
+    }
+}

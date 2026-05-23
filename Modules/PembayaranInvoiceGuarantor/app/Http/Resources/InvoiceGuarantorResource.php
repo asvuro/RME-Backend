@@ -13,6 +13,8 @@ class InvoiceGuarantorResource extends JsonResource
             'id' => $this->id,
             'invoice_id' => $this->invoice_id,
             'guarantor_id' => $this->guarantor_id,
+            'sequence' => $this->sequence,
+            'room_class_id' => $this->room_class_id,
             'covered_amount' => $this->covered_amount,
             'coverage_percentage' => $this->coverage_percentage,
             'verification_status' => $this->verification_status,

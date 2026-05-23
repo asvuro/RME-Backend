@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbReferrerType",
+    "alias": "generalsitbreferrertype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbReferrerType\\Providers\\GeneralSitbReferrerTypeServiceProvider"
+    ],
+    "files": []
+}

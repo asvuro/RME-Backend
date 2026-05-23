@@ -1,0 +1,11 @@
+{
+    "name": "GeneralContactType",
+    "alias": "generalcontacttype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralContactType\\Providers\\GeneralContactTypeServiceProvider"
+    ],
+    "files": []
+}

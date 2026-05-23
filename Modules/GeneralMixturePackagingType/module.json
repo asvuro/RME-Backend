@@ -1,0 +1,11 @@
+{
+    "name": "GeneralMixturePackagingType",
+    "alias": "generalmixturepackagingtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralMixturePackagingType\\Providers\\GeneralMixturePackagingTypeServiceProvider"
+    ],
+    "files": []
+}

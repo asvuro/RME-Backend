@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPainOnsetType",
+    "alias": "generalpainonsettype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPainOnsetType\\Providers\\GeneralPainOnsetTypeServiceProvider"
+    ],
+    "files": []
+}

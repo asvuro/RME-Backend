@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalaccidentguarantortype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralAccidentGuarantorType\\": "app/",
+            "Modules\\GeneralAccidentGuarantorType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralAccidentGuarantorType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralAccidentGuarantorType\\Tests\\": "tests/"
+        }
+    }
+}

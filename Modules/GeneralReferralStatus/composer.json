@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalreferralstatus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralReferralStatus\\": "app/",
+            "Modules\\GeneralReferralStatus\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralReferralStatus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralReferralStatus\\Tests\\": "tests/"
+        }
+    }
+}

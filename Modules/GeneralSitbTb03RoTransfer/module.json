@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbTb03RoTransfer",
+    "alias": "generalsitbtb03rotransfer",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbTb03RoTransfer\\Providers\\GeneralSitbTb03RoTransferServiceProvider"
+    ],
+    "files": []
+}

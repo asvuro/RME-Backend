@@ -1,0 +1,11 @@
+{
+    "name": "GeneralDepositType",
+    "alias": "generaldeposittype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralDepositType\\Providers\\GeneralDepositTypeServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPatientType",
+    "alias": "generalpatienttype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPatientType\\Providers\\GeneralPatientTypeServiceProvider"
+    ],
+    "files": []
+}

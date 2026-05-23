@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbmonth5microscopy",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbMonth5Microscopy\\": "app/",
+            "Modules\\GeneralSitbMonth5Microscopy\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbMonth5Microscopy\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbMonth5Microscopy\\Tests\\": "tests/"
+        }
+    }
+}

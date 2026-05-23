@@ -1,0 +1,52 @@
+<?php
+
+namespace Modules\GeneralReturnCancellationReason\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\GeneralReturnCancellationReason\Models\ReturnCancellationReason;
+
+class ReturnCancellationReasonController extends Controller
+{
+    public function index()
+    {
+        return ReturnCancellationReason::query()->orderBy('name')->paginate(15);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:return_cancellation_reasons,name'],
+            'code' => ['nullable', 'string', 'max:10', 'unique:return_cancellation_reasons,code'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        return response()->json(ReturnCancellationReason::create($data)->refresh(), 201);
+    }
+
+    public function show(ReturnCancellationReason $returnCancellationReason): ReturnCancellationReason
+    {
+        return $returnCancellationReason;
+    }
+
+    public function update(Request $request, ReturnCancellationReason $returnCancellationReason): ReturnCancellationReason
+    {
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('return_cancellation_reasons', 'name')->ignore($returnCancellationReason->id)],
+            'code' => ['nullable', 'string', 'max:10', Rule::unique('return_cancellation_reasons', 'code')->ignore($returnCancellationReason->id)],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        $returnCancellationReason->update($data);
+
+        return $returnCancellationReason;
+    }
+
+    public function destroy(ReturnCancellationReason $returnCancellationReason)
+    {
+        $returnCancellationReason->delete();
+
+        return response()->json(null, 204);
+    }
+}

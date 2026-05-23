@@ -1,0 +1,11 @@
+{
+    "name": "GeneralTbPatientCategory",
+    "alias": "generaltbpatientcategory",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralTbPatientCategory\\Providers\\GeneralTbPatientCategoryServiceProvider"
+    ],
+    "files": []
+}

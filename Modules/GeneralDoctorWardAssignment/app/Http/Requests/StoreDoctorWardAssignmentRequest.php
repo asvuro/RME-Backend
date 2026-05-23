@@ -18,7 +18,6 @@ class StoreDoctorWardAssignmentRequest extends FormRequest
             'ward_id' => ['required', 'exists:wards,id'],
             'assigned_at' => ['nullable', 'date'],
             'schedule_day' => ['nullable', 'string', 'max:50'],
-            'is_active' => ['sometimes', 'boolean'],
         ];
     }
 }

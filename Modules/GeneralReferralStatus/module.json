@@ -1,0 +1,11 @@
+{
+    "name": "GeneralReferralStatus",
+    "alias": "generalreferralstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralReferralStatus\\Providers\\GeneralReferralStatusServiceProvider"
+    ],
+    "files": []
+}

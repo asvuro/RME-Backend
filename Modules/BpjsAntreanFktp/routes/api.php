@@ -58,7 +58,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1/antrean-fktp')->group(function (
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/antrean-fktp/mobile-jkn')->group(function () {
-    Route::get('token', [MobileJknTokenController::class, 'index']);
+    Route::get('token', [MobileJknTokenController::class, 'index'])->middleware(['throttle:30,1']);
 
     Route::middleware([VerifyBpjsMobileJknToken::class])->group(function () {
         Route::post('antrean', [MobileJknAntreanController::class, 'store']);

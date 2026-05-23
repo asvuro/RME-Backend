@@ -1,0 +1,11 @@
+{
+    "name": "GeneralAccidentGuarantorType",
+    "alias": "generalaccidentguarantortype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralAccidentGuarantorType\\Providers\\GeneralAccidentGuarantorTypeServiceProvider"
+    ],
+    "files": []
+}

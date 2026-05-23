@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbreferrertype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbReferrerType\\": "app/",
+            "Modules\\GeneralSitbReferrerType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbReferrerType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbReferrerType\\Tests\\": "tests/"
+        }
+    }
+}

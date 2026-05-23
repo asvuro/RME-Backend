@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbtreatmentstatus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbTreatmentStatus\\": "app/",
+            "Modules\\GeneralSitbTreatmentStatus\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbTreatmentStatus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbTreatmentStatus\\Tests\\": "tests/"
+        }
+    }
+}

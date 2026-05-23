@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbthoraxnotdone",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbThoraxNotDone\\": "app/",
+            "Modules\\GeneralSitbThoraxNotDone\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbThoraxNotDone\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbThoraxNotDone\\Tests\\": "tests/"
+        }
+    }
+}

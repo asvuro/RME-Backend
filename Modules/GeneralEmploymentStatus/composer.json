@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalemploymentstatus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralEmploymentStatus\\": "app/",
+            "Modules\\GeneralEmploymentStatus\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralEmploymentStatus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralEmploymentStatus\\Tests\\": "tests/"
+        }
+    }
+}

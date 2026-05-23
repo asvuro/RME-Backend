@@ -1,0 +1,11 @@
+{
+    "name": "GeneralGoodsReceiptType",
+    "alias": "generalgoodsreceipttype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralGoodsReceiptType\\Providers\\GeneralGoodsReceiptTypeServiceProvider"
+    ],
+    "files": []
+}

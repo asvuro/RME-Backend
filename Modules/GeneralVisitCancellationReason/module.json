@@ -1,0 +1,11 @@
+{
+    "name": "GeneralVisitCancellationReason",
+    "alias": "generalvisitcancellationreason",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralVisitCancellationReason\\Providers\\GeneralVisitCancellationReasonServiceProvider"
+    ],
+    "files": []
+}

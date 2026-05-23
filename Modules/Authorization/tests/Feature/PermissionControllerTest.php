@@ -23,6 +23,17 @@ class PermissionControllerTest extends TestCase
         $response->assertOk()->assertJsonCount(1, 'data');
     }
 
+    public function test_it_rejects_permission_with_duplicate_name(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'sanctum');
+        Permission::create(['name' => 'edit-pasien']);
+
+        $response = $this->postJson('/api/v1/permissions', ['name' => 'edit-pasien']);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('name');
+    }
+
     public function test_it_deletes_permission(): void
     {
         $user = User::factory()->create();

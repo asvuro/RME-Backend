@@ -13,9 +13,10 @@ class MobileJknAntreanControllerTest extends TestCase
 
     private function issueToken(): MobileJknToken
     {
+        // Middleware stores/looks up sha256 digests, so the fixture must hash too.
         return MobileJknToken::create([
             'username' => 'mobilejkn',
-            'token' => 'test-token-123',
+            'token' => hash('sha256', 'test-token-123'),
             'expires_at' => now()->addHours(12),
         ]);
     }
@@ -54,13 +55,14 @@ class MobileJknAntreanControllerTest extends TestCase
 
     public function test_ambil_antrean_creates_local_booking_and_registers_with_bpjs(): void
     {
-        $token = $this->issueToken();
+        $this->issueToken();
 
         Http::fake([
             '*/antrean/add' => Http::response(['metaData' => ['code' => '200', 'message' => 'Ok'], 'response' => null]),
         ]);
 
-        $response = $this->withHeaders(['x-username' => $token->username, 'x-token' => $token->token])
+        // Send the plaintext; the middleware hashes it to match the stored digest.
+        $response = $this->withHeaders(['x-username' => 'mobilejkn', 'x-token' => 'test-token-123'])
             ->postJson('/api/v1/antrean-fktp/mobile-jkn/antrean', [
                 'nomorkartu' => '0001234567890',
                 'nik' => '3212345678987654',

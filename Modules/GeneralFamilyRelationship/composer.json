@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalfamilyrelationship",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralFamilyRelationship\\": "app/",
+            "Modules\\GeneralFamilyRelationship\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralFamilyRelationship\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralFamilyRelationship\\Tests\\": "tests/"
+        }
+    }
+}

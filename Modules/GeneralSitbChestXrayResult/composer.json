@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbchestxrayresult",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbChestXrayResult\\": "app/",
+            "Modules\\GeneralSitbChestXrayResult\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbChestXrayResult\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbChestXrayResult\\Tests\\": "tests/"
+        }
+    }
+}

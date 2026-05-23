@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPainScaleMethod",
+    "alias": "generalpainscalemethod",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPainScaleMethod\\Providers\\GeneralPainScaleMethodServiceProvider"
+    ],
+    "files": []
+}

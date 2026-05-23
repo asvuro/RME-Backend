@@ -1,0 +1,8 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Modules\GeneralOperationClass\Http\Controllers\OperationClassController;
+
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+    Route::apiResource('operation-classes', OperationClassController::class);
+});

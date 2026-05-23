@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbendmicroscopy",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbEndMicroscopy\\": "app/",
+            "Modules\\GeneralSitbEndMicroscopy\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbEndMicroscopy\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbEndMicroscopy\\Tests\\": "tests/"
+        }
+    }
+}

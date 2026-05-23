@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbOatGuideline",
+    "alias": "generalsitboatguideline",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbOatGuideline\\Providers\\GeneralSitbOatGuidelineServiceProvider"
+    ],
+    "files": []
+}

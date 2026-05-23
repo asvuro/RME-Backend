@@ -1,0 +1,11 @@
+{
+    "name": "GeneralEmploymentStatus",
+    "alias": "generalemploymentstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralEmploymentStatus\\Providers\\GeneralEmploymentStatusServiceProvider"
+    ],
+    "files": []
+}

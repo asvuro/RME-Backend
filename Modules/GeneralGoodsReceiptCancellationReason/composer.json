@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalgoodsreceiptcancellationreason",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralGoodsReceiptCancellationReason\\": "app/",
+            "Modules\\GeneralGoodsReceiptCancellationReason\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralGoodsReceiptCancellationReason\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralGoodsReceiptCancellationReason\\Tests\\": "tests/"
+        }
+    }
+}

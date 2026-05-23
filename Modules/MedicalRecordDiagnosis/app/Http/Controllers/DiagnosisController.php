@@ -12,6 +12,10 @@ class DiagnosisController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        ]);
+
         $query = Diagnosis::query();
 
         if ($request->filled('visit_id')) {

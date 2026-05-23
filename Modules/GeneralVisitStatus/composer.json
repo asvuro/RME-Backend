@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalvisitstatus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralVisitStatus\\": "app/",
+            "Modules\\GeneralVisitStatus\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralVisitStatus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralVisitStatus\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralDiscountType",
+    "alias": "generaldiscounttype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralDiscountType\\Providers\\GeneralDiscountTypeServiceProvider"
+    ],
+    "files": []
+}

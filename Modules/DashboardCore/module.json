@@ -1,0 +1,11 @@
+{
+    "name": "DashboardCore",
+    "alias": "dashboardcore",
+    "description": "Dashboard inti RS — KPI okupansi/kunjungan/tagihan/farmasi satu endpoint",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\DashboardCore\\Providers\\DashboardCoreServiceProvider"
+    ],
+    "files": []
+}

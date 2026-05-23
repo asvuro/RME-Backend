@@ -1,0 +1,11 @@
+{
+    "name": "GeneralMedicationAdministrationType",
+    "alias": "generalmedicationadministrationtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralMedicationAdministrationType\\Providers\\GeneralMedicationAdministrationTypeServiceProvider"
+    ],
+    "files": []
+}

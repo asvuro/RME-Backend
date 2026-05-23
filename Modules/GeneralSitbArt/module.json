@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbArt",
+    "alias": "generalsitbart",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbArt\\Providers\\GeneralSitbArtServiceProvider"
+    ],
+    "files": []
+}

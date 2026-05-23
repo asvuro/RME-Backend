@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbMonth2Microscopy",
+    "alias": "generalsitbmonth2microscopy",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbMonth2Microscopy\\Providers\\GeneralSitbMonth2MicroscopyServiceProvider"
+    ],
+    "files": []
+}

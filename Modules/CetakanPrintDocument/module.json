@@ -1,0 +1,11 @@
+{
+    "name": "CetakanPrintDocument",
+    "alias": "cetakanprintdocument",
+    "description": "Penerbitan dokumen cetak bernomor seri — port cetakan.storeKarcis/kwitansi_pembayaran simgos2",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CetakanPrintDocument\\Providers\\CetakanPrintDocumentServiceProvider"
+    ],
+    "files": []
+}

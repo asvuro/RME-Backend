@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPayrollDeduction",
+    "alias": "generalpayrolldeduction",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPayrollDeduction\\Providers\\GeneralPayrollDeductionServiceProvider"
+    ],
+    "files": []
+}

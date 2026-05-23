@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalreservationstatus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralReservationStatus\\": "app/",
+            "Modules\\GeneralReservationStatus\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralReservationStatus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralReservationStatus\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralBedStatus",
+    "alias": "generalbedstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralBedStatus\\Providers\\GeneralBedStatusServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalmedicationusagetype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralMedicationUsageType\\": "app/",
+            "Modules\\GeneralMedicationUsageType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralMedicationUsageType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralMedicationUsageType\\Tests\\": "tests/"
+        }
+    }
+}

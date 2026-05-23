@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbPreMicroscopy",
+    "alias": "generalsitbpremicroscopy",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbPreMicroscopy\\Providers\\GeneralSitbPreMicroscopyServiceProvider"
+    ],
+    "files": []
+}

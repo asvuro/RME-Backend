@@ -1,0 +1,11 @@
+{
+    "name": "GeneralReturnCancellationType",
+    "alias": "generalreturncancellationtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralReturnCancellationType\\Providers\\GeneralReturnCancellationTypeServiceProvider"
+    ],
+    "files": []
+}

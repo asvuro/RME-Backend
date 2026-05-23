@@ -59,4 +59,30 @@ class DiagnosisControllerTest extends TestCase
 
         $this->deleteJson("/api/v1/diagnoses/{$diagnosis->id}")->assertStatus(204);
     }
+
+    public function test_it_rejects_store_without_required_fields(): void
+    {
+        $this->actingUser();
+        Visit::factory()->create();
+        DiagnosisCode::factory()->create(['code' => 'A90']);
+
+        $this->postJson('/api/v1/diagnoses', [])->assertStatus(422);
+    }
+
+    public function test_it_rejects_store_with_unknown_visit_or_code(): void
+    {
+        $this->actingUser();
+
+        $this->postJson('/api/v1/diagnoses', [
+            'visit_id' => 999999,
+            'diagnosis_code_id' => 999999,
+        ])->assertStatus(422);
+    }
+
+    public function test_it_rejects_per_page_above_limit(): void
+    {
+        $this->actingUser();
+
+        $this->getJson('/api/v1/diagnoses?per_page=500')->assertStatus(422);
+    }
 }

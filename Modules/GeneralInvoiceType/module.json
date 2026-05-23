@@ -1,0 +1,11 @@
+{
+    "name": "GeneralInvoiceType",
+    "alias": "generalinvoicetype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralInvoiceType\\Providers\\GeneralInvoiceTypeServiceProvider"
+    ],
+    "files": []
+}

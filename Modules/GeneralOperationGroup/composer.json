@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaloperationgroup",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralOperationGroup\\": "app/",
+            "Modules\\GeneralOperationGroup\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralOperationGroup\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralOperationGroup\\Tests\\": "tests/"
+        }
+    }
+}

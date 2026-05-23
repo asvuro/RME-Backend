@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbDm",
+    "alias": "generalsitbdm",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbDm\\Providers\\GeneralSitbDmServiceProvider"
+    ],
+    "files": []
+}

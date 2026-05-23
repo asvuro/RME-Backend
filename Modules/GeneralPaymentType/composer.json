@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalpaymenttype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralPaymentType\\": "app/",
+            "Modules\\GeneralPaymentType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralPaymentType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralPaymentType\\Tests\\": "tests/"
+        }
+    }
+}

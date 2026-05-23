@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalaccommodationcalculationrule",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralAccommodationCalculationRule\\": "app/",
+            "Modules\\GeneralAccommodationCalculationRule\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralAccommodationCalculationRule\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralAccommodationCalculationRule\\Tests\\": "tests/"
+        }
+    }
+}

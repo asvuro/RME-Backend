@@ -1,0 +1,11 @@
+{
+    "name": "AplikasiSetting",
+    "alias": "aplikasisetting",
+    "description": "Konfigurasi RS — port REST PropertiConfig simgos2 di atas rs_settings",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AplikasiSetting\\Providers\\AplikasiSettingServiceProvider"
+    ],
+    "files": []
+}

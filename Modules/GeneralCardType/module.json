@@ -1,0 +1,11 @@
+{
+    "name": "GeneralCardType",
+    "alias": "generalcardtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralCardType\\Providers\\GeneralCardTypeServiceProvider"
+    ],
+    "files": []
+}

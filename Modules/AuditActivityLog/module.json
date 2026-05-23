@@ -1,0 +1,11 @@
+{
+    "name": "AuditActivityLog",
+    "alias": "auditactivitylog",
+    "description": "Jejak aktivitas CRUD & milestone domain — port logs.pengguna_akses_log simgos2",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditActivityLog\\Providers\\AuditActivityLogServiceProvider"
+    ],
+    "files": []
+}

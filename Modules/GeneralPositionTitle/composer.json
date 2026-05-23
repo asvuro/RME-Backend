@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalpositiontitle",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralPositionTitle\\": "app/",
+            "Modules\\GeneralPositionTitle\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralPositionTitle\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralPositionTitle\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/auditrequestlog",
+    "description": "Jejak request API masuk — port semangat logs.bridge_log simgos2",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\AuditRequestLog\\": "app/",
+            "Modules\\AuditRequestLog\\Database\\Factories\\": "database/factories/",
+            "Modules\\AuditRequestLog\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\AuditRequestLog\\Tests\\": "tests/"
+        }
+    }
+}

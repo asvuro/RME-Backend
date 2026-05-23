@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbtreatmenthistoryclassification",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbTreatmentHistoryClassification\\": "app/",
+            "Modules\\GeneralSitbTreatmentHistoryClassification\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbTreatmentHistoryClassification\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbTreatmentHistoryClassification\\Tests\\": "tests/"
+        }
+    }
+}

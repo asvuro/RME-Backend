@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaloperationclass",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralOperationClass\\": "app/",
+            "Modules\\GeneralOperationClass\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralOperationClass\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralOperationClass\\Tests\\": "tests/"
+        }
+    }
+}

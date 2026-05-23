@@ -1,0 +1,11 @@
+{
+    "name": "GeneralAgeGroup",
+    "alias": "generalagegroup",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralAgeGroup\\Providers\\GeneralAgeGroupServiceProvider"
+    ],
+    "files": []
+}

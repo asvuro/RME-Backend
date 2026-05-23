@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbdrugsource",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbDrugSource\\": "app/",
+            "Modules\\GeneralSitbDrugSource\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbDrugSource\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbDrugSource\\Tests\\": "tests/"
+        }
+    }
+}

@@ -6,15 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\Auth\Models\User;
 use Modules\PembayaranInvoice\Database\Factories\InvoiceFactory;
+use Modules\PembayaranInvoiceGuarantor\Models\InvoiceGuarantor;
 use Modules\PembayaranInvoiceItem\Models\InvoiceItem;
 use Modules\PembayaranPayment\Models\Payment;
 use Modules\PendaftaranVisit\Models\Visit;
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $fillable = [
         'invoice_number',
@@ -57,6 +59,31 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Lampiran penjamin (port pembayaran.penjamin_tagihan simgos2) — model di
+     * modul PembayaranInvoiceGuarantor (pemilik tabel); urutan sequence
+     * menentukan penanggung utama.
+     */
+    public function guarantorAttachments(): HasMany
+    {
+        return $this->hasMany(InvoiceGuarantor::class)->orderBy('sequence');
+    }
+
+    /** Port getTotalPenjaminTagihan: SUM(TOTAL) baris penjamin, 2 desimal stabil. */
+    public function coveredAmount(): string
+    {
+        return number_format((float) $this->guarantorAttachments()->sum('covered_amount'), 2, '.', '');
+    }
+
+    /**
+     * Sisa yang ditanggung pasien TIDAK disimpan di mana pun (tidak ada dual
+     * source of truth) - selalu dihitung dari total dikurangi coverage.
+     */
+    public function getPatientShareAttribute(): string
+    {
+        return number_format(max(0, (float) $this->total_amount - (float) $this->coveredAmount()), 2, '.', '');
     }
 
     /**

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralReservationStatus",
+    "alias": "generalreservationstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralReservationStatus\\Providers\\GeneralReservationStatusServiceProvider"
+    ],
+    "files": []
+}

@@ -3,24 +3,18 @@
 namespace Modules\GeneralDoctorWardAssignment\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Modules\GeneralDoctorWardAssignment\Models\DoctorWardAssignment;
 use Modules\GeneralDoctorWardAssignment\Http\Requests\StoreDoctorWardAssignmentRequest;
 use Modules\GeneralDoctorWardAssignment\Http\Requests\UpdateDoctorWardAssignmentRequest;
 use Modules\GeneralDoctorWardAssignment\Http\Resources\DoctorWardAssignmentResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class DoctorWardAssignmentController extends Controller
 {
-    public function index(Request $request)
+    public function index(): AnonymousResourceCollection
     {
-        $query = DoctorWardAssignment::query();
-
-        if ($request->filled('ward_id')) {
-            $query->where('ward_id', $request->integer('ward_id'));
-        }
-
-        return DoctorWardAssignmentResource::collection($query->paginate($request->integer('per_page', 15)));
+        return DoctorWardAssignmentResource::collection(DoctorWardAssignment::all());
     }
 
     public function store(StoreDoctorWardAssignmentRequest $request): DoctorWardAssignmentResource

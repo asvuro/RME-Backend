@@ -5,6 +5,7 @@ namespace Modules\PendaftaranVisit\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\Auth\Models\User;
 use Modules\GeneralBed\Models\Bed;
 use Modules\GeneralEmployee\Models\Employee;
@@ -15,7 +16,7 @@ use Modules\PendaftaranVisit\Database\Factories\VisitFactory;
 
 class Visit extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $fillable = [
         'visit_number',

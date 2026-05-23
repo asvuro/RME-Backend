@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbChestXrayResult",
+    "alias": "generalsitbchestxrayresult",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbChestXrayResult\\Providers\\GeneralSitbChestXrayResultServiceProvider"
+    ],
+    "files": []
+}

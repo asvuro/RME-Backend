@@ -5,14 +5,23 @@ namespace Modules\Auth\Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Tests\TestCase;
+use Database\Seeders\RoleAndPermissionSeeder;
 
 class UserControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
+
     private function actingUser(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
 
         return $user;

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbPpk",
+    "alias": "generalsitbppk",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbPpk\\Providers\\GeneralSitbPpkServiceProvider"
+    ],
+    "files": []
+}

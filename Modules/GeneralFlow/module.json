@@ -1,0 +1,11 @@
+{
+    "name": "GeneralFlow",
+    "alias": "generalflow",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralFlow\\Providers\\GeneralFlowServiceProvider"
+    ],
+    "files": []
+}

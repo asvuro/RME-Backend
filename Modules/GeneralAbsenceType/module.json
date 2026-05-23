@@ -1,0 +1,11 @@
+{
+    "name": "GeneralAbsenceType",
+    "alias": "generalabsencetype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralAbsenceType\\Providers\\GeneralAbsenceTypeServiceProvider"
+    ],
+    "files": []
+}

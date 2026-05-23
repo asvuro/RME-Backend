@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbpremicroscopy",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbPreMicroscopy\\": "app/",
+            "Modules\\GeneralSitbPreMicroscopy\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbPreMicroscopy\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbPreMicroscopy\\Tests\\": "tests/"
+        }
+    }
+}

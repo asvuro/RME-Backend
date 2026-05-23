@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPatientPickupStatus",
+    "alias": "generalpatientpickupstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPatientPickupStatus\\Providers\\GeneralPatientPickupStatusServiceProvider"
+    ],
+    "files": []
+}

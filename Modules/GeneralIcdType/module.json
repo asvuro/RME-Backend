@@ -1,0 +1,11 @@
+{
+    "name": "GeneralIcdType",
+    "alias": "generalicdtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralIcdType\\Providers\\GeneralIcdTypeServiceProvider"
+    ],
+    "files": []
+}

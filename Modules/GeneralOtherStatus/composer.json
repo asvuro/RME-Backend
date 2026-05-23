@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalotherstatus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralOtherStatus\\": "app/",
+            "Modules\\GeneralOtherStatus\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralOtherStatus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralOtherStatus\\Tests\\": "tests/"
+        }
+    }
+}

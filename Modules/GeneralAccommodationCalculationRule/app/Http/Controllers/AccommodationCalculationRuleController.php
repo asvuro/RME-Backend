@@ -1,0 +1,52 @@
+<?php
+
+namespace Modules\GeneralAccommodationCalculationRule\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\GeneralAccommodationCalculationRule\Models\AccommodationCalculationRule;
+
+class AccommodationCalculationRuleController extends Controller
+{
+    public function index()
+    {
+        return AccommodationCalculationRule::query()->orderBy('name')->paginate(15);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:accommodation_calculation_rules,name'],
+            'code' => ['nullable', 'string', 'max:10', 'unique:accommodation_calculation_rules,code'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        return response()->json(AccommodationCalculationRule::create($data)->refresh(), 201);
+    }
+
+    public function show(AccommodationCalculationRule $accommodationCalculationRule): AccommodationCalculationRule
+    {
+        return $accommodationCalculationRule;
+    }
+
+    public function update(Request $request, AccommodationCalculationRule $accommodationCalculationRule): AccommodationCalculationRule
+    {
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('accommodation_calculation_rules', 'name')->ignore($accommodationCalculationRule->id)],
+            'code' => ['nullable', 'string', 'max:10', Rule::unique('accommodation_calculation_rules', 'code')->ignore($accommodationCalculationRule->id)],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        $accommodationCalculationRule->update($data);
+
+        return $accommodationCalculationRule;
+    }
+
+    public function destroy(AccommodationCalculationRule $accommodationCalculationRule)
+    {
+        $accommodationCalculationRule->delete();
+
+        return response()->json(null, 204);
+    }
+}

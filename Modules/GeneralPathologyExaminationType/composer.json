@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalpathologyexaminationtype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralPathologyExaminationType\\": "app/",
+            "Modules\\GeneralPathologyExaminationType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralPathologyExaminationType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralPathologyExaminationType\\Tests\\": "tests/"
+        }
+    }
+}

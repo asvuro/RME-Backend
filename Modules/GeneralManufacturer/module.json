@@ -1,0 +1,11 @@
+{
+    "name": "GeneralManufacturer",
+    "alias": "generalmanufacturer",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralManufacturer\\Providers\\GeneralManufacturerServiceProvider"
+    ],
+    "files": []
+}

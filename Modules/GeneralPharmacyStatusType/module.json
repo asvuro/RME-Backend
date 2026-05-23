@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPharmacyStatusType",
+    "alias": "generalpharmacystatustype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPharmacyStatusType\\Providers\\GeneralPharmacyStatusTypeServiceProvider"
+    ],
+    "files": []
+}

@@ -12,6 +12,14 @@ class DoctorMedicalDepartmentTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Rute modul ini kini dilindungi auth:sanctum (fix temuan security
+        // review K-1) - semua request test harus terautentikasi.
+        $this->actingAs(\Modules\Auth\Models\User::factory()->create(), 'sanctum');
+    }
+
     public function test_can_list_assignments()
     {
         DoctorMedicalDepartment::factory()->count(3)->create();

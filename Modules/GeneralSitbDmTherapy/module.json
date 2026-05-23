@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbDmTherapy",
+    "alias": "generalsitbdmtherapy",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbDmTherapy\\Providers\\GeneralSitbDmTherapyServiceProvider"
+    ],
+    "files": []
+}

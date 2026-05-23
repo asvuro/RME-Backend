@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalinvoicetype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralInvoiceType\\": "app/",
+            "Modules\\GeneralInvoiceType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralInvoiceType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralInvoiceType\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralAnesthesiaType",
+    "alias": "generalanesthesiatype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralAnesthesiaType\\Providers\\GeneralAnesthesiaTypeServiceProvider"
+    ],
+    "files": []
+}

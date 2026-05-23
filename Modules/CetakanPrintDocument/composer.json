@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/cetakanprintdocument",
+    "description": "Penerbitan dokumen cetak bernomor seri — port cetakan.storeKarcis/kwitansi_pembayaran simgos2",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\CetakanPrintDocument\\": "app/",
+            "Modules\\CetakanPrintDocument\\Database\\Factories\\": "database/factories/",
+            "Modules\\CetakanPrintDocument\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\CetakanPrintDocument\\Tests\\": "tests/"
+        }
+    }
+}

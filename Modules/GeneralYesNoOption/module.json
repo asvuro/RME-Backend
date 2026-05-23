@@ -1,0 +1,11 @@
+{
+    "name": "GeneralYesNoOption",
+    "alias": "generalyesnooption",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralYesNoOption\\Providers\\GeneralYesNoOptionServiceProvider"
+    ],
+    "files": []
+}

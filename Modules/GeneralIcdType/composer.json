@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalicdtype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralIcdType\\": "app/",
+            "Modules\\GeneralIcdType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralIcdType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralIcdType\\Tests\\": "tests/"
+        }
+    }
+}

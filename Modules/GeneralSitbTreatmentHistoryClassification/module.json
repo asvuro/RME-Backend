@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbTreatmentHistoryClassification",
+    "alias": "generalsitbtreatmenthistoryclassification",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbTreatmentHistoryClassification\\Providers\\GeneralSitbTreatmentHistoryClassificationServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralLaboratoryUnit",
+    "alias": "generallaboratoryunit",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralLaboratoryUnit\\Providers\\GeneralLaboratoryUnitServiceProvider"
+    ],
+    "files": []
+}

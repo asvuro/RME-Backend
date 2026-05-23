@@ -13,6 +13,10 @@ class AnamnesisController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+        ]);
+
         $query = Anamnesis::query();
 
         return AnamnesisResource::collection($query->latest()->paginate($request->integer('per_page', 15)));

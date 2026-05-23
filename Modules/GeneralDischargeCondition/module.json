@@ -1,0 +1,11 @@
+{
+    "name": "GeneralDischargeCondition",
+    "alias": "generaldischargecondition",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralDischargeCondition\\Providers\\GeneralDischargeConditionServiceProvider"
+    ],
+    "files": []
+}

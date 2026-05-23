@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalhealthprovidertype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralHealthProviderType\\": "app/",
+            "Modules\\GeneralHealthProviderType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralHealthProviderType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralHealthProviderType\\Tests\\": "tests/"
+        }
+    }
+}

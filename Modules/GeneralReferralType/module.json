@@ -1,0 +1,11 @@
+{
+    "name": "GeneralReferralType",
+    "alias": "generalreferraltype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralReferralType\\Providers\\GeneralReferralTypeServiceProvider"
+    ],
+    "files": []
+}

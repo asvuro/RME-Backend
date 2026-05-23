@@ -27,6 +27,20 @@ class UserRoleControllerTest extends TestCase
         $this->assertTrue($target->fresh()->hasRole('staff'));
     }
 
+    public function test_it_rejects_sync_with_unknown_role(): void
+    {
+        $actor = User::factory()->create();
+        $this->actingAs($actor, 'sanctum');
+
+        $target = User::factory()->create();
+
+        $response = $this->putJson("/api/v1/users/{$target->id}/roles", [
+            'roles' => ['tidak-ada'],
+        ]);
+
+        $response->assertStatus(422)->assertJsonValidationErrors('roles.0');
+    }
+
     public function test_it_lists_user_roles(): void
     {
         $actor = User::factory()->create();

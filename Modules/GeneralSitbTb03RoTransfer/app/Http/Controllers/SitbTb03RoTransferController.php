@@ -1,0 +1,52 @@
+<?php
+
+namespace Modules\GeneralSitbTb03RoTransfer\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\GeneralSitbTb03RoTransfer\Models\SitbTb03RoTransfer;
+
+class SitbTb03RoTransferController extends Controller
+{
+    public function index()
+    {
+        return SitbTb03RoTransfer::query()->orderBy('name')->paginate(15);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:sitb_tb03_ro_transfers,name'],
+            'code' => ['nullable', 'string', 'max:10', 'unique:sitb_tb03_ro_transfers,code'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        return response()->json(SitbTb03RoTransfer::create($data)->refresh(), 201);
+    }
+
+    public function show(SitbTb03RoTransfer $sitbTb03RoTransfer): SitbTb03RoTransfer
+    {
+        return $sitbTb03RoTransfer;
+    }
+
+    public function update(Request $request, SitbTb03RoTransfer $sitbTb03RoTransfer): SitbTb03RoTransfer
+    {
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('sitb_tb03_ro_transfers', 'name')->ignore($sitbTb03RoTransfer->id)],
+            'code' => ['nullable', 'string', 'max:10', Rule::unique('sitb_tb03_ro_transfers', 'code')->ignore($sitbTb03RoTransfer->id)],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        $sitbTb03RoTransfer->update($data);
+
+        return $sitbTb03RoTransfer;
+    }
+
+    public function destroy(SitbTb03RoTransfer $sitbTb03RoTransfer)
+    {
+        $sitbTb03RoTransfer->delete();
+
+        return response()->json(null, 204);
+    }
+}

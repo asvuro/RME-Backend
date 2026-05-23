@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbdm",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbDm\\": "app/",
+            "Modules\\GeneralSitbDm\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbDm\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbDm\\Tests\\": "tests/"
+        }
+    }
+}

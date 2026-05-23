@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalbridgetype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralBridgeType\\": "app/",
+            "Modules\\GeneralBridgeType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralBridgeType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralBridgeType\\Tests\\": "tests/"
+        }
+    }
+}

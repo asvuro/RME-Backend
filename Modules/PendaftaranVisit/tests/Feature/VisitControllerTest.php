@@ -43,17 +43,19 @@ class VisitControllerTest extends TestCase
         $response->assertOk()->assertJsonCount(2, 'data');
     }
 
-    public function test_it_discharges_a_visit(): void
+    public function test_it_blocks_discharge_via_update_and_points_to_the_gate(): void
     {
-        $user = $this->actingUser();
+        $this->actingUser();
         $visit = Visit::factory()->create();
 
+        // Gerbang pulang #11: edit bebas tidak boleh memutir discharged_at —
+        // bed wajib dibebaskan lewat POST /visits/{visit}/discharge.
         $response = $this->putJson("/api/v1/visits/{$visit->id}", [
             'discharged_at' => now()->toIso8601String(),
             'final_outcome' => 'sembuh',
         ]);
 
-        $response->assertOk()->assertJsonPath('data.status', 'discharged');
-        $this->assertDatabaseHas('visits', ['id' => $visit->id, 'final_outcome_by' => $user->id]);
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('visits', ['id' => $visit->id, 'discharged_at' => null]);
     }
 }

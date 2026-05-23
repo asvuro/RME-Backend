@@ -1,0 +1,52 @@
+<?php
+
+namespace Modules\GeneralReservationStatus\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\GeneralReservationStatus\Models\ReservationStatus;
+
+class ReservationStatusController extends Controller
+{
+    public function index()
+    {
+        return ReservationStatus::query()->orderBy('name')->paginate(15);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:reservation_statuses,name'],
+            'code' => ['nullable', 'string', 'max:10', 'unique:reservation_statuses,code'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        return response()->json(ReservationStatus::create($data)->refresh(), 201);
+    }
+
+    public function show(ReservationStatus $reservationStatus): ReservationStatus
+    {
+        return $reservationStatus;
+    }
+
+    public function update(Request $request, ReservationStatus $reservationStatus): ReservationStatus
+    {
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('reservation_statuses', 'name')->ignore($reservationStatus->id)],
+            'code' => ['nullable', 'string', 'max:10', Rule::unique('reservation_statuses', 'code')->ignore($reservationStatus->id)],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        $reservationStatus->update($data);
+
+        return $reservationStatus;
+    }
+
+    public function destroy(ReservationStatus $reservationStatus)
+    {
+        $reservationStatus->delete();
+
+        return response()->json(null, 204);
+    }
+}

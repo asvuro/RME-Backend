@@ -8,5 +8,5 @@ Route::prefix('v1/system/license')->group(function () {
     Route::get('/fingerprint', [LicenseController::class, 'fingerprint']);
     Route::post('/activate', [LicenseController::class, 'activate']);
     Route::post('/sync', [LicenseController::class, 'sync']);
-    Route::post('/webhook', [LicenseController::class, 'webhook']);
+    Route::post('/webhook', [LicenseController::class, 'webhook'])->middleware('throttle:30,1');
 });

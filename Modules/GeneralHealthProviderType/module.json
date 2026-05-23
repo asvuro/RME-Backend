@@ -1,0 +1,11 @@
+{
+    "name": "GeneralHealthProviderType",
+    "alias": "generalhealthprovidertype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralHealthProviderType\\Providers\\GeneralHealthProviderTypeServiceProvider"
+    ],
+    "files": []
+}

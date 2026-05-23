@@ -7,64 +7,51 @@ use App\Modules\Support\CachedModuleManifest;
 use Illuminate\Filesystem\Filesystem;
 use Nwidart\Modules\Contracts\ActivatorInterface;
 use Nwidart\Modules\Contracts\RepositoryInterface;
-use Nwidart\Modules\Exceptions\InvalidActivatorClass;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Nwidart\Modules\ModuleManifest;
 
 /**
- * Replaces nwidart's default service bindings with cache-aware versions that skip the
- * module.json glob scan on every request once bootstrap/cache/module-manifest.php has
- * been warmed via `php artisan module:manifest-cache`. Falls back to nwidart's normal
- * (uncached) behavior when the cache file is absent, e.g. local dev right after a module
- * is created/removed.
+ * Drop-in replacement for nwidart's LaravelModulesServiceProvider that serves
+ * the module list from the warmed manifest (bootstrap/cache/module-manifest.php,
+ * built by module:manifest-cache) instead of globbing every module.json under
+ * Modules/ on every boot. Registered in bootstrap/providers.php because composer.json sets
+ * dont-discover for nwidart/laravel-modules.
  */
 class CachedLaravelModulesServiceProvider extends LaravelModulesServiceProvider
 {
     /**
-     * nwidart's own register() calls registerProviders(), which registers its
-     * Nwidart\Modules\Providers\ContractsServiceProvider - and THAT does a plain
-     * `$this->app->bind(RepositoryInterface::class, LaravelFileRepository::class)`,
-     * silently overwriting our cached singleton binding from registerServices() below.
-     * The result: every module_path() call for the rest of the request/test (there are
-     * several per module - registerTranslations, registerConfig, registerViews,
-     * loadMigrationsFrom) resolves the plain uncached repository and does a full
-     * glob-scan of every module.json, every single call. That's O(n) module_path()
-     * calls each doing an O(n) scan - O(n^2) real filesystem I/O per boot, the actual
-     * cause of this app's growing per-module test-suite cost (confirmed by
-     * instrumentation: at 52 modules this silent bug alone cost ~30-40ms/module and
-     * would have gotten quadratically worse toward the 675-module catalog target).
-     * Re-asserting the binding here, after parent::register() has already run (and
-     * been clobbered), guarantees it's correct again before boot() - and therefore
-     * every module_path() call - runs.
+     * Register the service provider.
+     *
+     * The cached bindings are installed AFTER parent::register() on purpose:
+     * parent::registerServices() unconditionally re-binds RepositoryInterface::class and
+     * ModuleManifest::class with the stock closures (Laravel's singleton() overwrites any
+     * existing binding), so binding first means our classes are silently replaced and never
+     * used - which resurfaced as an I/O storm under APP_ENV=testing, where the stock
+     * FileRepository/ModuleManifest deliberately bypass their own static caches via the
+     * runningUnitTests() guards and re-glob all N module.json files on every lookup.
+     * Binding last makes our cache-backed variants win. registerModules() inside
+     * parent::register() still runs against the stock manifest once (a single glob, or a hit
+     * on nwidart's own provider manifest); everything resolved afterwards - allEnabled(),
+     * module_path(), find(), Migrator/translator callbacks - gets the cached classes. With
+     * no warm manifest both classes fall back to a live scan, so a cold start still works.
      */
-    public function register()
+    public function register(): void
     {
         parent::register();
-        $this->registerServices();
+
+        $this->registerCachedServices();
     }
 
     /**
-     * {@inheritdoc}
+     * Swap the stock repository/manifest singletons for their cache-backed
+     * variants. Same constructor shapes as the stock closures in
+     * LaravelModulesServiceProvider::registerServices().
      */
-    protected function registerServices()
+    private function registerCachedServices(): void
     {
         $this->app->singleton(RepositoryInterface::class, function ($app) {
-            $path = $app['config']->get('modules.paths.modules');
-
-            return new CachedFileRepository($app, $path);
+            return new CachedFileRepository($app, $app['config']->get('modules.paths.modules'));
         });
-
-        $this->app->singleton(ActivatorInterface::class, function ($app) {
-            $activator = $app['config']->get('modules.activator');
-            $class = $app['config']->get('modules.activators.'.$activator)['class'];
-
-            if ($class === null) {
-                throw InvalidActivatorClass::missingConfig();
-            }
-
-            return new $class($app);
-        });
-
         $this->app->alias(RepositoryInterface::class, 'modules');
 
         $this->app->singleton(

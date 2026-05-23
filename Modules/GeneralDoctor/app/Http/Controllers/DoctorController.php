@@ -14,7 +14,7 @@ class DoctorController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        return DoctorResource::collection(Doctor::with('employee')->get());
+        return DoctorResource::collection(Doctor::all());
     }
 
     public function store(StoreDoctorRequest $request): DoctorResource

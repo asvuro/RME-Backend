@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPlanningPeriod",
+    "alias": "generalplanningperiod",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPlanningPeriod\\Providers\\GeneralPlanningPeriodServiceProvider"
+    ],
+    "files": []
+}

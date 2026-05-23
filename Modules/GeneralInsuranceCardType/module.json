@@ -1,0 +1,11 @@
+{
+    "name": "GeneralInsuranceCardType",
+    "alias": "generalinsurancecardtype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralInsuranceCardType\\Providers\\GeneralInsuranceCardTypeServiceProvider"
+    ],
+    "files": []
+}

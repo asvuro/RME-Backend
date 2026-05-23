@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalpayrolldeduction",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralPayrollDeduction\\": "app/",
+            "Modules\\GeneralPayrollDeduction\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralPayrollDeduction\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralPayrollDeduction\\Tests\\": "tests/"
+        }
+    }
+}

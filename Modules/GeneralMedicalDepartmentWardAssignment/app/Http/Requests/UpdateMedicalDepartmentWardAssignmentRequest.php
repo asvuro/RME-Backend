@@ -15,7 +15,6 @@ class UpdateMedicalDepartmentWardAssignmentRequest extends FormRequest
     {
         return [
             'is_primary' => ['sometimes', 'boolean'],
-            'is_active' => ['sometimes', 'boolean'],
             'assigned_at' => ['nullable', 'date'],
         ];
     }

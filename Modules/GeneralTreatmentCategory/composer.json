@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaltreatmentcategory",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralTreatmentCategory\\": "app/",
+            "Modules\\GeneralTreatmentCategory\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralTreatmentCategory\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralTreatmentCategory\\Tests\\": "tests/"
+        }
+    }
+}

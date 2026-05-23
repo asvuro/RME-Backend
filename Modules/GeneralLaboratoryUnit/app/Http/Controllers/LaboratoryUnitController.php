@@ -1,0 +1,52 @@
+<?php
+
+namespace Modules\GeneralLaboratoryUnit\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\GeneralLaboratoryUnit\Models\LaboratoryUnit;
+
+class LaboratoryUnitController extends Controller
+{
+    public function index()
+    {
+        return LaboratoryUnit::query()->orderBy('name')->paginate(15);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:laboratory_units,name'],
+            'code' => ['nullable', 'string', 'max:10', 'unique:laboratory_units,code'],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        return response()->json(LaboratoryUnit::create($data)->refresh(), 201);
+    }
+
+    public function show(LaboratoryUnit $laboratoryUnit): LaboratoryUnit
+    {
+        return $laboratoryUnit;
+    }
+
+    public function update(Request $request, LaboratoryUnit $laboratoryUnit): LaboratoryUnit
+    {
+        $data = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255', Rule::unique('laboratory_units', 'name')->ignore($laboratoryUnit->id)],
+            'code' => ['nullable', 'string', 'max:10', Rule::unique('laboratory_units', 'code')->ignore($laboratoryUnit->id)],
+            'is_active' => ['sometimes', 'boolean'],
+        ]);
+
+        $laboratoryUnit->update($data);
+
+        return $laboratoryUnit;
+    }
+
+    public function destroy(LaboratoryUnit $laboratoryUnit)
+    {
+        $laboratoryUnit->delete();
+
+        return response()->json(null, 204);
+    }
+}

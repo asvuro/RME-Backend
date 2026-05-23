@@ -1,0 +1,11 @@
+{
+    "name": "GeneralReturnCancellationReason",
+    "alias": "generalreturncancellationreason",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralReturnCancellationReason\\Providers\\GeneralReturnCancellationReasonServiceProvider"
+    ],
+    "files": []
+}

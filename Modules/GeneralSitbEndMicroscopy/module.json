@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbEndMicroscopy",
+    "alias": "generalsitbendmicroscopy",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbEndMicroscopy\\Providers\\GeneralSitbEndMicroscopyServiceProvider"
+    ],
+    "files": []
+}

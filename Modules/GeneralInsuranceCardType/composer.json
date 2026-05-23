@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalinsurancecardtype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralInsuranceCardType\\": "app/",
+            "Modules\\GeneralInsuranceCardType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralInsuranceCardType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralInsuranceCardType\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralAccommodationCalculationRule",
+    "alias": "generalaccommodationcalculationrule",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralAccommodationCalculationRule\\Providers\\GeneralAccommodationCalculationRuleServiceProvider"
+    ],
+    "files": []
+}

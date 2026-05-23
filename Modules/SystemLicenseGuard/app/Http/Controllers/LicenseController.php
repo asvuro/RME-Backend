@@ -96,14 +96,20 @@ class LicenseController extends Controller
 
     public function webhook(Request $request): JsonResponse
     {
+        // Fail-closed: tanpa secret terkonfigurasi, webhook ditolak total - bukan
+        // dilewati. Kalau tidak, deployment yang lupa mengisi SAAS_WEBHOOK_SECRET
+        // mempublikasikan endpoint yang bisa men-suspend instance / menyuntik
+        // token lisensi tanpa kredensial apa pun.
         $secret = config('license.webhook_secret');
-        if (!empty($secret)) {
-            $signature = $request->header('X-Hub-Signature-256');
-            $expected = 'sha256=' . hash_hmac('sha256', $request->getContent(), $secret);
+        if (empty($secret)) {
+            return response()->json(['success' => false, 'message' => 'Webhook is not configured on this instance.'], 403);
+        }
 
-            if (!hash_equals($expected, (string) $signature)) {
-                return response()->json(['success' => false, 'message' => 'Invalid webhook signature.'], 403);
-            }
+        $signature = $request->header('X-Hub-Signature-256');
+        $expected = 'sha256=' . hash_hmac('sha256', $request->getContent(), $secret);
+
+        if (!hash_equals($expected, (string) $signature)) {
+            return response()->json(['success' => false, 'message' => 'Invalid webhook signature.'], 403);
         }
 
         $event = $request->input('event');

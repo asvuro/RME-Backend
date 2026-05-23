@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalflow",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralFlow\\": "app/",
+            "Modules\\GeneralFlow\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralFlow\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralFlow\\Tests\\": "tests/"
+        }
+    }
+}

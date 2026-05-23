@@ -17,12 +17,10 @@ class NurseWardAssignment extends Model
         'ward_id',
         'shift',
         'assigned_at',
-        'is_active',
     ];
 
     protected $casts = [
         'assigned_at' => 'datetime',
-        'is_active' => 'boolean',
     ];
 
     protected static function newFactory(): NurseWardAssignmentFactory

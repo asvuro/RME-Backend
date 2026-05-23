@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbPreTcm",
+    "alias": "generalsitbpretcm",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbPreTcm\\Providers\\GeneralSitbPreTcmServiceProvider"
+    ],
+    "files": []
+}

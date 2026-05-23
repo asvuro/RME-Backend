@@ -12,6 +12,8 @@ Route::prefix('v1')->group(function () {
         Route::post('logout-all', [AuthController::class, 'logoutAll']);
         Route::get('me', [AuthController::class, 'me']);
 
-        Route::apiResource('users', UserController::class);
+        Route::middleware('role:admin')->group(function () {
+            Route::apiResource('users', UserController::class);
+        });
     });
 });

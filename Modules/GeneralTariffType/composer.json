@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generaltarifftype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralTariffType\\": "app/",
+            "Modules\\GeneralTariffType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralTariffType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralTariffType\\Tests\\": "tests/"
+        }
+    }
+}

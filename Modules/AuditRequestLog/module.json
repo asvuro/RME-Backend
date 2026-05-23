@@ -1,0 +1,11 @@
+{
+    "name": "AuditRequestLog",
+    "alias": "auditrequestlog",
+    "description": "Jejak request API masuk — port semangat logs.bridge_log simgos2",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditRequestLog\\Providers\\AuditRequestLogServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "KemkesReport",
+    "alias": "kemkesreport",
+    "description": "RL SIRS lokal — port informasi.executeBedMonitorKemkes/executeIndikatorRS/listKunjunganRIKemkes simgos2",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\KemkesReport\\Providers\\KemkesReportServiceProvider"
+    ],
+    "files": []
+}

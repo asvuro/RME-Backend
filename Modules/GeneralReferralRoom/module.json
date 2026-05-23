@@ -1,0 +1,11 @@
+{
+    "name": "GeneralReferralRoom",
+    "alias": "generalreferralroom",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralReferralRoom\\Providers\\GeneralReferralRoomServiceProvider"
+    ],
+    "files": []
+}

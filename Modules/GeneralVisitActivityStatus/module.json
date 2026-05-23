@@ -1,0 +1,11 @@
+{
+    "name": "GeneralVisitActivityStatus",
+    "alias": "generalvisitactivitystatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralVisitActivityStatus\\Providers\\GeneralVisitActivityStatusServiceProvider"
+    ],
+    "files": []
+}

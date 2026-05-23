@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPayrollAddition",
+    "alias": "generalpayrolladdition",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPayrollAddition\\Providers\\GeneralPayrollAdditionServiceProvider"
+    ],
+    "files": []
+}

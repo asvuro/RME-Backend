@@ -42,7 +42,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Jejak request API (#12) — port semangat logs.bridge_log simgos2.
+        $middleware->api(append: [
+            \Modules\AuditRequestLog\Http\Middleware\LogApiRequests::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

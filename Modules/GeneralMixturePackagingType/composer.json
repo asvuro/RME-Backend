@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalmixturepackagingtype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralMixturePackagingType\\": "app/",
+            "Modules\\GeneralMixturePackagingType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralMixturePackagingType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralMixturePackagingType\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralMonthName",
+    "alias": "generalmonthname",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralMonthName\\Providers\\GeneralMonthNameServiceProvider"
+    ],
+    "files": []
+}

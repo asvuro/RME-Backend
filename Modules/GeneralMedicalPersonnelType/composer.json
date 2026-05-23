@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalmedicalpersonneltype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralMedicalPersonnelType\\": "app/",
+            "Modules\\GeneralMedicalPersonnelType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralMedicalPersonnelType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralMedicalPersonnelType\\Tests\\": "tests/"
+        }
+    }
+}

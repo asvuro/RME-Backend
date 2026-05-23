@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalusergroup",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralUserGroup\\": "app/",
+            "Modules\\GeneralUserGroup\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralUserGroup\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralUserGroup\\Tests\\": "tests/"
+        }
+    }
+}

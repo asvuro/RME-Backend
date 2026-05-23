@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalcardtype",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralCardType\\": "app/",
+            "Modules\\GeneralCardType\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralCardType\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralCardType\\Tests\\": "tests/"
+        }
+    }
+}

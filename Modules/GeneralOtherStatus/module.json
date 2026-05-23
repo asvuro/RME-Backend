@@ -1,0 +1,11 @@
+{
+    "name": "GeneralOtherStatus",
+    "alias": "generalotherstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralOtherStatus\\Providers\\GeneralOtherStatusServiceProvider"
+    ],
+    "files": []
+}

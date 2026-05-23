@@ -1,0 +1,11 @@
+{
+    "name": "GeneralUserType",
+    "alias": "generalusertype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralUserType\\Providers\\GeneralUserTypeServiceProvider"
+    ],
+    "files": []
+}

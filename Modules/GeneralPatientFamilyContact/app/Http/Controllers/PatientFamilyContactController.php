@@ -4,47 +4,54 @@ namespace Modules\GeneralPatientFamilyContact\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\GeneralPatientFamilyContact\Http\Requests\StorePatientFamilyContactRequest;
-use Modules\GeneralPatientFamilyContact\Http\Requests\UpdatePatientFamilyContactRequest;
-use Modules\GeneralPatientFamilyContact\Http\Resources\PatientFamilyContactResource;
 use Modules\GeneralPatientFamilyContact\Models\PatientFamilyContact;
 
 class PatientFamilyContactController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $query = PatientFamilyContact::query();
-
-        if ($request->filled('patient_family_id')) {
-            $query->where('patient_family_id', $request->integer('patient_family_id'));
-        }
-
-        return PatientFamilyContactResource::collection($query->latest()->paginate($request->integer('per_page', 15)));
+        return response()->json(['data' => PatientFamilyContact::all()]);
     }
 
-    public function store(StorePatientFamilyContactRequest $request)
+    public function store(Request $request)
     {
-        $contact = PatientFamilyContact::create($request->validated());
+        $validated = $request->validate([
+            'patient_family_id' => 'required|integer',
+            'contact_type' => 'required|string|max:255',
+            'contact_value' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
 
-        return (new PatientFamilyContactResource($contact))->response()->setStatusCode(201);
+        $model = PatientFamilyContact::create($validated);
+        return response()->json(['data' => $model], 201);
     }
 
-    public function show(PatientFamilyContact $patient_family_contact): PatientFamilyContactResource
+    public function show($id)
     {
-        return new PatientFamilyContactResource($patient_family_contact);
+        return response()->json(['data' => PatientFamilyContact::findOrFail($id)]);
     }
 
-    public function update(UpdatePatientFamilyContactRequest $request, PatientFamilyContact $patient_family_contact): PatientFamilyContactResource
+    public function update(Request $request, $id)
     {
-        $patient_family_contact->update($request->validated());
+        $validated = $request->validate([
+            'patient_family_id' => 'required|integer',
+            'contact_type' => 'required|string|max:255',
+            'contact_value' => 'required|string|max:255',
+            'is_active' => 'boolean',
+        ]);
 
-        return new PatientFamilyContactResource($patient_family_contact->fresh());
+        $model = PatientFamilyContact::findOrFail($id);
+        $model->update($validated);
+        return response()->json(['data' => $model]);
     }
 
-    public function destroy(PatientFamilyContact $patient_family_contact)
+    public function destroy($id)
     {
-        $patient_family_contact->delete();
-
+        $model = PatientFamilyContact::findOrFail($id);
+        $model->delete();
         return response()->json(null, 204);
     }
 }

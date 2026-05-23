@@ -3,7 +3,9 @@
 namespace Modules\PendaftaranVisit\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\PendaftaranVisit\Services\VisitService;
 use Modules\PendaftaranVisit\Http\Requests\StoreVisitRequest;
 use Modules\PendaftaranVisit\Http\Requests\UpdateVisitRequest;
 use Modules\PendaftaranVisit\Http\Resources\VisitResource;
@@ -22,14 +24,10 @@ class VisitController extends Controller
         return VisitResource::collection($query->latest('admitted_at')->paginate($request->integer('per_page', 15)));
     }
 
-    public function store(StoreVisitRequest $request)
+    public function store(StoreVisitRequest $request, VisitService $service)
     {
-        $data = $request->validated();
-        $data['visit_number'] ??= Visit::generateVisitNumber();
-        $data['admitted_at'] ??= now();
-        $data['received_by'] = $request->user()->id;
-
-        $visit = Visit::create($data);
+        // Gerbang admission ala simgos2 ada di VisitService::admit().
+        $visit = $service->admit($request->validated(), $request->user());
 
         return (new VisitResource($visit))->response()->setStatusCode(201);
     }
@@ -43,11 +41,13 @@ class VisitController extends Controller
     {
         $data = $request->validated();
 
-        if (isset($data['discharged_at']) && ! isset($data['final_outcome_by'])) {
-            $data['final_outcome_by'] = $request->user()->id;
-            $data['final_outcome_at'] = now();
-            $data['status'] = $data['status'] ?? 'discharged';
-        }
+        // Gerbang pulang tidak boleh dilewati lewat edit bebas: bed harus
+        // dibebaskan dan rekam pulang dibuat oleh VisitService::discharge().
+        abort_if(
+            array_key_exists('discharged_at', $data) || ($data['status'] ?? null) === 'discharged',
+            422,
+            'Pulangkan kunjungan melalui POST /visits/{visit}/discharge.',
+        );
 
         $visit->update($data);
 
@@ -59,5 +59,49 @@ class VisitController extends Controller
         $visit->delete();
 
         return response()->json(null, 204);
+    }
+
+    /** Gerbang mutasi antar bed (#11). */
+    public function transfer(Request $request, Visit $visit, VisitService $service): JsonResponse
+    {
+        $data = $request->validate([
+            'target_bed_id' => ['required', 'integer', 'exists:beds,id'],
+            'notes' => ['nullable', 'string'],
+        ]);
+
+        $transfer = $service->transfer($visit, (int) $data['target_bed_id'], $request->user(), $data['notes'] ?? null);
+
+        return response()->json([
+            'data' => [
+                'id' => $transfer->id,
+                'visit_id' => $transfer->visit_id,
+                'ward_from_id' => $transfer->ward_from_id,
+                'bed_from_id' => $transfer->bed_from_id,
+                'ward_to_id' => $transfer->ward_to_id,
+                'bed_to_id' => $transfer->bed_to_id,
+                'transferred_at' => $transfer->transferred_at?->toIso8601String(),
+            ],
+        ], 201);
+    }
+
+    /** Gerbang pulang (#11): bebaskan bed + rekam discharge + akomodasi. */
+    public function discharge(Request $request, Visit $visit, VisitService $service): VisitResource
+    {
+        $data = $request->validate([
+            'final_outcome' => ['required', 'string', 'max:255'],
+            // Skema patient_discharge_records.discharge_method NOT NULL.
+            'discharge_method' => ['required', 'string', 'max:255'],
+            'follow_up_notes' => ['nullable', 'string'],
+        ]);
+
+        $visit = $service->discharge(
+            $visit,
+            $data['final_outcome'],
+            $request->user(),
+            $data['discharge_method'] ?? null,
+            $data['follow_up_notes'] ?? null,
+        );
+
+        return new VisitResource($visit);
     }
 }

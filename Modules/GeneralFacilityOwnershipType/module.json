@@ -1,0 +1,11 @@
+{
+    "name": "GeneralFacilityOwnershipType",
+    "alias": "generalfacilityownershiptype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralFacilityOwnershipType\\Providers\\GeneralFacilityOwnershipTypeServiceProvider"
+    ],
+    "files": []
+}

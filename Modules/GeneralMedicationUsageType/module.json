@@ -1,0 +1,11 @@
+{
+    "name": "GeneralMedicationUsageType",
+    "alias": "generalmedicationusagetype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralMedicationUsageType\\Providers\\GeneralMedicationUsageTypeServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralSitbDiagnosisType",
+    "alias": "generalsitbdiagnosistype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralSitbDiagnosisType\\Providers\\GeneralSitbDiagnosisTypeServiceProvider"
+    ],
+    "files": []
+}

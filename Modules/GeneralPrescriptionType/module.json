@@ -1,0 +1,11 @@
+{
+    "name": "GeneralPrescriptionType",
+    "alias": "generalprescriptiontype",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralPrescriptionType\\Providers\\GeneralPrescriptionTypeServiceProvider"
+    ],
+    "files": []
+}

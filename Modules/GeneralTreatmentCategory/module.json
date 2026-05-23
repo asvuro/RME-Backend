@@ -1,0 +1,11 @@
+{
+    "name": "GeneralTreatmentCategory",
+    "alias": "generaltreatmentcategory",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralTreatmentCategory\\Providers\\GeneralTreatmentCategoryServiceProvider"
+    ],
+    "files": []
+}

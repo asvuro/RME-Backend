@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalsitbchildtbscore0to13",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralSitbChildTbScore0To13\\": "app/",
+            "Modules\\GeneralSitbChildTbScore0To13\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralSitbChildTbScore0To13\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralSitbChildTbScore0To13\\Tests\\": "tests/"
+        }
+    }
+}

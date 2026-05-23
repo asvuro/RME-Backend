@@ -1,0 +1,11 @@
+{
+    "name": "GeneralOperationClass",
+    "alias": "generaloperationclass",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralOperationClass\\Providers\\GeneralOperationClassServiceProvider"
+    ],
+    "files": []
+}

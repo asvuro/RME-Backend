@@ -1,0 +1,11 @@
+{
+    "name": "GeneralVisitStatus",
+    "alias": "generalvisitstatus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralVisitStatus\\Providers\\GeneralVisitStatusServiceProvider"
+    ],
+    "files": []
+}

@@ -214,6 +214,29 @@ class VisitService implements VisitGate
         return $visit;
     }
 
+    /**
+     * Batalkan kunjungan (soft-cancel) — bukan hard delete. Port semangat
+     * status batal simgos2: bed dibebaskan bila terisi, tagihan yang sudah
+     * dikunci kasir memblokir pembatalan, dan riwayat kunjungan tetap ada
+     * untuk audit (status berubah jadi 'cancelled', bukan baris hilang).
+     */
+    public function cancel(Visit $visit): Visit
+    {
+        abort_if($visit->discharged_at !== null, 422, 'Kunjungan sudah pulang; tidak dapat dibatalkan.');
+        abort_if($visit->status === 'cancelled', 422, 'Kunjungan sudah batal.');
+        abort_if($this->billingGate->isVisitLocked($visit->id), 422, 'Tagihan kunjungan sudah dikunci kasir; tidak dapat dibatalkan.');
+
+        DB::transaction(function () use ($visit) {
+            $visit->update(['status' => 'cancelled']);
+
+            if ($visit->bed_id !== null) {
+                $this->bedGate->release((int) $visit->bed_id);
+            }
+        });
+
+        return $visit->refresh();
+    }
+
     /** Posting item "Akomodasi" dari masa rawat × tarif ward/kelas kamar. */
     protected function postAccommodation(Visit $visit, $dischargedAt): void
     {

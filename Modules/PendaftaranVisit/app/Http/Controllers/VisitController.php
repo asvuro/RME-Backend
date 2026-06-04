@@ -54,9 +54,11 @@ class VisitController extends Controller
         return new VisitResource($visit);
     }
 
-    public function destroy(Visit $visit)
+    public function destroy(Visit $visit, VisitService $service): JsonResponse
     {
-        $visit->delete();
+        // Bukan hard delete: lewat VisitService::cancel() agar bed dibebaskan
+        // dan gerbang tagihan terkunci tetap berlaku (konsisten dgn store/transfer/discharge).
+        $service->cancel($visit);
 
         return response()->json(null, 204);
     }

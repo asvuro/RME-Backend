@@ -2,6 +2,7 @@
 
 namespace Modules\Authorization\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Spatie\Permission\Models\Permission;
@@ -12,9 +13,17 @@ class RoleControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
+
     private function actingUser(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
 
         return $user;
@@ -26,18 +35,17 @@ class RoleControllerTest extends TestCase
         Permission::create(['name' => 'edit-pasien']);
 
         $response = $this->postJson('/api/v1/roles', [
-            'name' => 'admin',
+            'name' => 'dokter',
             'permissions' => ['edit-pasien'],
         ]);
 
-        $response->assertCreated()->assertJsonPath('data.name', 'admin');
-        $this->assertDatabaseHas('roles', ['name' => 'admin']);
+        $response->assertCreated()->assertJsonPath('data.name', 'dokter');
+        $this->assertDatabaseHas('roles', ['name' => 'dokter']);
     }
 
     public function test_it_rejects_role_with_duplicate_name(): void
     {
         $this->actingUser();
-        Role::create(['name' => 'admin']);
 
         $response = $this->postJson('/api/v1/roles', ['name' => 'admin']);
 
@@ -49,7 +57,7 @@ class RoleControllerTest extends TestCase
         $this->actingUser();
 
         $response = $this->postJson('/api/v1/roles', [
-            'name' => 'admin',
+            'name' => 'dokter',
             'permissions' => ['tidak-ada'],
         ]);
 
@@ -71,12 +79,11 @@ class RoleControllerTest extends TestCase
     public function test_it_lists_roles(): void
     {
         $this->actingUser();
-        Role::create(['name' => 'admin']);
         Role::create(['name' => 'staff']);
 
         $response = $this->getJson('/api/v1/roles');
 
-        $response->assertOk()->assertJsonCount(2, 'data');
+        $response->assertOk()->assertJsonCount(3, 'data');
     }
 
     public function test_it_syncs_role_permissions_on_update(): void

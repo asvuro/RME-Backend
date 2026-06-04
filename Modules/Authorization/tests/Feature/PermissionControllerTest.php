@@ -2,6 +2,7 @@
 
 namespace Modules\Authorization\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Spatie\Permission\Models\Permission;
@@ -11,10 +12,25 @@ class PermissionControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_creates_and_lists_permissions(): void
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
+
+    private function actingUser(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
+
+        return $user;
+    }
+
+    public function test_it_creates_and_lists_permissions(): void
+    {
+        $this->actingUser();
 
         $this->postJson('/api/v1/permissions', ['name' => 'edit-pasien'])->assertCreated();
 
@@ -25,8 +41,7 @@ class PermissionControllerTest extends TestCase
 
     public function test_it_rejects_permission_with_duplicate_name(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingUser();
         Permission::create(['name' => 'edit-pasien']);
 
         $response = $this->postJson('/api/v1/permissions', ['name' => 'edit-pasien']);
@@ -36,8 +51,7 @@ class PermissionControllerTest extends TestCase
 
     public function test_it_deletes_permission(): void
     {
-        $user = User::factory()->create();
-        $this->actingAs($user, 'sanctum');
+        $this->actingUser();
         $permission = Permission::create(['name' => 'edit-pasien']);
 
         $response = $this->deleteJson("/api/v1/permissions/{$permission->id}");

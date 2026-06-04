@@ -4,6 +4,8 @@ namespace Modules\PendaftaranVisit\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
+use Modules\GeneralBed\Models\Bed;
+use Modules\PembayaranInvoice\Services\InvoiceService;
 use Modules\PendaftaranRegistration\Models\Registration;
 use Modules\PendaftaranVisit\Models\Visit;
 use Tests\TestCase;
@@ -57,5 +59,31 @@ class VisitControllerTest extends TestCase
 
         $response->assertStatus(422);
         $this->assertDatabaseHas('visits', ['id' => $visit->id, 'discharged_at' => null]);
+    }
+
+    public function test_it_cancels_a_visit_and_releases_the_bed(): void
+    {
+        $this->actingUser();
+        $bed = Bed::factory()->create(['status' => Bed::STATUS_OCCUPIED]);
+        $visit = Visit::factory()->create(['ward_id' => $bed->room->ward_id, 'bed_id' => $bed->id]);
+
+        $response = $this->deleteJson("/api/v1/visits/{$visit->id}");
+
+        $response->assertStatus(204);
+        $this->assertDatabaseHas('visits', ['id' => $visit->id, 'status' => 'cancelled']);
+        $this->assertSame(Bed::STATUS_AVAILABLE, $bed->fresh()->status);
+    }
+
+    public function test_it_blocks_cancel_when_billing_is_locked(): void
+    {
+        $this->actingUser();
+        $visit = Visit::factory()->create();
+        $invoice = app(InvoiceService::class)->ensureForVisit($visit->id);
+        app(InvoiceService::class)->lock($invoice->id);
+
+        $response = $this->deleteJson("/api/v1/visits/{$visit->id}");
+
+        $response->assertStatus(422);
+        $this->assertDatabaseHas('visits', ['id' => $visit->id, 'status' => 'active']);
     }
 }

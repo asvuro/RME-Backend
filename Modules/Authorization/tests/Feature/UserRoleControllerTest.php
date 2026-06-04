@@ -2,6 +2,7 @@
 
 namespace Modules\Authorization\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Spatie\Permission\Models\Role;
@@ -11,10 +12,25 @@ class UserRoleControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_assigns_roles_to_user(): void
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
+
+    private function actingAdmin(): User
     {
         $actor = User::factory()->create();
+        $actor->assignRole('admin');
         $this->actingAs($actor, 'sanctum');
+
+        return $actor;
+    }
+
+    public function test_it_assigns_roles_to_user(): void
+    {
+        $this->actingAdmin();
 
         $target = User::factory()->create();
         Role::create(['name' => 'staff']);
@@ -29,8 +45,7 @@ class UserRoleControllerTest extends TestCase
 
     public function test_it_rejects_sync_with_unknown_role(): void
     {
-        $actor = User::factory()->create();
-        $this->actingAs($actor, 'sanctum');
+        $this->actingAdmin();
 
         $target = User::factory()->create();
 
@@ -43,14 +58,14 @@ class UserRoleControllerTest extends TestCase
 
     public function test_it_lists_user_roles(): void
     {
-        $actor = User::factory()->create();
-        $this->actingAs($actor, 'sanctum');
+        $actor = $this->actingAdmin();
 
         Role::create(['name' => 'staff']);
         $actor->assignRole('staff');
 
         $response = $this->getJson("/api/v1/users/{$actor->id}/roles");
 
-        $response->assertOk()->assertJsonPath('roles.0', 'staff');
+        $response->assertOk()->assertJsonCount(2, 'roles');
+        $this->assertEqualsCanonicalizing(['admin', 'staff'], $response->json('roles'));
     }
 }

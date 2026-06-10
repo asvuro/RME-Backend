@@ -39,9 +39,6 @@ class LicenseController extends Controller
         return response()->json([
             'success' => true,
             'fingerprint' => $this->fingerprintService->getFingerprint(),
-            'hostname' => gethostname(),
-            'php_version' => PHP_VERSION,
-            'os' => PHP_OS_FAMILY,
         ]);
     }
 

@@ -106,7 +106,7 @@ EOD;
 
         $response->assertOk()
             ->assertJsonPath('success', true)
-            ->assertJsonStructure(['fingerprint', 'hostname', 'os']);
+            ->assertJsonStructure(['fingerprint', 'success']);
         
         $this->assertStringStartsWith('HWID-', $response->json('fingerprint'));
     }

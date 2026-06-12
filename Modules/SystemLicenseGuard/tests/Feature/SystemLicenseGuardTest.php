@@ -107,8 +107,22 @@ EOD;
         $response->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonStructure(['fingerprint', 'success']);
-        
+
+        // Endpoint publik tanpa auth: topologi server tidak boleh ikut bocor.
+        $this->assertArrayNotHasKey('hostname', $response->json());
+        $this->assertArrayNotHasKey('php_version', $response->json());
+        $this->assertArrayNotHasKey('os', $response->json());
+
         $this->assertStringStartsWith('HWID-', $response->json('fingerprint'));
+    }
+
+    public function test_it_rate_limits_the_fingerprint_endpoint(): void
+    {
+        for ($i = 0; $i < 60; $i++) {
+            $this->getJson('/api/v1/system/license/fingerprint')->assertOk();
+        }
+
+        $this->getJson('/api/v1/system/license/fingerprint')->assertStatus(429);
     }
 
     public function test_it_reports_unlicensed_when_no_license_installed(): void

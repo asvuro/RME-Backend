@@ -5,13 +5,13 @@ namespace Modules\AuditRequestLog\Tests\Feature;
 use App\Modules\Contracts\HospitalConfig;
 use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Modules\Auth\Models\User;
 use Modules\AuditRequestLog\Models\RequestLog;
+use Modules\Auth\Models\User;
 use Tests\TestCase;
 
 /**
  * Port semangat logs.bridge_log simgos2: setiap request API masuk tercatat
- * (method/url/status/durasi/user/ip), payload sensitif direduksi.
+ * (method/url/status/durasi/user/ip), payload dibatasi field referensi.
  */
 class RequestLogApiTest extends TestCase
 {
@@ -32,17 +32,21 @@ class RequestLogApiTest extends TestCase
     {
         $this->actingAs($this->admin, 'sanctum');
 
-        $this->getJson('/api/v1/request-logs')->assertOk();
+        $this->getJson('/api/v1/request-logs?patient_name=Rahasia&token=raw-token')->assertOk();
 
         $row = RequestLog::query()->firstOrFail();
         $this->assertSame('GET', $row->method);
+        $this->assertStringEndsWith('/api/v1/request-logs', $row->url);
+        $this->assertStringNotContainsString('?', $row->url);
+        $this->assertStringNotContainsString('Rahasia', $row->url);
+        $this->assertStringNotContainsString('raw-token', $row->url);
         $this->assertSame(200, (int) $row->status);
         $this->assertSame($this->admin->id, (int) $row->user_id);
         $this->assertNotNull($row->ip);
         $this->assertNotNull($row->duration_ms);
     }
 
-    public function test_payload_post_tersimpan_tanpa_field_sensitif(): void
+    public function test_payload_post_hanya_mencatat_field_referensi_allowlist(): void
     {
         $this->actingAs($this->admin, 'sanctum');
 
@@ -50,14 +54,28 @@ class RequestLogApiTest extends TestCase
         $this->postJson('/api/v1/visits', [
             'password' => 'rahasia',
             'registration_id' => 999999999,
+            'patient_name' => 'Nama Pasien',
+            'clinical_note' => 'Keluhan dan diagnosis mentah',
+            'items' => [
+                [
+                    'service_id' => 123,
+                    'result_text' => 'hasil klinis',
+                ],
+            ],
         ]);
 
         $row = RequestLog::query()
             ->where('method', 'POST')
             ->firstOrFail();
         $this->assertSame(422, (int) $row->status);
-        $this->assertArrayHasKey('registration_id', $row->payload);
-        $this->assertArrayNotHasKey('password', $row->payload);
+        $this->assertSame([
+            'registration_id' => 999999999,
+            'items' => [
+                [
+                    'service_id' => 123,
+                ],
+            ],
+        ], $row->payload);
     }
 
     public function test_path_bukan_api_tidak_dicatat(): void

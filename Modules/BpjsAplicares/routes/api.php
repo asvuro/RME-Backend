@@ -5,7 +5,7 @@ use Modules\BpjsAplicares\Http\Controllers\AplicaresBedAvailabilityController;
 use Modules\BpjsAplicares\Http\Controllers\AplicaresReferensiController;
 use Modules\BpjsAplicares\Http\Controllers\AplicaresRoomController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1/aplicares')->group(function () {
+Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1/aplicares')->group(function () {
     Route::get('referensi/kamar/{query?}', [AplicaresReferensiController::class, 'kamar']);
 
     Route::get('rooms', [AplicaresRoomController::class, 'index']);

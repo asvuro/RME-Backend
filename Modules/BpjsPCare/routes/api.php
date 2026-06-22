@@ -10,7 +10,7 @@ use Modules\BpjsPCare\Http\Controllers\ReferenceController;
 use Modules\BpjsPCare\Http\Controllers\SkrinningController;
 use Modules\BpjsPCare\Http\Controllers\TindakanController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1')->group(function () {
     // Pure reference/lookup passthroughs - query BPJS live, nothing persisted.
     Route::prefix('pcare-ref')->name('bpjspcare.ref.')->group(function () {
         Route::get('diagnosa', [ReferenceController::class, 'diagnosa'])->name('diagnosa');

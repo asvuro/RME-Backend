@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralAntibioticBacteriaMapping\Http\Controllers\AntibioticBacteriaMappingController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('antibiotic-bacteria-mappings', AntibioticBacteriaMappingController::class);
+    Route::apiResource('antibiotic-bacteria-mappings', AntibioticBacteriaMappingController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('antibiotic-bacteria-mappings', AntibioticBacteriaMappingController::class)->only(['store', 'update', 'destroy']);
+    });
 });

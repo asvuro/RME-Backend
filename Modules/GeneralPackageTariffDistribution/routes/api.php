@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralPackageTariffDistribution\Http\Controllers\PackageTariffDistributionController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('package-tariff-distributions', PackageTariffDistributionController::class)
-        ->parameters(['package-tariff-distributions' => 'package_tariff_distribution']);
+    Route::apiResource('package-tariff-distributions', PackageTariffDistributionController::class)->only(['index', 'show'])->parameters(['package-tariff-distributions' => 'package_tariff_distribution']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('package-tariff-distributions', PackageTariffDistributionController::class)->only(['store', 'update', 'destroy'])->parameters(['package-tariff-distributions' => 'package_tariff_distribution']);
+    });
 });

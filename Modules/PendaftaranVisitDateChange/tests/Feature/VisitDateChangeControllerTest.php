@@ -2,6 +2,7 @@
 
 namespace Modules\PendaftaranVisitDateChange\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\PendaftaranVisit\Models\Visit;
@@ -17,7 +18,10 @@ class VisitDateChangeControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
         $this->user = User::factory()->create();
+        $this->user->assignRole('petugas');
     }
 
     public function test_can_list_visit_date_changes(): void

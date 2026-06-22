@@ -1,6 +1,7 @@
 <?php
 namespace Modules\PembatalanReturnCancellation\Tests\Feature;
 use Tests\TestCase;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\PembatalanReturnCancellation\Models\ReturnCancellation;
 use Modules\Auth\Models\User;
@@ -8,7 +9,11 @@ class ReturnCancellationTest extends TestCase {
     use RefreshDatabase;
     protected function setUp(): void {
         parent::setUp();
-        $this->actingAs(User::factory()->create(), 'sanctum');
+
+        $this->seed(RoleAndPermissionSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $this->actingAs($user, 'sanctum');
     }
     public function test_can_list() {
         ReturnCancellation::factory()->count(3)->create();

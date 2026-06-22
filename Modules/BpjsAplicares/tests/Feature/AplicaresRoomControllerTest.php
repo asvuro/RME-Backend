@@ -2,6 +2,7 @@
 
 namespace Modules\BpjsAplicares\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Modules\Auth\Models\User;
@@ -15,9 +16,17 @@ class AplicaresRoomControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
     private function actingUser(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('petugas');
         $this->actingAs($user, 'sanctum');
 
         return $user;

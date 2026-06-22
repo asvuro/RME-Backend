@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralPharmacyGuarantorMargin\Http\Controllers\PharmacyGuarantorMarginController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('pharmacy-guarantor-margins', PharmacyGuarantorMarginController::class);
+    Route::apiResource('pharmacy-guarantor-margins', PharmacyGuarantorMarginController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('pharmacy-guarantor-margins', PharmacyGuarantorMarginController::class)->only(['store', 'update', 'destroy']);
+    });
 });

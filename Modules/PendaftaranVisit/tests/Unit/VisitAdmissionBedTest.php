@@ -2,6 +2,7 @@
 
 namespace Modules\PendaftaranVisit\Tests\Unit;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\GeneralBed\Models\Bed;
@@ -33,8 +34,11 @@ class VisitAdmissionBedTest extends TestCase
     {
         parent::setUp();
 
+
+        $this->seed(RoleAndPermissionSeeder::class);
         $this->service = app(VisitService::class);
         $this->user = User::factory()->create();
+        $this->user->assignRole('petugas');
         $this->ward = Ward::factory()->create();
         $this->bed = Bed::factory()->create(['room_id' => Room::factory()->create(['ward_id' => $this->ward])->id]);
     }

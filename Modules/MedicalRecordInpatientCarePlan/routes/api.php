@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\MedicalRecordInpatientCarePlan\Http\Controllers\InpatientCarePlanController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('inpatient-care-plans', InpatientCarePlanController::class)
-        ->only(['index', 'store', 'show'])
-        ->parameters(['inpatient-care-plans' => 'record']);
+    Route::apiResource('inpatient-care-plans', InpatientCarePlanController::class)->only(['index', 'show'])->parameters(['inpatient-care-plans' => 'record']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('inpatient-care-plans', InpatientCarePlanController::class)->only(['store'])->parameters(['inpatient-care-plans' => 'record']);
+    });
 });

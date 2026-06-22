@@ -2,6 +2,7 @@
 
 namespace Modules\LayananMedicalSupplyUsageItem\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\LayananMedicalSupplyUsageItem\Models\MedicalSupplyUsageItem;
@@ -11,9 +12,18 @@ class MedicalSupplyUsageItemControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
     private function actingUser(): void
     {
-        $this->actingAs(User::factory()->create(), 'sanctum');
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $this->actingAs($user, 'sanctum');
     }
 
     public function test_it_lists_supply_usage_items(): void

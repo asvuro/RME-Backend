@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralHealthProviderType\Http\Controllers\HealthProviderTypeController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('health-provider-types', HealthProviderTypeController::class);
+    Route::apiResource('health-provider-types', HealthProviderTypeController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('health-provider-types', HealthProviderTypeController::class)->only(['store', 'update', 'destroy']);
+    });
 });

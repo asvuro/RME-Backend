@@ -3,5 +3,12 @@ use Illuminate\Support\Facades\Route;
 use Modules\PembatalanFinalResult\Http\Controllers\PembatalanFinalResultController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('final-results', PembatalanFinalResultController::class)
-        ->parameters(['final-results' => 'final_result']);
+        ->parameters(['final-results' => 'final_result'])
+        ->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('final-results', PembatalanFinalResultController::class)
+            ->parameters(['final-results' => 'final_result'])
+            ->only(['store', 'update', 'destroy']);
+    });
 });

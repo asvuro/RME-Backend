@@ -1,6 +1,7 @@
 <?php
 namespace Modules\PembatalanFinalResult\Tests\Feature;
 use Tests\TestCase;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\PembatalanFinalResult\Models\FinalResult;
 use Modules\PendaftaranVisit\Models\Visit;
@@ -9,7 +10,11 @@ class FinalResultTest extends TestCase {
     use RefreshDatabase;
     protected function setUp(): void {
         parent::setUp();
-        $this->actingAs(User::factory()->create(), 'sanctum');
+
+        $this->seed(RoleAndPermissionSeeder::class);
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $this->actingAs($user, 'sanctum');
     }
     public function test_can_list() {
         FinalResult::factory()->count(3)->create();

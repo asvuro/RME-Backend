@@ -27,7 +27,7 @@ class InvoiceGuarantorApiTest extends TestCase
         $this->seed(RoleAndPermissionSeeder::class);
     }
 
-    private function actingUser(?string $role = null): User
+    private function actingUser(?string $role = 'petugas'): User
     {
         $user = User::factory()->create();
         if ($role !== null) {

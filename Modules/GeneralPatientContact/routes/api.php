@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralPatientContact\Http\Controllers\PatientContactController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('patient-contacts', PatientContactController::class);
+    Route::apiResource('patient-contacts', PatientContactController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('patient-contacts', PatientContactController::class)->only(['store', 'update', 'destroy']);
+    });
 });

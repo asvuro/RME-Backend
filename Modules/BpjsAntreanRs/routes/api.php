@@ -20,7 +20,7 @@ use Modules\BpjsAntreanRs\Http\Middleware\VerifyBpjsMobileJknToken;
 | Outbound (internal-facing) — this hospital -> BPJS WS BPJS antrean_rs.
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth:sanctum'])->prefix('v1/antrean-rs')->group(function () {
+Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1/antrean-rs')->group(function () {
     Route::apiResource('antrean', AntreanController::class)
         ->only(['index', 'store', 'show'])
         ->parameters(['antrean' => 'antrean']);

@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralPackageService\Http\Controllers\PackageServiceController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('package-services', PackageServiceController::class);
+    Route::apiResource('package-services', PackageServiceController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('package-services', PackageServiceController::class)->only(['store', 'update', 'destroy']);
+    });
 });

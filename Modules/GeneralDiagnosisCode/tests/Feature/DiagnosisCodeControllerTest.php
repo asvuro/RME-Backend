@@ -2,6 +2,7 @@
 
 namespace Modules\GeneralDiagnosisCode\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\GeneralDiagnosisCode\Models\DiagnosisCode;
@@ -11,9 +12,18 @@ class DiagnosisCodeControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
     private function actingUser(): void
     {
-        $this->actingAs(User::factory()->create(), 'sanctum');
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $this->actingAs($user, 'sanctum');
     }
 
     public function test_it_creates_diagnosis_code(): void

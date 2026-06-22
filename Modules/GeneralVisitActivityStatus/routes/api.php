@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralVisitActivityStatus\Http\Controllers\VisitActivityStatusController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('visit-activity-statuses', VisitActivityStatusController::class);
+    Route::apiResource('visit-activity-statuses', VisitActivityStatusController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('visit-activity-statuses', VisitActivityStatusController::class)->only(['store', 'update', 'destroy']);
+    });
 });

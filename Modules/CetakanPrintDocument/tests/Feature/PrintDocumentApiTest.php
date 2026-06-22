@@ -3,6 +3,7 @@
 namespace Modules\CetakanPrintDocument\Tests\Feature;
 
 use App\Modules\Contracts\HospitalConfig;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\CetakanPrintDocument\Models\PrintDocument;
@@ -28,7 +29,10 @@ class PrintDocumentApiTest extends TestCase
     {
         parent::setUp();
 
+
+        $this->seed(RoleAndPermissionSeeder::class);
         $this->user = User::factory()->create();
+        $this->user->assignRole('petugas');
         $this->actingAs($this->user, 'sanctum');
     }
 

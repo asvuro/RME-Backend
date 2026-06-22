@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\SatuSehatKptl\Http\Controllers\KptlController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1/satusehat/kptl')->group(function () {
+Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1/satusehat/kptl')->group(function () {
     Route::post('code', [KptlController::class, 'code']);
     Route::post('base-code', [KptlController::class, 'baseCode']);
     Route::post('base-code-combination', [KptlController::class, 'baseCodeCombination']);

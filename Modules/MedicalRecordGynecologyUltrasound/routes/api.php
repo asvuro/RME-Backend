@@ -4,7 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Modules\MedicalRecordGynecologyUltrasound\Http\Controllers\GynecologyUltrasoundController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('gynecology-ultrasounds', GynecologyUltrasoundController::class)->parameters([
+    Route::apiResource('gynecology-ultrasounds', GynecologyUltrasoundController::class)->only(['index', 'show'])->parameters([
         'gynecology-ultrasounds' => 'ultrasound',
     ]);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('gynecology-ultrasounds', GynecologyUltrasoundController::class)->only(['store', 'update', 'destroy'])->parameters([
+        'gynecology-ultrasounds' => 'ultrasound',
+    ]);
+    });
 });

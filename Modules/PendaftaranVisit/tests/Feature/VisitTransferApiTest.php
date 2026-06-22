@@ -3,6 +3,7 @@
 namespace Modules\PendaftaranVisit\Tests\Feature;
 
 use App\Events\VisitTransferred;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Modules\Auth\Models\User;
@@ -29,7 +30,10 @@ class VisitTransferApiTest extends TestCase
     {
         parent::setUp();
 
+
+        $this->seed(RoleAndPermissionSeeder::class);
         $this->user = User::factory()->create();
+        $this->user->assignRole('petugas');
         $this->actingAs($this->user, 'sanctum');
         $this->ward = Ward::factory()->create();
     }

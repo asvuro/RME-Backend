@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralProcedure\Http\Controllers\ProcedureController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('procedures', ProcedureController::class);
+    Route::apiResource('procedures', ProcedureController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('procedures', ProcedureController::class)->only(['store', 'update', 'destroy']);
+    });
 });

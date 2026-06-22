@@ -5,6 +5,9 @@ use Modules\CetakanPrintDocument\Http\Controllers\PrintDocumentController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('print-documents', [PrintDocumentController::class, 'index']);
-    Route::post('print-documents/issue', [PrintDocumentController::class, 'issue']);
     Route::get('print-documents/{document}', [PrintDocumentController::class, 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::post('print-documents/issue', [PrintDocumentController::class, 'issue']);
+    });
 });

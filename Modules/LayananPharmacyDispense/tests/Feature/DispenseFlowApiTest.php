@@ -40,6 +40,7 @@ class DispenseFlowApiTest extends TestCase
     private function actingUser(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('petugas');
         $this->actingAs($user, 'sanctum');
 
         return $user;

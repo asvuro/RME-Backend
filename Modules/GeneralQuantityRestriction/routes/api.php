@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralQuantityRestriction\Http\Controllers\QuantityRestrictionController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('quantity-restrictions', QuantityRestrictionController::class);
+    Route::apiResource('quantity-restrictions', QuantityRestrictionController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('quantity-restrictions', QuantityRestrictionController::class)->only(['store', 'update', 'destroy']);
+    });
 });

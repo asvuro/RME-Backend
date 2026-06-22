@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\PendaftaranConsultationAnswer\Http\Controllers\ConsultationAnswerController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('consultationanswers', ConsultationAnswerController::class)->only(['index', 'store', 'show']);
+    Route::apiResource('consultationanswers', ConsultationAnswerController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('consultationanswers', ConsultationAnswerController::class)->only(['store']);
+    });
 });

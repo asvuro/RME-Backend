@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralIcdSnomedCtMapping\Http\Controllers\IcdSnomedCtMappingController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('icd-snomed-ct-mappings', IcdSnomedCtMappingController::class);
+    Route::apiResource('icd-snomed-ct-mappings', IcdSnomedCtMappingController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('icd-snomed-ct-mappings', IcdSnomedCtMappingController::class)->only(['store', 'update', 'destroy']);
+    });
 });

@@ -2,6 +2,7 @@
 
 namespace Modules\BerkasKlaimPharmacyClaimItem\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\BerkasKlaimPharmacyClaim\Models\PharmacyClaim;
@@ -12,9 +13,17 @@ class PharmacyClaimItemControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
+    }
     private function actingUser(): User
     {
         $user = User::factory()->create();
+        $user->assignRole('petugas');
         $this->actingAs($user, 'sanctum');
 
         return $user;

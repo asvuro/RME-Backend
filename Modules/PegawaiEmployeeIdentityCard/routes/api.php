@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\PegawaiEmployeeIdentityCard\Http\Controllers\EmployeeIdentityCardController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('employee-identity-cards', EmployeeIdentityCardController::class);
+    Route::apiResource('employee-identity-cards', EmployeeIdentityCardController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('employee-identity-cards', EmployeeIdentityCardController::class)->only(['store', 'update', 'destroy']);
+    });
 });

@@ -4,5 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Modules\GeneralFacilityOwnershipType\Http\Controllers\FacilityOwnershipTypeController;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('facility-ownership-types', FacilityOwnershipTypeController::class);
+    Route::apiResource('facility-ownership-types', FacilityOwnershipTypeController::class)->only(['index', 'show']);
+
+    Route::middleware('role:petugas|admin')->group(function () {
+        Route::apiResource('facility-ownership-types', FacilityOwnershipTypeController::class)->only(['store', 'update', 'destroy']);
+    });
 });

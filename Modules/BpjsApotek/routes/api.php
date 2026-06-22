@@ -9,7 +9,7 @@ use Modules\BpjsApotek\Http\Controllers\ApotekReferensiController;
 use Modules\BpjsApotek\Http\Controllers\ApotekResepController;
 use Modules\BpjsApotek\Http\Controllers\ApotekSepController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1/apotek')->group(function () {
+Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1/apotek')->group(function () {
     Route::prefix('referensi')->group(function () {
         Route::get('dpho/{query?}', [ApotekReferensiController::class, 'dpho']);
         Route::get('poli/{query?}', [ApotekReferensiController::class, 'poli']);

@@ -2,6 +2,7 @@
 
 namespace Modules\PendaftaranConsultationAnswer\Tests\Feature;
 
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\GeneralEmployee\Models\Employee;
@@ -18,7 +19,10 @@ class ConsultationAnswerControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->seed(RoleAndPermissionSeeder::class);
         $this->user = User::factory()->create();
+        $this->user->assignRole('petugas');
     }
 
     public function test_can_list_consultation_answers(): void

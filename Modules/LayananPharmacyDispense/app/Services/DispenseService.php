@@ -123,6 +123,50 @@ class DispenseService
         return $dispense;
     }
 
+    /**
+     * Batalkan satu record dispense (port pembatalan pelayanan farmasi).
+     *
+     * Gerbang: dispense yang sudah 'cancelled' tidak bisa dibatalkan lagi.
+     * Efek (SATU transaksi): bila dispense sebelumnya berstatus 'dispensed',
+     * stok yang tadi dikurangi dikembalikan (StockGate 'in' per item resep)
+     * dan status Prescription disinkronkan balik ke 'active' agar bisa
+     * dilayani ulang. Reversal tagihan tidak dilakukan di sini karena
+     * BillingGate belum menyediakan kontrak pembatalan posting.
+     */
+    public function cancel(PharmacyDispense $dispense, User $user): PharmacyDispense
+    {
+        abort_if($dispense->status === 'cancelled', 422, 'Dispense sudah dibatalkan.');
+
+        $prescription = $dispense->prescription()->firstOrFail();
+        $wasDispensed = $dispense->status === 'dispensed';
+        $items = $wasDispensed ? $prescription->items()->with('item')->get() : collect();
+        $wardId = $wasDispensed
+            ? ($prescription->visit?->ward_id ?? Ward::query()->value('id'))
+            : null;
+
+        return DB::transaction(function () use ($dispense, $prescription, $items, $wasDispensed, $wardId, $user) {
+            if ($wasDispensed && $wardId !== null) {
+                foreach ($items as $item) {
+                    $quantity = max(1, (int) $item->quantity);
+                    $this->stock->adjust(
+                        (int) $wardId,
+                        (int) $item->item_id,
+                        'in',
+                        $quantity,
+                        $user,
+                        "Pembatalan dispense resep {$prescription->prescription_number}",
+                    );
+                }
+
+                $prescription->update(['status' => 'active']);
+            }
+
+            $dispense->update(['status' => 'cancelled']);
+
+            return $dispense->refresh();
+        });
+    }
+
     /** Gerbang telaah: wajib ada review lulus; config 54 menambah syarat issues kosong. */
     protected function assertScreeningPassed(Prescription $prescription): void
     {

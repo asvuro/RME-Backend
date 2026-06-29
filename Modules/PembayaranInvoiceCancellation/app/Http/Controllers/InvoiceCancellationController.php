@@ -5,13 +5,15 @@ namespace Modules\PembayaranInvoiceCancellation\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Modules\PembayaranInvoice\Models\Invoice;
+use Modules\PembayaranInvoice\Services\InvoiceService;
 use Modules\PembayaranInvoiceCancellation\Http\Requests\StoreInvoiceCancellationRequest;
 use Modules\PembayaranInvoiceCancellation\Http\Resources\InvoiceCancellationResource;
 use Modules\PembayaranInvoiceCancellation\Models\InvoiceCancellation;
 
 class InvoiceCancellationController extends Controller
 {
+    public function __construct(protected InvoiceService $invoiceService) {}
+
     public function index(Request $request)
     {
         $query = InvoiceCancellation::query();
@@ -34,11 +36,12 @@ class InvoiceCancellationController extends Controller
         $data['cancelled_by'] = $request->user()->id;
 
         $cancellation = DB::transaction(function () use ($data) {
-            $cancellation = InvoiceCancellation::create($data);
-            Invoice::whereKey($data['invoice_id'])->update(['status' => 'cancelled', 'is_locked' => true]);
-
-            return $cancellation;
+            return InvoiceCancellation::create($data);
         });
+
+        // Di luar transaksi record cancellation: InvoiceService::cancel() membuka
+        // transaksinya sendiri dan men-dispatch event InvoiceLocked (audit trail).
+        $this->invoiceService->cancel($data['invoice_id']);
 
         return (new InvoiceCancellationResource($cancellation))->response()->setStatusCode(201);
     }

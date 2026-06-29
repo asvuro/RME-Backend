@@ -55,6 +55,23 @@ class InvoiceService implements BillingGate
         InvoiceLocked::dispatch($invoice->refresh());
     }
 
+    /**
+     * Batalkan invoice (dipakai modul PembayaranInvoiceCancellation, catatan
+     * legal/finansial append-only). Statusnya jadi 'cancelled' + terkunci
+     * sekaligus, lewat jalur resmi supaya event InvoiceLocked tetap terpicu
+     * (audit trail invoice_lock) -- bukan raw update dari controller lain.
+     */
+    public function cancel(int $invoiceId): void
+    {
+        $invoice = Invoice::findOrFail($invoiceId);
+
+        DB::transaction(function () use ($invoice) {
+            $invoice->update(['status' => 'cancelled', 'is_locked' => true]);
+        });
+
+        InvoiceLocked::dispatch($invoice->refresh());
+    }
+
     public function unlock(int $invoiceId): void
     {
         Invoice::query()->whereKey($invoiceId)->update(['is_locked' => false]);
@@ -90,6 +107,71 @@ class InvoiceService implements BillingGate
         );
 
         return $invoice->refresh();
+    }
+
+    /**
+     * Port dari store() controller: buka invoice untuk kunjungan lewat
+     * ensureForVisit (get-or-create, invarian 1 invoice : 1 kunjungan) dan,
+     * HANYA saat baris memang baru dibuat, terapkan atribut opsional dari
+     * request (nomor/tanggal manual, rounding_adjustment awal). Invoice yang
+     * sudah ada untuk kunjungan ini tidak pernah ditimpa lewat jalur ini -
+     * mencegah request store() kedua diam-diam mengubah invoice pertama.
+     */
+    public function createForVisit(int $visitId, array $attributes, int $createdBy): Invoice
+    {
+        Visit::findOrFail($visitId);
+
+        $invoice = Invoice::query()->firstOrCreate(
+            ['visit_id' => $visitId],
+            array_merge([
+                'invoice_number' => Invoice::generateInvoiceNumber(),
+                'invoice_date' => now(),
+                'created_by' => $createdBy,
+            ], $attributes),
+        );
+
+        if ($invoice->wasRecentlyCreated && array_key_exists('rounding_adjustment', $attributes)) {
+            $invoice->recalculateTotals();
+        }
+
+        return $invoice->refresh();
+    }
+
+    /**
+     * Update atribut invoice terbuka (nomor, tanggal, rounding_adjustment,
+     * status) lalu jaga dua invarian yang sebelumnya hanya ditegakkan lewat
+     * postServiceItem(): total_amount konsisten dengan rounding_adjustment
+     * terbaru, dan coverage_amount penjamin (turunan total_amount) ikut
+     * disinkronkan lewat redistribute().
+     */
+    public function updateInvoice(Invoice $invoice, array $data): Invoice
+    {
+        abort_if($this->isInvoiceLocked($invoice->id), 422, 'Tagihan ini sudah dikunci, tidak bisa diubah.');
+
+        DB::transaction(function () use ($invoice, $data) {
+            $invoice->update($data);
+            $invoice->recalculateTotals();
+        });
+
+        $this->redistribute($invoice->refresh());
+
+        return $invoice->refresh();
+    }
+
+    /**
+     * Hapus invoice terbuka dalam transaksi, ikut membuang baris item &
+     * lampiran penjamin (FK sudah cascadeOnDelete, eksplisit di sini biar
+     * jelas untuk pembaca & konsisten dengan pola service lain di kelas ini).
+     */
+    public function deleteInvoice(Invoice $invoice): void
+    {
+        abort_if($this->isInvoiceLocked($invoice->id), 422, 'Tagihan ini sudah dikunci, tidak bisa dihapus.');
+
+        DB::transaction(function () use ($invoice) {
+            $invoice->guarantorAttachments()->delete();
+            $invoice->items()->delete();
+            $invoice->delete();
+        });
     }
 
     /**

@@ -54,6 +54,59 @@ class BedService implements BedGate
         });
     }
 
+    /**
+     * Ubah atribut non-status bed (bed_number, is_active). Menonaktifkan bed
+     * yang sedang dipesan/terisi ditolak 422 — status hanya boleh berubah
+     * lewat occupy()/release()/setMaintenance(), dan gerbang is_active yang
+     * dipakai occupy() tidak boleh dilewati untuk bed yang masih dipakai.
+     */
+    public function updateDetails(int $bedId, array $data): Bed
+    {
+        return DB::transaction(function () use ($bedId, $data) {
+            $bed = Bed::query()->lockForUpdate()->findOrFail($bedId);
+
+            if (array_key_exists('is_active', $data) && ! $data['is_active']) {
+                abort_if(
+                    in_array($bed->status, [Bed::STATUS_OCCUPIED, Bed::STATUS_RESERVED], true),
+                    422,
+                    "Bed #{$bedId} masih {$bed->status}, tidak bisa dinonaktifkan.",
+                );
+            }
+
+            $bed->update($data);
+
+            return $bed;
+        });
+    }
+
+    /**
+     * Hapus bed. Ditolak 422 bila bed sedang dipesan/terisi, atau bila masih
+     * ada kunjungan aktif yang menunjuk bed ini (sama seperti gerbang di
+     * release()) — mencegah Visit yatim yang bed_id-nya sudah tak ada.
+     */
+    public function deleteBed(int $bedId): void
+    {
+        DB::transaction(function () use ($bedId) {
+            $bed = Bed::query()->lockForUpdate()->findOrFail($bedId);
+
+            abort_if(
+                in_array($bed->status, [Bed::STATUS_OCCUPIED, Bed::STATUS_RESERVED], true),
+                422,
+                "Bed #{$bedId} masih {$bed->status}, tidak bisa dihapus.",
+            );
+
+            $masihDipakai = Visit::query()
+                ->where('bed_id', $bedId)
+                ->whereNull('discharged_at')
+                ->where('status', '!=', 'cancelled')
+                ->exists();
+
+            abort_if($masihDipakai, 422, "Bed #{$bedId} masih dipakai kunjungan aktif lain.");
+
+            $bed->delete();
+        });
+    }
+
     public function setMaintenance(int $bedId, bool $on): void
     {
         DB::transaction(function () use ($bedId, $on) {

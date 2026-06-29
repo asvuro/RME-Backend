@@ -8,9 +8,14 @@ use Modules\PembayaranInvoice\Http\Requests\StoreInvoiceRequest;
 use Modules\PembayaranInvoice\Http\Requests\UpdateInvoiceRequest;
 use Modules\PembayaranInvoice\Http\Resources\InvoiceResource;
 use Modules\PembayaranInvoice\Models\Invoice;
+use Modules\PembayaranInvoice\Services\InvoiceService;
 
 class InvoiceController extends Controller
 {
+    public function __construct(private readonly InvoiceService $invoiceService)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = Invoice::query();
@@ -25,11 +30,17 @@ class InvoiceController extends Controller
     public function store(StoreInvoiceRequest $request)
     {
         $data = $request->validated();
-        $data['invoice_number'] ??= Invoice::generateInvoiceNumber();
-        $data['invoice_date'] ??= now();
-        $data['created_by'] = $request->user()->id;
 
-        $invoice = Invoice::create($data);
+        $attributes = collect($data)
+            ->only(['invoice_number', 'invoice_date', 'rounding_adjustment'])
+            ->filter(fn ($value) => $value !== null)
+            ->all();
+
+        $invoice = $this->invoiceService->createForVisit(
+            (int) $data['visit_id'],
+            $attributes,
+            $request->user()->id,
+        );
 
         return (new InvoiceResource($invoice))->response()->setStatusCode(201);
     }
@@ -41,18 +52,14 @@ class InvoiceController extends Controller
 
     public function update(UpdateInvoiceRequest $request, Invoice $invoice): InvoiceResource
     {
-        abort_if($invoice->is_locked, 422, 'Tagihan ini sudah dikunci, tidak bisa diubah.');
-
-        $invoice->update($request->validated());
+        $invoice = $this->invoiceService->updateInvoice($invoice, $request->validated());
 
         return new InvoiceResource($invoice);
     }
 
     public function destroy(Invoice $invoice)
     {
-        abort_if($invoice->is_locked, 422, 'Tagihan ini sudah dikunci, tidak bisa dihapus.');
-
-        $invoice->delete();
+        $this->invoiceService->deleteInvoice($invoice);
 
         return response()->json(null, 204);
     }

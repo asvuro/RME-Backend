@@ -5,9 +5,14 @@ namespace Modules\GeneralBed\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\GeneralBed\Models\Bed;
+use Modules\GeneralBed\Services\BedService;
 
 class BedController extends Controller
 {
+    public function __construct(protected BedService $bedService)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = Bed::query();
@@ -42,14 +47,12 @@ class BedController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
-        $bed->update($data);
-
-        return $bed;
+        return $this->bedService->updateDetails($bed->id, $data);
     }
 
     public function destroy(Bed $bed)
     {
-        $bed->delete();
+        $this->bedService->deleteBed($bed->id);
 
         return response()->json(null, 204);
     }

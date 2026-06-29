@@ -4,14 +4,15 @@ namespace Modules\InventoryWardStockTransaction\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
-use Modules\InventoryWardItemStock\Models\WardItemStock;
 use Modules\InventoryWardStockTransaction\Http\Requests\StoreWardStockTransactionRequest;
 use Modules\InventoryWardStockTransaction\Http\Resources\WardStockTransactionResource;
 use Modules\InventoryWardStockTransaction\Models\WardStockTransaction;
+use Modules\InventoryWardStockTransaction\Services\WardStockService;
 
 class InventoryWardStockTransactionController extends Controller
 {
+    public function __construct(protected WardStockService $wardStockService) {}
+
     public function index(Request $request)
     {
         $query = WardStockTransaction::query();
@@ -34,21 +35,16 @@ class InventoryWardStockTransactionController extends Controller
     public function store(StoreWardStockTransactionRequest $request)
     {
         $data = $request->validated();
-        $data['performed_at'] ??= now();
-        $data['performed_by'] = $request->user()->id;
 
-        $stock = WardItemStock::firstOrCreate(
-            ['ward_id' => $data['ward_id'], 'item_id' => $data['item_id']],
-            ['quantity' => 0]
+        $transaction = $this->wardStockService->record(
+            wardId: $data['ward_id'],
+            itemId: $data['item_id'],
+            type: $data['type'],
+            quantity: $data['quantity'],
+            user: $request->user(),
+            notes: $data['notes'] ?? null,
+            performedAt: isset($data['performed_at']) ? new \DateTimeImmutable($data['performed_at']) : null,
         );
-
-        if ($data['type'] === 'out' && $stock->quantity < $data['quantity']) {
-            throw ValidationException::withMessages(['quantity' => 'Stok ruangan tidak cukup untuk transaksi keluar.']);
-        }
-
-        $transaction = WardStockTransaction::create($data);
-
-        $stock->increment('quantity', $data['type'] === 'in' ? $data['quantity'] : -$data['quantity']);
 
         return (new WardStockTransactionResource($transaction))->response()->setStatusCode(201);
     }

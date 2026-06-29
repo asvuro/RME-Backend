@@ -37,7 +37,7 @@ class VisitController extends Controller
         return new VisitResource($visit);
     }
 
-    public function update(UpdateVisitRequest $request, Visit $visit): VisitResource
+    public function update(UpdateVisitRequest $request, Visit $visit, VisitService $service): VisitResource
     {
         $data = $request->validated();
 
@@ -49,7 +49,24 @@ class VisitController extends Controller
             'Pulangkan kunjungan melalui POST /visits/{visit}/discharge.',
         );
 
-        $visit->update($data);
+        // Gerbang mutasi bed/ward tidak boleh dilewati lewat edit bebas:
+        // okupansi, riwayat, dan validasi bed hanya berlaku di
+        // VisitService::transfer() (#11).
+        abort_if(
+            array_key_exists('ward_id', $data) || array_key_exists('bed_id', $data),
+            422,
+            'Pindahkan bed/ward kunjungan melalui POST /visits/{visit}/transfer.',
+        );
+
+        // Status lain (mis. batal) juga punya gerbang sendiri (bed dibebaskan,
+        // tagihan terkunci diperiksa) — tidak boleh diubah lewat edit bebas.
+        abort_if(
+            array_key_exists('status', $data),
+            422,
+            'Ubah status kunjungan melalui gerbang khusus (mis. DELETE /visits/{visit} untuk batal, POST /visits/{visit}/discharge untuk pulang).',
+        );
+
+        $visit = $service->updateDetails($visit, $data);
 
         return new VisitResource($visit);
     }

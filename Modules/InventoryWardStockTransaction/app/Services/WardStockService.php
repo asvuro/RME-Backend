@@ -31,6 +31,17 @@ class WardStockService implements StockGate
 
     public function adjust(int $wardId, int $itemId, string $type, int $quantity, User $user, ?string $notes = null): void
     {
+        $this->record($wardId, $itemId, $type, $quantity, $user, $notes);
+    }
+
+    /**
+     * Sama seperti adjust(), tapi mengembalikan entri ledger yang dibuat.
+     * Dipakai oleh endpoint yang perlu menyajikan transaksi hasil pencatatan
+     * (mis. WardStockTransactionResource), tanpa menduplikasi invariant
+     * (lockForUpdate, gerbang allow_order_out_of_stock, flooring saldo di 0).
+     */
+    public function record(int $wardId, int $itemId, string $type, int $quantity, User $user, ?string $notes = null, ?\DateTimeInterface $performedAt = null): WardStockTransaction
+    {
         if (! in_array($type, self::TYPES, true)) {
             abort(422, "Tipe transaksi stok '{$type}' tidak dikenal.");
         }
@@ -43,7 +54,7 @@ class WardStockService implements StockGate
         // dikendalikan pharmacy.allow_order_out_of_stock (PropertiConfig 48).
         $allowNegative = (bool) $this->config->get('pharmacy.allow_order_out_of_stock', false);
 
-        DB::transaction(function () use ($wardId, $itemId, $type, $quantity, $user, $notes, $allowNegative) {
+        return DB::transaction(function () use ($wardId, $itemId, $type, $quantity, $user, $notes, $performedAt, $allowNegative) {
             $delta = $this->signedQuantity($type, $quantity);
 
             $stock = WardItemStock::query()
@@ -60,13 +71,13 @@ class WardStockService implements StockGate
 
             // Skema ledger memakai unsignedInteger: jumlah SELALU positif,
             // arah mutasi disimpan pada kolom type (out = pengurangan).
-            WardStockTransaction::create([
+            $transaction = WardStockTransaction::create([
                 'ward_id' => $wardId,
                 'item_id' => $itemId,
                 'type' => $type,
                 'quantity' => abs($quantity),
                 'performed_by' => $user->id,
-                'performed_at' => now(),
+                'performed_at' => $performedAt ?? now(),
                 'notes' => $notes,
             ]);
 
@@ -75,6 +86,8 @@ class WardStockService implements StockGate
             } else {
                 $stock->update(['quantity' => max(0, $newBalance)]);
             }
+
+            return $transaction;
         });
     }
 

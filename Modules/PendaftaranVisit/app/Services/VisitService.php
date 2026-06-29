@@ -237,6 +237,29 @@ class VisitService implements VisitGate
         return $visit->refresh();
     }
 
+    /**
+     * Sunting atribut non-gerbang kunjungan (mis. attending_physician_id,
+     * is_deposit, deposit_class_id, visit_number, final_outcome) via
+     * PUT/PATCH /visits/{visit}. ward_id/bed_id (gerbang #11 transfer()),
+     * status/discharged_at (gerbang cancel()/discharge()) HARUS lewat
+     * gerbang masing-masing dan tidak boleh lewat sini — controller sudah
+     * menahan field tsb sebelum data mencapai method ini.
+     *
+     * @param  array<string, mixed>  $data  hasil validasi UpdateVisitRequest,
+     *                                       sudah bersih dari ward_id/bed_id/status/discharged_at
+     */
+    public function updateDetails(Visit $visit, array $data): Visit
+    {
+        abort_if($visit->discharged_at !== null, 422, 'Kunjungan sudah pulang; tidak dapat disunting.');
+        abort_if($visit->status === 'cancelled', 422, 'Kunjungan sudah batal; tidak dapat disunting.');
+
+        DB::transaction(function () use ($visit, $data) {
+            $visit->update($data);
+        });
+
+        return $visit->refresh();
+    }
+
     /** Posting item "Akomodasi" dari masa rawat × tarif ward/kelas kamar. */
     protected function postAccommodation(Visit $visit, $dischargedAt): void
     {

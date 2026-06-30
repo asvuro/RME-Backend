@@ -9,6 +9,7 @@ use App\Modules\Contracts\BedGate;
 use App\Modules\Contracts\BillingGate;
 use App\Modules\Contracts\HospitalConfig;
 use App\Modules\Contracts\VisitGate;
+use App\Modules\Contracts\WardScope;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 use Modules\GeneralBed\Models\Bed;
@@ -37,7 +38,18 @@ class VisitService implements VisitGate
         protected HospitalConfig $config,
         protected BillingGate $billingGate,
         protected BedGate $bedGate,
+        protected WardScope $wardScope,
     ) {}
+
+    /** Gerbang least-privilege #3: petugas hanya boleh menulis di ward tempat dia ditugaskan. */
+    protected function assertWardAccess(User $user, ?int $wardId): void
+    {
+        abort_if(
+            ! $this->wardScope->canAccessWard($user, $wardId),
+            403,
+            'Anda tidak ditugaskan ke ward kunjungan ini.',
+        );
+    }
 
     /** Kontrak VisitGate: dipakai modul layanan sebelum posting tindakan/resep. */
     public function isPatientDischarged(int $visitId): bool
@@ -81,6 +93,8 @@ class VisitService implements VisitGate
             $this->assertBedConsistent($data);
         }
 
+        $this->assertWardAccess($user, isset($data['ward_id']) ? (int) $data['ward_id'] : null);
+
         $visit = DB::transaction(function () use ($data, $user) {
             // Port trigger onAfterInsertKunjungan: bed yang dibawa kunjungan
             // langsung terisi; okupansi dicek atomik di sumber kebenaran bed.
@@ -116,6 +130,16 @@ class VisitService implements VisitGate
     {
         abort_if($visit->discharged_at !== null, 422, 'Kunjungan sudah pulang; tidak dapat dimutasi.');
         abort_if($visit->status === 'cancelled', 422, 'Kunjungan sudah batal; tidak dapat dimutasi.');
+
+        // Ward-scope (#3): staf ward asal ATAU ward tujuan boleh melakukan
+        // mutasi (mengirim atau menerima pasien keduanya wajar).
+        $targetWardIdForGate = Bed::query()->with('room')->find($targetBedId)?->room?->ward_id;
+        abort_if(
+            ! $this->wardScope->canAccessWard($user, $visit->ward_id)
+                && ! $this->wardScope->canAccessWard($user, $targetWardIdForGate),
+            403,
+            'Anda tidak ditugaskan ke ward asal maupun ward tujuan mutasi ini.',
+        );
 
         [$transfer, $oldBedId] = DB::transaction(function () use ($visit, $targetBedId, $user, $notes) {
             $targetBed = Bed::query()->lockForUpdate()->findOrFail($targetBedId);
@@ -172,6 +196,7 @@ class VisitService implements VisitGate
         abort_if($visit->discharged_at !== null, 422, 'Kunjungan sudah berstatus pulang.');
         abort_if($visit->status === 'cancelled', 422, 'Kunjungan sudah batal; tidak dapat dipulangkan.');
         abort_if(trim($finalOutcome) === '', 422, 'Hasil akhir kunjungan wajib diisi.');
+        $this->assertWardAccess($user, $visit->ward_id);
 
         $dischargedAt = now();
 
@@ -220,11 +245,12 @@ class VisitService implements VisitGate
      * dikunci kasir memblokir pembatalan, dan riwayat kunjungan tetap ada
      * untuk audit (status berubah jadi 'cancelled', bukan baris hilang).
      */
-    public function cancel(Visit $visit): Visit
+    public function cancel(Visit $visit, User $user): Visit
     {
         abort_if($visit->discharged_at !== null, 422, 'Kunjungan sudah pulang; tidak dapat dibatalkan.');
         abort_if($visit->status === 'cancelled', 422, 'Kunjungan sudah batal.');
         abort_if($this->billingGate->isVisitLocked($visit->id), 422, 'Tagihan kunjungan sudah dikunci kasir; tidak dapat dibatalkan.');
+        $this->assertWardAccess($user, $visit->ward_id);
 
         DB::transaction(function () use ($visit) {
             $visit->update(['status' => 'cancelled']);
@@ -248,10 +274,11 @@ class VisitService implements VisitGate
      * @param  array<string, mixed>  $data  hasil validasi UpdateVisitRequest,
      *                                       sudah bersih dari ward_id/bed_id/status/discharged_at
      */
-    public function updateDetails(Visit $visit, array $data): Visit
+    public function updateDetails(Visit $visit, array $data, User $user): Visit
     {
         abort_if($visit->discharged_at !== null, 422, 'Kunjungan sudah pulang; tidak dapat disunting.');
         abort_if($visit->status === 'cancelled', 422, 'Kunjungan sudah batal; tidak dapat disunting.');
+        $this->assertWardAccess($user, $visit->ward_id);
 
         DB::transaction(function () use ($visit, $data) {
             $visit->update($data);

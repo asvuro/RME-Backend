@@ -7,7 +7,9 @@ use App\Modules\Contracts\BillingGate;
 use App\Modules\Contracts\HospitalConfig;
 use App\Modules\Contracts\StockGate;
 use App\Modules\Contracts\VisitGate;
+use App\Modules\Contracts\WardScope;
 use App\Support\RsSettingService;
+use App\Support\WardAccessResolver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -22,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         VisitGate::class => \Modules\PendaftaranVisit\Services\VisitService::class,
         StockGate::class => \Modules\InventoryWardStockTransaction\Services\WardStockService::class,
         BedGate::class => \Modules\GeneralBed\Services\BedService::class,
+        WardScope::class => WardAccessResolver::class,
     ];
 
     /**

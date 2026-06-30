@@ -5,6 +5,9 @@ namespace Modules\InventoryWardStockTransaction\Tests\Feature;
 use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
+use Modules\GeneralEmployee\Models\Employee;
+use Modules\GeneralStaffMember\Models\StaffMember;
+use Modules\GeneralStaffWardAssignment\Models\StaffWardAssignment;
 use Modules\GeneralWard\Models\Ward;
 use Modules\InventoryItem\Models\Item;
 use Modules\InventoryWardItemStock\Models\WardItemStock;
@@ -28,6 +31,48 @@ class WardStockTransactionControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         return $user;
+    }
+
+    /** Petugas yang ditugaskan HANYA ke $wardId (least-privilege #3). */
+    private function actingWardStaff(int $wardId): User
+    {
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $employee = Employee::factory()->create(['user_id' => $user->id]);
+        $staffMember = StaffMember::factory()->create(['employee_id' => $employee->id]);
+        StaffWardAssignment::factory()->create(['staff_member_id' => $staffMember->id, 'ward_id' => $wardId]);
+        $this->actingAs($user, 'sanctum');
+
+        return $user;
+    }
+
+    public function test_ward_staff_cannot_record_transaction_for_another_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $item = Item::factory()->create();
+
+        $this->postJson('/api/v1/ward-stock-transactions', [
+            'ward_id' => $otherWard->id,
+            'item_id' => $item->id,
+            'type' => 'in',
+            'quantity' => 5,
+        ])->assertStatus(403);
+    }
+
+    public function test_ward_staff_can_record_transaction_for_own_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $item = Item::factory()->create();
+
+        $this->postJson('/api/v1/ward-stock-transactions', [
+            'ward_id' => $ownWard->id,
+            'item_id' => $item->id,
+            'type' => 'in',
+            'quantity' => 5,
+        ])->assertCreated();
     }
 
     public function test_it_records_an_in_transaction_and_increments_ward_stock(): void

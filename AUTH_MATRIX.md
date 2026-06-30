@@ -168,13 +168,40 @@ PharmacyDispense) — `WardStockTransaction` dan `PrintDocument` model-nya
 tidak memakai trait `Auditable` maupun men-dispatch event yang didengar
 `DomainEventAuditListener`. Ini dicatat sebagai gap di Section 5.
 
+## 4b. Least-Privilege per Ward (#3) — Status per 2026-08-25
+
+Ditambahkan `App\Modules\Contracts\WardScope` (impl. `App\Support\WardAccessResolver`):
+rantai `User -> Employee.user_id -> StaffMember/Doctor/Nurse.employee_id ->
+*WardAssignment.ward_id`. `admin` selalu lolos; `petugas` yang PUNYA minimal
+1 ward assignment dibatasi hanya ke ward itu; `petugas` TANPA assignment
+sama sekali default masih akses penuh (rollout bertahap — lihat catatan di
+`WardAccessResolver::canAccessWard()`).
+
+Diterapkan ke 3 entitas yang benar-benar "milik" satu ward:
+
+| Entitas | Method digate | Ward diambil dari |
+|---|---|---|
+| `Bed` | `store`/`update`/`destroy` (`BedController`/`BedService`) | `Room.ward_id` |
+| `Visit` | `admit`/`transfer`/`discharge`/`cancel`/`updateDetails` (`VisitService`) | `Visit.ward_id` (transfer: asal ATAU tujuan) |
+| `WardStockTransaction` | `store` (`InventoryWardStockTransactionController`, cuma endpoint langsung) | `ward_id` request |
+
+**Sengaja TIDAK di-gate** (keputusan eksplisit, bukan lupa): `Invoice`
+(billing/kasir) dan `PharmacyDispense` (farmasi) — keduanya fungsi
+lintas-ward di operasional RS nyata (satu loket kasir/apotek melayani semua
+ward), bukan milik satu ward. Ward-scope di situ akan salah mengunci staf
+yang justru harus lintas-ward. `StockGate`/`BedGate` yang dipanggil
+INTERNAL dari modul lain (mis. farmasi mengurangi stok ward tujuan lewat
+`StockGate::adjust()`) juga tidak digate — hanya endpoint HTTP langsung ke
+modul pemiliknya yang digate.
+
 ## 5. Belum Dikerjakan / Technical Debt Diketahui
 
-- **Object-level authorization belum ada.** Role bersifat global
-  (`admin`/`petugas`); tidak ada scope per unit/ruangan/ward, per fasilitas,
-  atau per pasien. Semua user dengan role yang sama punya akses identik ke
-  seluruh baris data lintas unit. Tidak ada Laravel Policy per model yang
-  mengecek kepemilikan/keterkaitan unit request-er.
+- **Object-level authorization baru sebagian (ward-scope, lihat 4b).** Belum
+  ada scope per fasilitas atau per pasien (mis. "cuma dokter penanggung
+  jawab pasien ini yang boleh ubah rekam mediknya"). Ward-scope Visit/Bed/
+  WardStockTransaction juga masih "default terbuka" untuk user yang belum
+  pernah di-assign ward sama sekali — proteksi baru aktif begitu assignment
+  pertama dibuat.
 - **Konsolidasi modul granular (579 modul) belum dilakukan.** Struktur
   modular saat ini memecah domain menjadi banyak modul kecil (1
   referensi/tabel legacy ≈ 1 modul); belum ada langkah konsolidasi ke modul

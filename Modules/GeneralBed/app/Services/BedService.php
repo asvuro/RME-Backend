@@ -3,7 +3,9 @@
 namespace Modules\GeneralBed\Services;
 
 use App\Modules\Contracts\BedGate;
+use App\Modules\Contracts\WardScope;
 use Illuminate\Support\Facades\DB;
+use Modules\Auth\Models\User;
 use Modules\GeneralBed\Models\Bed;
 use Modules\PendaftaranVisit\Models\Visit;
 
@@ -13,6 +15,8 @@ use Modules\PendaftaranVisit\Models\Visit;
  */
 class BedService implements BedGate
 {
+    public function __construct(protected WardScope $wardScope) {}
+
     public function occupy(int $bedId): void
     {
         DB::transaction(function () use ($bedId) {
@@ -60,10 +64,16 @@ class BedService implements BedGate
      * lewat occupy()/release()/setMaintenance(), dan gerbang is_active yang
      * dipakai occupy() tidak boleh dilewati untuk bed yang masih dipakai.
      */
-    public function updateDetails(int $bedId, array $data): Bed
+    public function updateDetails(int $bedId, array $data, User $user): Bed
     {
-        return DB::transaction(function () use ($bedId, $data) {
-            $bed = Bed::query()->lockForUpdate()->findOrFail($bedId);
+        return DB::transaction(function () use ($bedId, $data, $user) {
+            $bed = Bed::query()->lockForUpdate()->with('room')->findOrFail($bedId);
+
+            abort_if(
+                ! $this->wardScope->canAccessWard($user, $bed->room?->ward_id),
+                403,
+                "Anda tidak ditugaskan ke ward bed #{$bedId}.",
+            );
 
             if (array_key_exists('is_active', $data) && ! $data['is_active']) {
                 abort_if(
@@ -84,10 +94,16 @@ class BedService implements BedGate
      * ada kunjungan aktif yang menunjuk bed ini (sama seperti gerbang di
      * release()) — mencegah Visit yatim yang bed_id-nya sudah tak ada.
      */
-    public function deleteBed(int $bedId): void
+    public function deleteBed(int $bedId, User $user): void
     {
-        DB::transaction(function () use ($bedId) {
-            $bed = Bed::query()->lockForUpdate()->findOrFail($bedId);
+        DB::transaction(function () use ($bedId, $user) {
+            $bed = Bed::query()->lockForUpdate()->with('room')->findOrFail($bedId);
+
+            abort_if(
+                ! $this->wardScope->canAccessWard($user, $bed->room?->ward_id),
+                403,
+                "Anda tidak ditugaskan ke ward bed #{$bedId}.",
+            );
 
             abort_if(
                 in_array($bed->status, [Bed::STATUS_OCCUPIED, Bed::STATUS_RESERVED], true),

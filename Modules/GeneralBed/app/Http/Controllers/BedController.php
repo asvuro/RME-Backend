@@ -3,13 +3,15 @@
 namespace Modules\GeneralBed\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Contracts\WardScope;
 use Illuminate\Http\Request;
 use Modules\GeneralBed\Models\Bed;
 use Modules\GeneralBed\Services\BedService;
+use Modules\GeneralRoom\Models\Room;
 
 class BedController extends Controller
 {
-    public function __construct(protected BedService $bedService)
+    public function __construct(protected BedService $bedService, protected WardScope $wardScope)
     {
     }
 
@@ -32,6 +34,13 @@ class BedController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
+        $wardId = Room::query()->whereKey($data['room_id'])->value('ward_id');
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), $wardId),
+            403,
+            'Anda tidak ditugaskan ke ward room ini.',
+        );
+
         return response()->json(Bed::create($data)->refresh(), 201);
     }
 
@@ -47,12 +56,12 @@ class BedController extends Controller
             'is_active' => ['sometimes', 'boolean'],
         ]);
 
-        return $this->bedService->updateDetails($bed->id, $data);
+        return $this->bedService->updateDetails($bed->id, $data, $request->user());
     }
 
-    public function destroy(Bed $bed)
+    public function destroy(Request $request, Bed $bed)
     {
-        $this->bedService->deleteBed($bed->id);
+        $this->bedService->deleteBed($bed->id, $request->user());
 
         return response()->json(null, 204);
     }

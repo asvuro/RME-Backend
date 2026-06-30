@@ -3,6 +3,7 @@
 namespace Modules\InventoryWardStockTransaction\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Contracts\WardScope;
 use Illuminate\Http\Request;
 use Modules\InventoryWardStockTransaction\Http\Requests\StoreWardStockTransactionRequest;
 use Modules\InventoryWardStockTransaction\Http\Resources\WardStockTransactionResource;
@@ -11,7 +12,7 @@ use Modules\InventoryWardStockTransaction\Services\WardStockService;
 
 class InventoryWardStockTransactionController extends Controller
 {
-    public function __construct(protected WardStockService $wardStockService) {}
+    public function __construct(protected WardStockService $wardStockService, protected WardScope $wardScope) {}
 
     public function index(Request $request)
     {
@@ -35,6 +36,16 @@ class InventoryWardStockTransactionController extends Controller
     public function store(StoreWardStockTransactionRequest $request)
     {
         $data = $request->validated();
+
+        // Ward-scope (#3): cuma untuk endpoint langsung ini. Panggilan StockGate
+        // dari modul lain (mis. DispenseService farmasi mengurangi stok ward
+        // tujuan) SENGAJA tidak digate di sini -- petugas farmasi melayani
+        // lintas ward, bukan staf ward itu sendiri.
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), (int) $data['ward_id']),
+            403,
+            'Anda tidak ditugaskan ke ward ini.',
+        );
 
         $transaction = $this->wardStockService->record(
             wardId: $data['ward_id'],

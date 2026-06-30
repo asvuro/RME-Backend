@@ -66,16 +66,16 @@ class VisitController extends Controller
             'Ubah status kunjungan melalui gerbang khusus (mis. DELETE /visits/{visit} untuk batal, POST /visits/{visit}/discharge untuk pulang).',
         );
 
-        $visit = $service->updateDetails($visit, $data);
+        $visit = $service->updateDetails($visit, $data, $request->user());
 
         return new VisitResource($visit);
     }
 
-    public function destroy(Visit $visit, VisitService $service): JsonResponse
+    public function destroy(Request $request, Visit $visit, VisitService $service): JsonResponse
     {
         // Bukan hard delete: lewat VisitService::cancel() agar bed dibebaskan
         // dan gerbang tagihan terkunci tetap berlaku (konsisten dgn store/transfer/discharge).
-        $service->cancel($visit);
+        $service->cancel($visit, $request->user());
 
         return response()->json(null, 204);
     }

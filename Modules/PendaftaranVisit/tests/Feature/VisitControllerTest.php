@@ -6,6 +6,10 @@ use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
 use Modules\GeneralBed\Models\Bed;
+use Modules\GeneralEmployee\Models\Employee;
+use Modules\GeneralStaffMember\Models\StaffMember;
+use Modules\GeneralStaffWardAssignment\Models\StaffWardAssignment;
+use Modules\GeneralWard\Models\Ward;
 use Modules\PembayaranInvoice\Services\InvoiceService;
 use Modules\PendaftaranRegistration\Models\Registration;
 use Modules\PendaftaranVisit\Models\Visit;
@@ -29,6 +33,54 @@ class VisitControllerTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         return $user;
+    }
+
+    /** Petugas yang ditugaskan HANYA ke $wardId (least-privilege #3). */
+    private function actingWardStaff(int $wardId): User
+    {
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $employee = Employee::factory()->create(['user_id' => $user->id]);
+        $staffMember = StaffMember::factory()->create(['employee_id' => $employee->id]);
+        StaffWardAssignment::factory()->create(['staff_member_id' => $staffMember->id, 'ward_id' => $wardId]);
+        $this->actingAs($user, 'sanctum');
+
+        return $user;
+    }
+
+    public function test_ward_staff_cannot_admit_visit_to_another_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $registration = Registration::factory()->create();
+
+        $this->postJson('/api/v1/visits', [
+            'registration_id' => $registration->id,
+            'ward_id' => $otherWard->id,
+        ])->assertStatus(403);
+    }
+
+    public function test_ward_staff_can_admit_visit_to_own_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $registration = Registration::factory()->create();
+
+        $this->postJson('/api/v1/visits', [
+            'registration_id' => $registration->id,
+            'ward_id' => $ownWard->id,
+        ])->assertCreated();
+    }
+
+    public function test_ward_staff_cannot_cancel_visit_in_another_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $visit = Visit::factory()->create(['ward_id' => $otherWard->id]);
+
+        $this->deleteJson("/api/v1/visits/{$visit->id}")->assertStatus(403);
     }
 
     public function test_it_admits_a_visit_under_a_registration(): void

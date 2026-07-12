@@ -56,6 +56,25 @@ class InvoiceService implements BillingGate
     }
 
     /**
+     * Tandai invoice lunas + terkunci (dipakai modul PembayaranPayment begitu
+     * total pembayaran >= total_amount). Lewat jalur resmi supaya event
+     * InvoiceLocked (audit trail invoice_lock) tetap terpicu -- sebelumnya
+     * PaymentController menulis $invoice->update() langsung, jejak audit
+     * pelunasan otomatis jadi tidak pernah tercatat (ditemukan lewat uji
+     * end-to-end HTTP, bukan asumsi).
+     */
+    public function markPaid(int $invoiceId): void
+    {
+        $invoice = Invoice::findOrFail($invoiceId);
+
+        DB::transaction(function () use ($invoice) {
+            $invoice->update(['status' => 'paid', 'is_locked' => true]);
+        });
+
+        InvoiceLocked::dispatch($invoice->refresh());
+    }
+
+    /**
      * Batalkan invoice (dipakai modul PembayaranInvoiceCancellation, catatan
      * legal/finansial append-only). Statusnya jadi 'cancelled' + terkunci
      * sekaligus, lewat jalur resmi supaya event InvoiceLocked tetap terpicu

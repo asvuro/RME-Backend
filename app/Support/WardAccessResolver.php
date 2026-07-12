@@ -24,33 +24,42 @@ class WardAccessResolver implements WardScope
 {
     public function assignedWardIds(int $userId): array
     {
-        $employee = Employee::query()->where('user_id', $userId)->first();
+        // employees.user_id TIDAK unique -- satu user bisa punya lebih dari
+        // satu baris Employee (mis. profil dibuat ulang). Kumpulkan assignment
+        // dari SEMUA employee milik user ini, jangan cuma yang pertama
+        // ditemukan -- kalau tidak, assignment bisa "hilang" gara-gara
+        // resolver kebetulan ambil baris Employee yang salah.
+        $employeeIds = Employee::query()->where('user_id', $userId)->pluck('id');
 
-        if ($employee === null) {
+        if ($employeeIds->isEmpty()) {
             return [];
         }
 
         $wardIds = [];
 
-        $staffMemberId = StaffMember::query()->where('employee_id', $employee->id)->value('id');
-        if ($staffMemberId !== null) {
+        $staffMemberIds = StaffMember::query()->whereIn('employee_id', $employeeIds)->pluck('id');
+        if ($staffMemberIds->isNotEmpty()) {
             $wardIds[] = StaffWardAssignment::query()
-                ->where('staff_member_id', $staffMemberId)
+                ->whereIn('staff_member_id', $staffMemberIds)
                 ->pluck('ward_id')->all();
         }
 
-        $doctorId = Doctor::query()->where('employee_id', $employee->id)->value('id');
-        if ($doctorId !== null) {
+        $doctorIds = Doctor::query()->whereIn('employee_id', $employeeIds)->pluck('id');
+        if ($doctorIds->isNotEmpty()) {
             $wardIds[] = DoctorWardAssignment::query()
-                ->where('doctor_id', $doctorId)
+                ->whereIn('doctor_id', $doctorIds)
                 ->pluck('ward_id')->all();
         }
 
-        $nurseId = Nurse::query()->where('employee_id', $employee->id)->value('id');
-        if ($nurseId !== null) {
+        $nurseIds = Nurse::query()->whereIn('employee_id', $employeeIds)->pluck('id');
+        if ($nurseIds->isNotEmpty()) {
             $wardIds[] = NurseWardAssignment::query()
-                ->where('nurse_id', $nurseId)
+                ->whereIn('nurse_id', $nurseIds)
                 ->pluck('ward_id')->all();
+        }
+
+        if ($wardIds === []) {
+            return [];
         }
 
         return array_values(array_unique(array_merge(...$wardIds)));

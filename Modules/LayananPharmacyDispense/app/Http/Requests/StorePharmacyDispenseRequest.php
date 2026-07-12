@@ -3,8 +3,14 @@
 namespace Modules\LayananPharmacyDispense\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
+/**
+ * Sejak #5 (audit write-path): quantity/status/dispensed_by/dispensed_at
+ * TIDAK lagi dipakai controller -- semuanya hasil gerbang bisnis di
+ * DispenseService::dispense(), bukan input klien. Rules disamakan dengan
+ * yang benar-benar dibaca controller (cuma prescription_id) supaya endpoint
+ * ini bisa dipanggil (sebelumnya validasi minta field yang sudah tak dipakai).
+ */
 class StorePharmacyDispenseRequest extends FormRequest
 {
     public function authorize(): bool
@@ -16,10 +22,6 @@ class StorePharmacyDispenseRequest extends FormRequest
     {
         return [
             'prescription_id' => ['required', 'integer', 'exists:prescriptions,id'],
-            'dispensed_by' => ['nullable', 'integer', 'exists:users,id'],
-            'dispensed_at' => ['nullable', 'date'],
-            'quantity' => ['required', 'integer'],
-            'status' => ['required', Rule::in(['pending', 'dispensed', 'cancelled'])],
         ];
     }
 }

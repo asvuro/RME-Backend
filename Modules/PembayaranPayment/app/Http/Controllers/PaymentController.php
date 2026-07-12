@@ -5,12 +5,15 @@ namespace Modules\PembayaranPayment\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\PembayaranInvoice\Models\Invoice;
+use Modules\PembayaranInvoice\Services\InvoiceService;
 use Modules\PembayaranPayment\Http\Requests\StorePaymentRequest;
 use Modules\PembayaranPayment\Http\Resources\PaymentResource;
 use Modules\PembayaranPayment\Models\Payment;
 
 class PaymentController extends Controller
 {
+    public function __construct(protected InvoiceService $invoiceService) {}
+
     public function index(Request $request)
     {
         $query = Payment::query();
@@ -40,7 +43,7 @@ class PaymentController extends Controller
 
         $totalPaid = $invoice->payments()->sum('amount');
         if ($totalPaid >= $invoice->total_amount) {
-            $invoice->update(['is_locked' => true, 'status' => 'paid']);
+            $this->invoiceService->markPaid($invoice->id);
         }
 
         return (new PaymentResource($payment))->response()->setStatusCode(201);

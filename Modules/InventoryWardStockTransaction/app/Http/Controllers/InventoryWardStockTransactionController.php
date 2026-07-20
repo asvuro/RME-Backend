@@ -26,6 +26,15 @@ class InventoryWardStockTransactionController extends Controller
             $query->where('item_id', $request->integer('item_id'));
         }
 
+        // Baca juga di-scope ward (#3): sama seperti gerbang tulis endpoint ini.
+        $user = $request->user();
+        if (! $user->hasRole('admin')) {
+            $assigned = $this->wardScope->assignedWardIds($user->id);
+            if ($assigned !== []) {
+                $query->whereIn('ward_id', $assigned);
+            }
+        }
+
         return WardStockTransactionResource::collection($query->latest('performed_at')->paginate($request->integer('per_page', 15)));
     }
 
@@ -60,8 +69,14 @@ class InventoryWardStockTransactionController extends Controller
         return (new WardStockTransactionResource($transaction))->response()->setStatusCode(201);
     }
 
-    public function show(WardStockTransaction $ward_stock_transaction): WardStockTransactionResource
+    public function show(Request $request, WardStockTransaction $ward_stock_transaction): WardStockTransactionResource
     {
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), $ward_stock_transaction->ward_id),
+            403,
+            'Anda tidak ditugaskan ke ward transaksi ini.',
+        );
+
         return new WardStockTransactionResource($ward_stock_transaction);
     }
 }

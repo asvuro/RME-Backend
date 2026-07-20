@@ -10,6 +10,7 @@ use App\Modules\Contracts\BillingGate;
 use App\Modules\Contracts\HospitalConfig;
 use App\Modules\Contracts\VisitGate;
 use App\Modules\Contracts\WardScope;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 use Modules\GeneralBed\Models\Bed;
@@ -102,8 +103,13 @@ class VisitService implements VisitGate
                 $this->bedGate->occupy((int) $data['bed_id']);
             }
 
+            // 'status' TIDAK boleh datang dari input: kunjungan baru selalu
+            // mulai dari default kolom ('active'). Kalau klien bisa suntik
+            // status=discharged/cancelled saat admit, seluruh gerbang state
+            // machine (bed release, cek tagihan, event audit) di cancel()/
+            // discharge() bisa dilewati sejak awal.
             return Visit::create([
-                ...$data,
+                ...Arr::except($data, 'status'),
                 'visit_number' => $data['visit_number'] ?? Visit::generateVisitNumber(),
                 'admitted_at' => $data['admitted_at'] ?? now(),
                 'received_by' => $user->id,

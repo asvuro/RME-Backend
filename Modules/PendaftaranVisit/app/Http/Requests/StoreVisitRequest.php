@@ -23,7 +23,6 @@ class StoreVisitRequest extends FormRequest
             'is_new_visit' => ['sometimes', 'boolean'],
             'is_deposit' => ['sometimes', 'boolean'],
             'deposit_class_id' => ['nullable', 'integer'],
-            'status' => ['sometimes', 'string', 'max:255'],
         ];
     }
 }

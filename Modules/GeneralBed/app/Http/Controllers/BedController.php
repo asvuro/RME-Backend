@@ -23,6 +23,15 @@ class BedController extends Controller
             $query->where('room_id', $request->integer('room_id'));
         }
 
+        // Baca juga di-scope ward (#3): sama seperti gerbang tulis.
+        $user = $request->user();
+        if (! $user->hasRole('admin')) {
+            $assigned = $this->wardScope->assignedWardIds($user->id);
+            if ($assigned !== []) {
+                $query->whereHas('room', fn ($q) => $q->whereIn('ward_id', $assigned));
+            }
+        }
+
         return $query->orderBy('bed_number')->paginate(15);
     }
 
@@ -44,8 +53,14 @@ class BedController extends Controller
         return response()->json(Bed::create($data)->refresh(), 201);
     }
 
-    public function show(Bed $bed): Bed
+    public function show(Request $request, Bed $bed): Bed
     {
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), $bed->room?->ward_id),
+            403,
+            'Anda tidak ditugaskan ke ward bed ini.',
+        );
+
         return $bed;
     }
 

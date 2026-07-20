@@ -147,4 +147,56 @@ class VisitControllerTest extends TestCase
         $response->assertStatus(422);
         $this->assertDatabaseHas('visits', ['id' => $visit->id, 'status' => 'active']);
     }
+
+    public function test_it_ignores_status_field_injected_at_admit(): void
+    {
+        $this->actingUser();
+        $registration = Registration::factory()->create();
+
+        $response = $this->postJson('/api/v1/visits', [
+            'registration_id' => $registration->id,
+            'status' => 'discharged',
+        ]);
+
+        // status bukan field yang divalidasi -- diabaikan, bukan bikin 422.
+        $response->assertCreated();
+        $this->assertDatabaseHas('visits', ['registration_id' => $registration->id, 'status' => 'active']);
+    }
+
+    public function test_ward_staff_cannot_read_visit_in_another_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $visit = Visit::factory()->create(['ward_id' => $otherWard->id]);
+
+        $this->getJson("/api/v1/visits/{$visit->id}")->assertStatus(403);
+    }
+
+    public function test_ward_staff_can_read_visit_in_own_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $visit = Visit::factory()->create(['ward_id' => $ownWard->id]);
+
+        $this->getJson("/api/v1/visits/{$visit->id}")->assertOk();
+    }
+
+    public function test_ward_staff_list_excludes_visits_from_other_wards(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $ownVisit = Visit::factory()->create(['ward_id' => $ownWard->id]);
+        Visit::factory()->create(['ward_id' => $otherWard->id]);
+        $outpatientVisit = Visit::factory()->create(['ward_id' => null]);
+
+        $response = $this->getJson('/api/v1/visits');
+
+        $response->assertOk();
+        $ids = array_column($response->json('data'), 'id');
+        $this->assertContains($ownVisit->id, $ids);
+        $this->assertContains($outpatientVisit->id, $ids);
+        $this->assertCount(2, $ids);
+    }
 }

@@ -3,6 +3,7 @@
 namespace Modules\PendaftaranVisit\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Contracts\WardScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\PendaftaranVisit\Services\VisitService;
@@ -13,12 +14,26 @@ use Modules\PendaftaranVisit\Models\Visit;
 
 class VisitController extends Controller
 {
+    public function __construct(protected WardScope $wardScope) {}
+
     public function index(Request $request)
     {
         $query = Visit::query();
 
         if ($request->filled('registration_id')) {
             $query->where('registration_id', $request->integer('registration_id'));
+        }
+
+        // Baca juga di-scope ward (#3): petugas cuma lihat kunjungan rawat
+        // jalan (ward_id null) + kunjungan di ward tempat dia ditugaskan.
+        // Sama seperti gerbang tulis: admin bebas, petugas tanpa assignment
+        // sama sekali masih default terbuka (rollout bertahap).
+        $user = $request->user();
+        if (! $user->hasRole('admin')) {
+            $assigned = $this->wardScope->assignedWardIds($user->id);
+            if ($assigned !== []) {
+                $query->where(fn ($q) => $q->whereNull('ward_id')->orWhereIn('ward_id', $assigned));
+            }
         }
 
         return VisitResource::collection($query->latest('admitted_at')->paginate($request->integer('per_page', 15)));
@@ -32,8 +47,14 @@ class VisitController extends Controller
         return (new VisitResource($visit))->response()->setStatusCode(201);
     }
 
-    public function show(Visit $visit): VisitResource
+    public function show(Request $request, Visit $visit): VisitResource
     {
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), $visit->ward_id),
+            403,
+            'Anda tidak ditugaskan ke ward kunjungan ini.',
+        );
+
         return new VisitResource($visit);
     }
 

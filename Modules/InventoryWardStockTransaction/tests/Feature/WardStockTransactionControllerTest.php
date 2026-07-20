@@ -61,6 +61,51 @@ class WardStockTransactionControllerTest extends TestCase
         ])->assertStatus(403);
     }
 
+    public function test_ward_staff_cannot_read_transaction_from_another_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $item = Item::factory()->create();
+
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        $this->actingAs($admin, 'sanctum');
+        $rOther = $this->postJson('/api/v1/ward-stock-transactions', [
+            'ward_id' => $otherWard->id, 'item_id' => $item->id, 'type' => 'in', 'quantity' => 5,
+        ]);
+        $otherTransactionId = $rOther->json('data.id');
+
+        $this->actingWardStaff($ownWard->id);
+
+        $this->getJson("/api/v1/ward-stock-transactions/{$otherTransactionId}")->assertStatus(403);
+    }
+
+    public function test_ward_staff_list_excludes_transactions_from_other_wards(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $item = Item::factory()->create();
+
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+        $this->actingAs($admin, 'sanctum');
+        $this->postJson('/api/v1/ward-stock-transactions', [
+            'ward_id' => $otherWard->id, 'item_id' => $item->id, 'type' => 'in', 'quantity' => 5,
+        ]);
+
+        $this->actingWardStaff($ownWard->id);
+        $this->postJson('/api/v1/ward-stock-transactions', [
+            'ward_id' => $ownWard->id, 'item_id' => $item->id, 'type' => 'in', 'quantity' => 3,
+        ]);
+
+        $response = $this->getJson('/api/v1/ward-stock-transactions');
+
+        $response->assertOk();
+        foreach ($response->json('data') as $row) {
+            $this->assertSame($ownWard->id, $row['ward_id']);
+        }
+    }
+
     public function test_ward_staff_can_record_transaction_for_own_ward(): void
     {
         $ownWard = Ward::factory()->create();

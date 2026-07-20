@@ -109,4 +109,32 @@ class BedControllerTest extends TestCase
         $this->deleteJson("/api/v1/beds/{$bed->id}")
             ->assertStatus(403);
     }
+
+    public function test_ward_staff_cannot_read_bed_in_another_ward(): void
+    {
+        $ownWard = \Modules\GeneralWard\Models\Ward::factory()->create();
+        $otherWard = \Modules\GeneralWard\Models\Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $room = Room::factory()->create(['ward_id' => $otherWard->id]);
+        $bed = Bed::factory()->create(['room_id' => $room->id]);
+
+        $this->getJson("/api/v1/beds/{$bed->id}")->assertStatus(403);
+    }
+
+    public function test_ward_staff_list_excludes_beds_from_other_wards(): void
+    {
+        $ownWard = \Modules\GeneralWard\Models\Ward::factory()->create();
+        $otherWard = \Modules\GeneralWard\Models\Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $ownRoom = Room::factory()->create(['ward_id' => $ownWard->id]);
+        $otherRoom = Room::factory()->create(['ward_id' => $otherWard->id]);
+        $ownBed = Bed::factory()->create(['room_id' => $ownRoom->id]);
+        Bed::factory()->create(['room_id' => $otherRoom->id]);
+
+        $response = $this->getJson('/api/v1/beds');
+
+        $response->assertOk();
+        $ids = array_column($response->json('data'), 'id');
+        $this->assertSame([$ownBed->id], $ids);
+    }
 }

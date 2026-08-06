@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/layananpatientcomplaint",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LayananPatientComplaint\\": "app/",
+            "Modules\\LayananPatientComplaint\\Database\\Factories\\": "database/factories/",
+            "Modules\\LayananPatientComplaint\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LayananPatientComplaint\\Tests\\": "tests/"
+        }
+    }
+}

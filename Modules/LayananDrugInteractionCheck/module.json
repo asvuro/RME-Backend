@@ -1,0 +1,11 @@
+{
+    "name": "LayananDrugInteractionCheck",
+    "alias": "layanandruginteractioncheck",
+    "description": "CDSS advisory interaksi obat & alergi (rule engine internal, read-only).",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LayananDrugInteractionCheck\\Providers\\LayananDrugInteractionCheckServiceProvider"
+    ],
+    "files": []
+}

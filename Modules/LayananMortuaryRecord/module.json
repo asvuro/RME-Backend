@@ -1,0 +1,11 @@
+{
+    "name": "LayananMortuaryRecord",
+    "alias": "layananmortuaryrecord",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LayananMortuaryRecord\\Providers\\LayananMortuaryRecordServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalfacilitymaintenance",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralFacilityMaintenance\\": "app/",
+            "Modules\\GeneralFacilityMaintenance\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralFacilityMaintenance\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralFacilityMaintenance\\Tests\\": "tests/"
+        }
+    }
+}

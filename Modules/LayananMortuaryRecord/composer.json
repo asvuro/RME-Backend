@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/layananmortuaryrecord",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LayananMortuaryRecord\\": "app/",
+            "Modules\\LayananMortuaryRecord\\Database\\Factories\\": "database/factories/",
+            "Modules\\LayananMortuaryRecord\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LayananMortuaryRecord\\Tests\\": "tests/"
+        }
+    }
+}

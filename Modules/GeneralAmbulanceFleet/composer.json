@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/generalambulancefleet",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\GeneralAmbulanceFleet\\": "app/",
+            "Modules\\GeneralAmbulanceFleet\\Database\\Factories\\": "database/factories/",
+            "Modules\\GeneralAmbulanceFleet\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GeneralAmbulanceFleet\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/layananimagingorder",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LayananImagingOrder\\": "app/",
+            "Modules\\LayananImagingOrder\\Database\\Factories\\": "database/factories/",
+            "Modules\\LayananImagingOrder\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LayananImagingOrder\\Tests\\": "tests/"
+        }
+    }
+}

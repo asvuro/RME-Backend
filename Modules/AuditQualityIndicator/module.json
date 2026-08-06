@@ -1,0 +1,11 @@
+{
+    "name": "AuditQualityIndicator",
+    "alias": "auditqualityindicator",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditQualityIndicator\\Providers\\AuditQualityIndicatorServiceProvider"
+    ],
+    "files": []
+}

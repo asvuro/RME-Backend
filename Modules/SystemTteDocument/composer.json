@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/systemttedocument",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\SystemTteDocument\\": "app/",
+            "Modules\\SystemTteDocument\\Database\\Factories\\": "database/factories/",
+            "Modules\\SystemTteDocument\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\SystemTteDocument\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "name": "FinanceGeneralLedger",
+    "alias": "financegeneralledger",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FinanceGeneralLedger\\Providers\\FinanceGeneralLedgerServiceProvider"
+    ],
+    "files": []
+}

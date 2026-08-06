@@ -1,0 +1,11 @@
+{
+    "name": "PegawaiRemunerasiJasaMedis",
+    "alias": "pegawairemunerasijasamedis",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PegawaiRemunerasiJasaMedis\\Providers\\PegawaiRemunerasiJasaMedisServiceProvider"
+    ],
+    "files": []
+}

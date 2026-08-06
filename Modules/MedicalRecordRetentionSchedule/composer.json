@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/medicalrecordretentionschedule",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\MedicalRecordRetentionSchedule\\": "app/",
+            "Modules\\MedicalRecordRetentionSchedule\\Database\\Factories\\": "database/factories/",
+            "Modules\\MedicalRecordRetentionSchedule\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\MedicalRecordRetentionSchedule\\Tests\\": "tests/"
+        }
+    }
+}

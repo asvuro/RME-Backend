@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/auditinfectionsurveillance",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\AuditInfectionSurveillance\\": "app/",
+            "Modules\\AuditInfectionSurveillance\\Database\\Factories\\": "database/factories/",
+            "Modules\\AuditInfectionSurveillance\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\AuditInfectionSurveillance\\Tests\\": "tests/"
+        }
+    }
+}

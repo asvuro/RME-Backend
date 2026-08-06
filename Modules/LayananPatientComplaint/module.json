@@ -1,0 +1,11 @@
+{
+    "name": "LayananPatientComplaint",
+    "alias": "layananpatientcomplaint",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LayananPatientComplaint\\Providers\\LayananPatientComplaintServiceProvider"
+    ],
+    "files": []
+}

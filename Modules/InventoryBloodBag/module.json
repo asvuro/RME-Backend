@@ -1,0 +1,11 @@
+{
+    "name": "InventoryBloodBag",
+    "alias": "inventorybloodbag",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\InventoryBloodBag\\Providers\\InventoryBloodBagServiceProvider"
+    ],
+    "files": []
+}

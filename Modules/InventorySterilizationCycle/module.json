@@ -1,0 +1,11 @@
+{
+    "name": "InventorySterilizationCycle",
+    "alias": "inventorysterilizationcycle",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\InventorySterilizationCycle\\Providers\\InventorySterilizationCycleServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "GeneralFacilityMaintenance",
+    "alias": "generalfacilitymaintenance",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralFacilityMaintenance\\Providers\\GeneralFacilityMaintenanceServiceProvider"
+    ],
+    "files": []
+}

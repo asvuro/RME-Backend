@@ -1,0 +1,11 @@
+{
+    "name": "LayananTelemedicineSession",
+    "alias": "layanantelemedicinesession",
+    "description": "Sesi konsultasi telemedicine per kunjungan dengan gerbang urutan status scheduled -> ongoing -> completed/cancelled.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LayananTelemedicineSession\\Providers\\LayananTelemedicineSessionServiceProvider"
+    ],
+    "files": []
+}

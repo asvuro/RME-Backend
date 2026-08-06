@@ -1,0 +1,11 @@
+{
+    "name": "AuditIncidentReport",
+    "alias": "auditincidentreport",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditIncidentReport\\Providers\\AuditIncidentReportServiceProvider"
+    ],
+    "files": []
+}

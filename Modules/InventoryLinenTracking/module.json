@@ -1,0 +1,11 @@
+{
+    "name": "InventoryLinenTracking",
+    "alias": "inventorylinentracking",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\InventoryLinenTracking\\Providers\\InventoryLinenTrackingServiceProvider"
+    ],
+    "files": []
+}

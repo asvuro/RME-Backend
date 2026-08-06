@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/pegawairemunerasijasamedis",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\PegawaiRemunerasiJasaMedis\\": "app/",
+            "Modules\\PegawaiRemunerasiJasaMedis\\Database\\Factories\\": "database/factories/",
+            "Modules\\PegawaiRemunerasiJasaMedis\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\PegawaiRemunerasiJasaMedis\\Tests\\": "tests/"
+        }
+    }
+}

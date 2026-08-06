@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/inventorybloodbag",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\InventoryBloodBag\\": "app/",
+            "Modules\\InventoryBloodBag\\Database\\Factories\\": "database/factories/",
+            "Modules\\InventoryBloodBag\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\InventoryBloodBag\\Tests\\": "tests/"
+        }
+    }
+}

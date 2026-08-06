@@ -1,0 +1,11 @@
+{
+    "name": "PegawaiJadwalShift",
+    "alias": "pegawaijadwalshift",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PegawaiJadwalShift\\Providers\\PegawaiJadwalShiftServiceProvider"
+    ],
+    "files": []
+}

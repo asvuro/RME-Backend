@@ -1,0 +1,11 @@
+{
+    "name": "SystemTteDocument",
+    "alias": "systemttedocument",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SystemTteDocument\\Providers\\SystemTteDocumentServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/layanantelemedicinesession",
+    "description": "Sesi konsultasi telemedicine per kunjungan dengan gerbang urutan status scheduled -> ongoing -> completed/cancelled.",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LayananTelemedicineSession\\": "app/",
+            "Modules\\LayananTelemedicineSession\\Database\\Factories\\": "database/factories/",
+            "Modules\\LayananTelemedicineSession\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LayananTelemedicineSession\\Tests\\": "tests/"
+        }
+    }
+}

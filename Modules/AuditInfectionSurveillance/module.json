@@ -1,0 +1,11 @@
+{
+    "name": "AuditInfectionSurveillance",
+    "alias": "auditinfectionsurveillance",
+    "description": "Surveilans PPI (HAIs): hari-perawatan alat, kasus infeksi, dan laju infeksi per 1.000 hari-alat.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AuditInfectionSurveillance\\Providers\\AuditInfectionSurveillanceServiceProvider"
+    ],
+    "files": []
+}

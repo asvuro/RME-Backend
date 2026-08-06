@@ -1,0 +1,11 @@
+{
+    "name": "InventoryDietOrder",
+    "alias": "inventorydietorder",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\InventoryDietOrder\\Providers\\InventoryDietOrderServiceProvider"
+    ],
+    "files": []
+}

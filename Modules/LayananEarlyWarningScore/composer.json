@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/layananearlywarningscore",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\LayananEarlyWarningScore\\": "app/",
+            "Modules\\LayananEarlyWarningScore\\Database\\Factories\\": "database/factories/",
+            "Modules\\LayananEarlyWarningScore\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\LayananEarlyWarningScore\\Tests\\": "tests/"
+        }
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/auditqualityindicator",
+    "description": "",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\AuditQualityIndicator\\": "app/",
+            "Modules\\AuditQualityIndicator\\Database\\Factories\\": "database/factories/",
+            "Modules\\AuditQualityIndicator\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\AuditQualityIndicator\\Tests\\": "tests/"
+        }
+    }
+}

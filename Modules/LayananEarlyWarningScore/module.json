@@ -1,0 +1,11 @@
+{
+    "name": "LayananEarlyWarningScore",
+    "alias": "layananearlywarningscore",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LayananEarlyWarningScore\\Providers\\LayananEarlyWarningScoreServiceProvider"
+    ],
+    "files": []
+}

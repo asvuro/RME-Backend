@@ -1,0 +1,30 @@
+{
+    "name": "dhrigos/pendaftaranselfcheckin",
+    "description": "Anjungan Pasien Mandiri (kiosk) - backend antrian self-check-in pasien.",
+    "authors": [
+        {
+            "name": "Deva Indrayana Rahmat",
+            "email": "dhrigos@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\PendaftaranSelfCheckin\\": "app/",
+            "Modules\\PendaftaranSelfCheckin\\Database\\Factories\\": "database/factories/",
+            "Modules\\PendaftaranSelfCheckin\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\PendaftaranSelfCheckin\\Tests\\": "tests/"
+        }
+    }
+}

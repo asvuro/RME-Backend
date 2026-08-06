@@ -1,0 +1,11 @@
+{
+    "name": "GeneralAmbulanceFleet",
+    "alias": "generalambulancefleet",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GeneralAmbulanceFleet\\Providers\\GeneralAmbulanceFleetServiceProvider"
+    ],
+    "files": []
+}

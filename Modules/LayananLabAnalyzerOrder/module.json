@@ -1,0 +1,11 @@
+{
+    "name": "LayananLabAnalyzerOrder",
+    "alias": "layananlabanalyzerorder",
+    "description": "Tracking order + hasil LIS analyzer per vendor (Novanet/Vanslab/Winacom) - model data, bukan bridging protokol.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\LayananLabAnalyzerOrder\\Providers\\LayananLabAnalyzerOrderServiceProvider"
+    ],
+    "files": []
+}

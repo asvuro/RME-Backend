@@ -1,0 +1,16 @@
+<?php
+
+namespace Modules\AuditQualityIndicator\Database\Seeders;
+
+use Illuminate\Database\Seeder;
+
+class AuditQualityIndicatorDatabaseSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // $this->call([]);
+    }
+}

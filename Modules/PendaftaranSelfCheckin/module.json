@@ -1,0 +1,11 @@
+{
+    "name": "PendaftaranSelfCheckin",
+    "alias": "pendaftaranselfcheckin",
+    "description": "Anjungan Pasien Mandiri (kiosk) - backend antrian self-check-in pasien.",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\PendaftaranSelfCheckin\\Providers\\PendaftaranSelfCheckinServiceProvider"
+    ],
+    "files": []
+}

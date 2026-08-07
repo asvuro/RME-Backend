@@ -218,8 +218,12 @@ class LicenseVerifierService
     {
         $publicKey = $this->getPublicKey();
         if (!$publicKey) {
-            Log::warning('No RSA Public Key configured for SystemLicenseGuard. Signature verification skipped in insecure mode.');
-            return true;
+            // Fail-closed: tanpa public key terkonfigurasi, semua token lisensi
+            // harus ditolak. Kalau tidak, siapa pun bisa mengaktifkan lisensi
+            // palsu lewat endpoint publik /activate karena verifikasi dilewati.
+            Log::warning('No RSA Public Key configured for SystemLicenseGuard. All license tokens will be rejected.');
+
+            return false;
         }
 
         $result = openssl_verify($payload, $signature, $publicKey, OPENSSL_ALGO_SHA256);

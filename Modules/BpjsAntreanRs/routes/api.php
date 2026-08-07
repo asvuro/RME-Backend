@@ -58,7 +58,8 @@ Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1/antrean-rs
 |--------------------------------------------------------------------------
 */
 Route::prefix('v1/antrean-rs/mobile-jkn')->group(function () {
-    Route::get('token', [MobileJknTokenController::class, 'index']);
+    Route::get('token', [MobileJknTokenController::class, 'index'])
+        ->middleware('throttle:30,1');
 
     Route::middleware([VerifyBpjsMobileJknToken::class])->group(function () {
         Route::post('antrean', [MobileJknAntreanController::class, 'store']);

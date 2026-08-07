@@ -50,6 +50,10 @@ class UserController extends Controller
 
         $user->update($data);
 
+        if (array_intersect_key($data, array_flip(['is_locked', 'is_active', 'password'])) !== []) {
+            $user->tokens()->delete();
+        }
+
         return new UserResource($user);
     }
 

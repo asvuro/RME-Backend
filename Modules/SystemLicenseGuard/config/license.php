@@ -7,6 +7,9 @@ return [
     |--------------------------------------------------------------------------
     */
     'central_hub_url' => env('SAAS_CENTRAL_HUB_URL', 'https://hub.simgos.id'),
+    // Optional secondary hub host allowed for activate overrides. Keep this
+    // empty in production so only central_hub_url can be used.
+    'central_hub_url_fallback' => env('SAAS_CENTRAL_HUB_URL_FALLBACK', null),
     'central_hub_timeout' => (int) env('SAAS_CENTRAL_HUB_TIMEOUT', 10),
 
     /*

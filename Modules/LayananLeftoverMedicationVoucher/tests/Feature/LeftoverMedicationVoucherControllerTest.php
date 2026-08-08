@@ -57,4 +57,44 @@ class LeftoverMedicationVoucherControllerTest extends TestCase
         $this->getJson("/api/v1/leftover-medication-vouchers/{$voucher->id}")->assertOk()->assertJsonPath('data.id', $voucher->id);
     }
 
+    public function test_redeem_stamps_redeemed_at_from_server(): void
+    {
+        $this->actingUser();
+        $voucher = LeftoverMedicationVoucher::factory()->create(['status' => 'pending', 'redeemed_at' => null]);
+
+        $this->putJson("/api/v1/leftover-medication-vouchers/{$voucher->id}", [
+            'status' => 'redeemed',
+            'redeemed_at' => '2099-01-01 00:00:00',
+        ])->assertOk()->assertJsonPath('data.status', 'redeemed');
+
+        $fresh = $voucher->fresh();
+        $this->assertNotNull($fresh->redeemed_at);
+        $this->assertNotSame('2099-01-01 00:00:00', $fresh->redeemed_at->toDateTimeString());
+    }
+
+    public function test_cannot_reset_redeemed_voucher_back_to_pending(): void
+    {
+        $this->actingUser();
+        $voucher = LeftoverMedicationVoucher::factory()->create(['status' => 'pending']);
+
+        $this->putJson("/api/v1/leftover-medication-vouchers/{$voucher->id}", ['status' => 'redeemed'])
+            ->assertOk();
+
+        $this->putJson("/api/v1/leftover-medication-vouchers/{$voucher->id}", ['status' => 'pending'])
+            ->assertStatus(422);
+
+        $this->assertSame('redeemed', $voucher->fresh()->status);
+    }
+
+    public function test_cannot_redeem_an_already_redeemed_voucher_again(): void
+    {
+        $this->actingUser();
+        $voucher = LeftoverMedicationVoucher::factory()->create(['status' => 'pending']);
+
+        $this->putJson("/api/v1/leftover-medication-vouchers/{$voucher->id}", ['status' => 'redeemed'])
+            ->assertOk();
+
+        $this->putJson("/api/v1/leftover-medication-vouchers/{$voucher->id}", ['status' => 'redeemed'])
+            ->assertStatus(422);
+    }
 }

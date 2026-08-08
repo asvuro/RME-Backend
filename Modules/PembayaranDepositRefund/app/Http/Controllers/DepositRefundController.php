@@ -34,8 +34,22 @@ class DepositRefundController extends Controller
         $data['refunded_by'] = $request->user()->id;
 
         $refund = DB::transaction(function () use ($data) {
+            $deposit = Deposit::query()->whereKey($data['deposit_id'])->lockForUpdate()->firstOrFail();
+
+            abort_if($deposit->status !== 'held', 422, 'Deposit ini tidak dalam status held, tidak dapat direfund.');
+
+            $alreadyRefunded = (float) DepositRefund::query()
+                ->where('deposit_id', $deposit->id)
+                ->sum('refunded_amount');
+
+            abort_if(
+                $alreadyRefunded + (float) $data['refunded_amount'] > (float) $deposit->amount,
+                422,
+                'Total refund melebihi jumlah deposit.'
+            );
+
             $refund = DepositRefund::create($data);
-            Deposit::whereKey($data['deposit_id'])->update(['status' => 'refunded']);
+            $deposit->update(['status' => 'refunded']);
 
             return $refund;
         });

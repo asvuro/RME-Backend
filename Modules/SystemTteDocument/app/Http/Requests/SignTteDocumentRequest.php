@@ -13,8 +13,9 @@ class SignTteDocumentRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'employee_id' => ['required', 'integer', 'exists:employees,id'],
-        ];
+        // employee_id SENGAJA tidak divalidasi/diterima dari klien -- signer
+        // selalu dari profil pegawai milik user yang login (lihat controller),
+        // supaya petugas tidak bisa menandatangani dokumen atas nama orang lain.
+        return [];
     }
 }

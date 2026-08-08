@@ -52,6 +52,37 @@ class InvoiceCancellationControllerTest extends TestCase
         $this->assertTrue((bool) $invoice->fresh()->is_locked);
     }
 
+    public function test_it_rejects_duplicate_cancellation_of_the_same_invoice(): void
+    {
+        $this->actingUser();
+        $invoice = Invoice::factory()->create(['status' => 'open', 'is_locked' => false]);
+
+        $this->postJson('/api/v1/invoice-cancellations', [
+            'invoice_id' => $invoice->id,
+            'reason' => 'first cancel',
+        ])->assertCreated();
+
+        $this->postJson('/api/v1/invoice-cancellations', [
+            'invoice_id' => $invoice->id,
+            'reason' => 're-cancel already cancelled',
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('invoice_cancellations', 1);
+    }
+
+    public function test_it_rejects_cancellation_of_a_paid_invoice(): void
+    {
+        $this->actingUser();
+        $invoice = Invoice::factory()->create(['status' => 'paid', 'is_locked' => true]);
+
+        $this->postJson('/api/v1/invoice-cancellations', [
+            'invoice_id' => $invoice->id,
+            'reason' => 'cancel after payment',
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('invoice_cancellations', 0);
+    }
+
     public function test_it_requires_reason(): void
     {
         $this->actingUser();

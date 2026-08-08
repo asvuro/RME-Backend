@@ -5,6 +5,9 @@ namespace Modules\InventoryWardItemStock\Tests\Feature;
 use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Auth\Models\User;
+use Modules\GeneralEmployee\Models\Employee;
+use Modules\GeneralStaffMember\Models\StaffMember;
+use Modules\GeneralStaffWardAssignment\Models\StaffWardAssignment;
 use Modules\GeneralWard\Models\Ward;
 use Modules\InventoryItem\Models\Item;
 use Modules\InventoryWardItemStock\Models\WardItemStock;
@@ -82,5 +85,43 @@ class InventoryWardItemStockControllerTest extends TestCase
     public function test_guest_cannot_access_ward_item_stocks(): void
     {
         $this->getJson('/api/v1/inventorywarditemstocks')->assertStatus(401);
+    }
+
+    private function actingWardStaff(int $wardId): User
+    {
+        $user = User::factory()->create();
+        $user->assignRole('petugas');
+        $employee = Employee::factory()->create(['user_id' => $user->id]);
+        $staffMember = StaffMember::factory()->create(['employee_id' => $employee->id]);
+        StaffWardAssignment::factory()->create(['staff_member_id' => $staffMember->id, 'ward_id' => $wardId]);
+        $this->actingAs($user, 'sanctum');
+
+        return $user;
+    }
+
+    public function test_ward_staff_cannot_create_stock_for_another_ward(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $item = Item::factory()->create();
+
+        $this->postJson('/api/v1/inventorywarditemstocks', [
+            'item_id' => $item->id,
+            'ward_id' => $otherWard->id,
+            'quantity' => 99999,
+        ])->assertStatus(403);
+    }
+
+    public function test_ward_staff_cannot_update_or_delete_another_wards_stock(): void
+    {
+        $ownWard = Ward::factory()->create();
+        $otherWard = Ward::factory()->create();
+        $stock = WardItemStock::factory()->create(['ward_id' => $otherWard->id, 'quantity' => 10]);
+        $this->actingWardStaff($ownWard->id);
+
+        $this->putJson("/api/v1/inventorywarditemstocks/{$stock->id}", ['quantity' => 99999])->assertStatus(403);
+        $this->deleteJson("/api/v1/inventorywarditemstocks/{$stock->id}")->assertStatus(403);
+        $this->assertSame(10, $stock->fresh()->quantity);
     }
 }

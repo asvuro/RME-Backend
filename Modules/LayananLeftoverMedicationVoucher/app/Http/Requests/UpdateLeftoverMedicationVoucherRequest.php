@@ -21,7 +21,9 @@ class UpdateLeftoverMedicationVoucherRequest extends FormRequest
             'prescription_id' => ['sometimes', 'integer', 'exists:prescriptions,id'],
             'status' => ['sometimes', Rule::in(['pending', 'redeemed', 'expired'])],
             'issued_at' => ['sometimes', 'date'],
-            'redeemed_at' => ['sometimes', 'date'],
+            // redeemed_at SENGAJA tidak divalidasi di sini -- server yang
+            // menstempel waktu redeem saat transisi terjadi (lihat controller),
+            // bukan nilai kiriman klien.
             'notes' => ['sometimes', 'string'],
         ];
     }

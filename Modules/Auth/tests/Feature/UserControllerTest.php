@@ -72,4 +72,45 @@ class UserControllerTest extends TestCase
         $response->assertStatus(204);
         $this->assertDatabaseMissing('users', ['id' => $target->id]);
     }
+
+    public function test_admin_cannot_lock_own_account(): void
+    {
+        $admin = $this->actingUser();
+
+        $this->putJson("/api/v1/users/{$admin->id}", ['is_locked' => true])
+            ->assertOk()
+            ->assertJsonPath('data.is_locked', false);
+
+        $this->assertFalse($admin->fresh()->is_locked);
+    }
+
+    public function test_admin_cannot_disable_own_account(): void
+    {
+        $admin = $this->actingUser();
+
+        $this->putJson("/api/v1/users/{$admin->id}", ['is_active' => false])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', true);
+
+        $this->assertTrue($admin->fresh()->is_active);
+    }
+
+    public function test_admin_can_still_lock_other_accounts(): void
+    {
+        $this->actingUser();
+        $target = User::factory()->create();
+
+        $this->putJson("/api/v1/users/{$target->id}", ['is_locked' => true])
+            ->assertOk()
+            ->assertJsonPath('data.is_locked', true);
+    }
+
+    public function test_admin_cannot_delete_own_account(): void
+    {
+        $admin = $this->actingUser();
+
+        $this->deleteJson("/api/v1/users/{$admin->id}")->assertStatus(422);
+
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
+    }
 }

@@ -70,6 +70,41 @@ class PaymentControllerTest extends TestCase
         ])->assertStatus(422);
     }
 
+    public function test_it_rejects_payment_exceeding_outstanding_balance(): void
+    {
+        $this->actingUser();
+        $invoice = Invoice::factory()->create(['total_amount' => 100000]);
+
+        $this->postJson('/api/v1/payments', [
+            'invoice_id' => $invoice->id,
+            'payment_method' => 'cash',
+            'amount' => 999999,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('payments', 0);
+        $this->assertFalse($invoice->fresh()->is_locked);
+    }
+
+    public function test_it_rejects_payment_exceeding_remaining_balance_after_partial_payment(): void
+    {
+        $this->actingUser();
+        $invoice = Invoice::factory()->create(['total_amount' => 100000]);
+
+        $this->postJson('/api/v1/payments', [
+            'invoice_id' => $invoice->id,
+            'payment_method' => 'cash',
+            'amount' => 60000,
+        ])->assertCreated();
+
+        $this->postJson('/api/v1/payments', [
+            'invoice_id' => $invoice->id,
+            'payment_method' => 'cash',
+            'amount' => 60000,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('payments', 1);
+    }
+
     public function test_it_records_who_received_the_payment(): void
     {
         $user = $this->actingUser();

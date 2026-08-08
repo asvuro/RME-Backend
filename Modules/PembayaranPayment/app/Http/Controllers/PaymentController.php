@@ -4,6 +4,7 @@ namespace Modules\PembayaranPayment\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PembayaranInvoice\Services\InvoiceService;
 use Modules\PembayaranPayment\Http\Requests\StorePaymentRequest;
@@ -31,20 +32,34 @@ class PaymentController extends Controller
      */
     public function store(StorePaymentRequest $request)
     {
-        $invoice = Invoice::findOrFail($request->integer('invoice_id'));
-        abort_if($invoice->is_locked, 422, 'Tagihan ini sudah lunas dan dikunci.');
-
         $data = $request->validated();
         $data['payment_number'] ??= Payment::generatePaymentNumber();
         $data['paid_at'] ??= now();
         $data['received_by'] = $request->user()->id;
 
-        $payment = Payment::create($data);
+        $payment = DB::transaction(function () use ($data) {
+            $invoice = Invoice::query()->whereKey($data['invoice_id'])->lockForUpdate()->firstOrFail();
 
-        $totalPaid = $invoice->payments()->sum('amount');
-        if ($totalPaid >= $invoice->total_amount) {
-            $this->invoiceService->markPaid($invoice->id);
-        }
+            abort_if($invoice->is_locked, 422, 'Tagihan ini sudah lunas dan dikunci.');
+            abort_if($invoice->status === 'cancelled', 422, 'Tagihan ini sudah dibatalkan.');
+
+            $alreadyPaid = (float) $invoice->payments()->sum('amount');
+            $outstanding = (float) $invoice->total_amount - $alreadyPaid;
+
+            abort_if(
+                (float) $data['amount'] > $outstanding,
+                422,
+                'Jumlah pembayaran melebihi sisa tagihan.'
+            );
+
+            $payment = Payment::create($data);
+
+            if ($alreadyPaid + (float) $data['amount'] >= (float) $invoice->total_amount) {
+                $this->invoiceService->markPaid($invoice->id);
+            }
+
+            return $payment;
+        });
 
         return (new PaymentResource($payment))->response()->setStatusCode(201);
     }

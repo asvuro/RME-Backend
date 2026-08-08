@@ -56,4 +56,25 @@ class InvoiceControllerTest extends TestCase
 
         $this->deleteJson("/api/v1/invoices/{$invoice->id}")->assertStatus(422);
     }
+
+    public function test_it_rejects_rounding_adjustment_outside_bounded_range(): void
+    {
+        $this->actingUser();
+        $invoice = Invoice::factory()->create(['rounding_adjustment' => 0]);
+
+        $this->putJson("/api/v1/invoices/{$invoice->id}", ['rounding_adjustment' => -99999999])
+            ->assertStatus(422);
+    }
+
+    public function test_it_ignores_client_supplied_status_field(): void
+    {
+        $this->actingUser();
+        $invoice = Invoice::factory()->create(['status' => 'open']);
+
+        $this->putJson("/api/v1/invoices/{$invoice->id}", ['status' => 'paid'])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'open');
+
+        $this->assertFalse($invoice->fresh()->is_locked);
+    }
 }

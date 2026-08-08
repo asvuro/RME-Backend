@@ -4,6 +4,8 @@ namespace Modules\PenjualanSaleReturn\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Modules\PenjualanSale\Models\Sale;
 use Modules\PenjualanSaleReturn\Http\Requests\StoreSaleReturnRequest;
 use Modules\PenjualanSaleReturn\Http\Resources\SaleReturnResource;
 use Modules\PenjualanSaleReturn\Models\SaleReturn;
@@ -29,7 +31,24 @@ class SaleReturnController extends Controller
         $data = $request->validated();
         $data['returned_at'] ??= now();
 
-        $return = SaleReturn::create($data);
+        $return = DB::transaction(function () use ($data) {
+            $sale = Sale::query()
+                ->whereKey($data['sale_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $alreadyRefunded = (float) SaleReturn::query()
+                ->where('sale_id', $sale->id)
+                ->sum('refund_amount');
+
+            abort_if(
+                $alreadyRefunded + (float) $data['refund_amount'] > (float) $sale->total_amount,
+                422,
+                'Total retur melebihi nilai penjualan.'
+            );
+
+            return SaleReturn::create($data);
+        });
 
         return (new SaleReturnResource($return))->response()->setStatusCode(201);
     }

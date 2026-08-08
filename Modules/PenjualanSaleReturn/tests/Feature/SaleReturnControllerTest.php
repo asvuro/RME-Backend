@@ -45,6 +45,37 @@ class SaleReturnControllerTest extends TestCase
         $response->assertJsonPath('data.refund_amount', '25000.00');
     }
 
+    public function test_it_rejects_refund_exceeding_sale_total(): void
+    {
+        $this->actingUser();
+        $sale = Sale::factory()->create(['total_amount' => 50]);
+
+        $this->postJson('/api/v1/sale-returns', [
+            'sale_id' => $sale->id,
+            'refund_amount' => 5000,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('sale_returns', 0);
+    }
+
+    public function test_it_rejects_stacked_returns_exceeding_sale_total(): void
+    {
+        $this->actingUser();
+        $sale = Sale::factory()->create(['total_amount' => 50]);
+
+        $this->postJson('/api/v1/sale-returns', [
+            'sale_id' => $sale->id,
+            'refund_amount' => 30,
+        ])->assertCreated();
+
+        $this->postJson('/api/v1/sale-returns', [
+            'sale_id' => $sale->id,
+            'refund_amount' => 30,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('sale_returns', 1);
+    }
+
     public function test_it_lists_returns_filtered_by_sale(): void
     {
         $this->actingUser();

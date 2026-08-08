@@ -43,6 +43,17 @@ class InvoiceItemController extends Controller
     {
         abort_if($invoice_item->invoice->is_locked, 422, 'Tagihan ini sudah dikunci, tidak bisa diubah.');
 
+        // unit_price bukan sekadar detail tampilan -- itu yang menentukan
+        // subtotal/total_amount tagihan. Petugas biasa boleh koreksi
+        // deskripsi/kuantitas, tapi mengubah harga satuan (mis. jadi 0)
+        // hanya boleh admin, supaya ada jejak siapa yang menyunting nilai
+        // finansial dan tidak sembarang akun kasir bisa nol-kan tagihan.
+        abort_if(
+            $request->has('unit_price') && ! $request->user()->hasRole('admin'),
+            403,
+            'Hanya admin yang dapat mengubah harga satuan item tagihan.'
+        );
+
         $invoice_item->update($request->validated());
         $invoice_item->invoice->recalculateTotals();
 

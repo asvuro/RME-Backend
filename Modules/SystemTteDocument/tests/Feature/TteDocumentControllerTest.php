@@ -34,6 +34,23 @@ class TteDocumentControllerTest extends TestCase
         return $user;
     }
 
+    /** Petugas dengan profil Employee terhubung -- diperlukan untuk sign(). */
+    private function actingUserWithEmployee(): Employee
+    {
+        $user = $this->actingUser();
+
+        return Employee::factory()->create(['user_id' => $user->id]);
+    }
+
+    private function actingAdmin(): User
+    {
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+        $this->actingAs($user, 'sanctum');
+
+        return $user;
+    }
+
     public function test_it_creates_a_draft_document_and_lists_it(): void
     {
         $this->actingUser();
@@ -56,8 +73,7 @@ class TteDocumentControllerTest extends TestCase
 
     public function test_sign_computes_sha256_hash_and_advances_state_when_pending(): void
     {
-        $this->actingUser();
-        $employee = Employee::factory()->create();
+        $employee = $this->actingUserWithEmployee();
 
         $content = ['title' => 'Resume Medis', 'body' => 'Isi resume final.'];
         $document = TteDocument::factory()->create([
@@ -65,9 +81,7 @@ class TteDocumentControllerTest extends TestCase
             'content' => $content,
         ]);
 
-        $response = $this->postJson("/api/v1/tte-documents/{$document->id}/sign", [
-            'employee_id' => $employee->id,
-        ]);
+        $response = $this->postJson("/api/v1/tte-documents/{$document->id}/sign");
 
         $response->assertOk()
             ->assertJsonPath('data.status', TteDocument::STATUS_SIGNED)
@@ -84,14 +98,11 @@ class TteDocumentControllerTest extends TestCase
 
     public function test_sign_is_rejected_when_document_is_still_draft(): void
     {
-        $this->actingUser();
-        $employee = Employee::factory()->create();
+        $this->actingUserWithEmployee();
 
         $document = TteDocument::factory()->create(['status' => TteDocument::STATUS_DRAFT]);
 
-        $this->postJson("/api/v1/tte-documents/{$document->id}/sign", [
-            'employee_id' => $employee->id,
-        ])->assertStatus(422);
+        $this->postJson("/api/v1/tte-documents/{$document->id}/sign")->assertStatus(422);
 
         $document->refresh();
         $this->assertSame(TteDocument::STATUS_DRAFT, $document->status);
@@ -101,8 +112,7 @@ class TteDocumentControllerTest extends TestCase
 
     public function test_sign_is_rejected_when_document_already_signed(): void
     {
-        $this->actingUser();
-        $employee = Employee::factory()->create();
+        $this->actingUserWithEmployee();
 
         $document = TteDocument::factory()->create([
             'status' => TteDocument::STATUS_SIGNED,
@@ -110,9 +120,32 @@ class TteDocumentControllerTest extends TestCase
             'signed_at' => now(),
         ]);
 
+        $this->postJson("/api/v1/tte-documents/{$document->id}/sign")->assertStatus(422);
+    }
+
+    public function test_sign_is_rejected_when_caller_has_no_linked_employee_profile(): void
+    {
+        $this->actingUser();
+
+        $document = TteDocument::factory()->create(['status' => TteDocument::STATUS_PENDING_SIGN]);
+
+        $this->postJson("/api/v1/tte-documents/{$document->id}/sign")->assertStatus(422);
+
+        $this->assertSame(TteDocument::STATUS_PENDING_SIGN, $document->fresh()->status);
+    }
+
+    public function test_sign_cannot_attribute_to_an_arbitrary_employee_id(): void
+    {
+        $this->actingUserWithEmployee();
+        $victim = Employee::factory()->create();
+
+        $document = TteDocument::factory()->create(['status' => TteDocument::STATUS_PENDING_SIGN]);
+
         $this->postJson("/api/v1/tte-documents/{$document->id}/sign", [
-            'employee_id' => $employee->id,
-        ])->assertStatus(422);
+            'employee_id' => $victim->id,
+        ])->assertOk();
+
+        $this->assertNotSame($victim->id, $document->fresh()->signed_by);
     }
 
     public function test_create_is_rejected_when_an_active_document_already_exists_for_the_reference(): void
@@ -133,8 +166,7 @@ class TteDocumentControllerTest extends TestCase
 
     public function test_submit_for_sign_then_sign_then_lock_full_lifecycle(): void
     {
-        $this->actingUser();
-        $employee = Employee::factory()->create();
+        $this->actingUserWithEmployee();
 
         $document = TteDocument::factory()->create(['status' => TteDocument::STATUS_DRAFT]);
 
@@ -142,17 +174,20 @@ class TteDocumentControllerTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', TteDocument::STATUS_PENDING_SIGN);
 
-        $this->postJson("/api/v1/tte-documents/{$document->id}/sign", ['employee_id' => $employee->id])
+        $this->postJson("/api/v1/tte-documents/{$document->id}/sign")
             ->assertOk()
             ->assertJsonPath('data.status', TteDocument::STATUS_SIGNED);
 
+        // lock() dibatasi admin -- petugas penanda tangan tidak boleh mengunci sendiri.
+        $this->postJson("/api/v1/tte-documents/{$document->id}/lock")->assertForbidden();
+
+        $this->actingAdmin();
         $this->postJson("/api/v1/tte-documents/{$document->id}/lock")
             ->assertOk()
             ->assertJsonPath('data.status', TteDocument::STATUS_LOCKED);
 
         // Locked dokumen tak bisa ditandatangani ulang.
-        $this->postJson("/api/v1/tte-documents/{$document->id}/sign", ['employee_id' => $employee->id])
-            ->assertStatus(422);
+        $this->postJson("/api/v1/tte-documents/{$document->id}/sign")->assertStatus(422);
     }
 
     public function test_show_returns_a_single_document(): void

@@ -4,6 +4,7 @@ namespace Modules\LayananLeftoverMedicationVoucher\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\LayananLeftoverMedicationVoucher\Http\Requests\StoreLeftoverMedicationVoucherRequest;
 use Modules\LayananLeftoverMedicationVoucher\Http\Requests\UpdateLeftoverMedicationVoucherRequest;
 use Modules\LayananLeftoverMedicationVoucher\Http\Resources\LeftoverMedicationVoucherResource;
@@ -32,9 +33,40 @@ class LeftoverMedicationVoucherController extends Controller
         return new LeftoverMedicationVoucherResource($voucher);
     }
 
+    /**
+     * Gerbang forward-only: pending->redeemed dan pending->expired saja.
+     * Sekali redeemed/expired, status tidak bisa diubah lagi lewat endpoint
+     * ini (mencegah reset ke pending lalu redeem ulang). redeemed_at
+     * distempel server saat transisi ke redeemed, bukan dari input klien.
+     */
     public function update(UpdateLeftoverMedicationVoucherRequest $request, LeftoverMedicationVoucher $voucher): LeftoverMedicationVoucherResource
     {
-        $voucher->update($request->validated());
+        $data = $request->validated();
+
+        $voucher = DB::transaction(function () use ($data, $voucher) {
+            $voucher = LeftoverMedicationVoucher::query()->whereKey($voucher->id)->lockForUpdate()->firstOrFail();
+
+            if (isset($data['status'])) {
+                abort_if(
+                    $voucher->status !== 'pending',
+                    422,
+                    "Voucher berstatus '{$voucher->status}' tidak dapat diubah statusnya lagi."
+                );
+                abort_if(
+                    ! in_array($data['status'], ['redeemed', 'expired'], true),
+                    422,
+                    'Transisi status voucher hanya boleh ke redeemed atau expired.'
+                );
+
+                if ($data['status'] === 'redeemed') {
+                    $data['redeemed_at'] = now();
+                }
+            }
+
+            $voucher->update($data);
+
+            return $voucher;
+        });
 
         return new LeftoverMedicationVoucherResource($voucher);
     }

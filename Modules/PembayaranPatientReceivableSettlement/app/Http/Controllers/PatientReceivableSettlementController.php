@@ -34,8 +34,25 @@ class PatientReceivableSettlementController extends Controller
         $data['received_by'] = $request->user()->id;
 
         $settlement = DB::transaction(function () use ($data) {
+            $receivable = PatientReceivable::query()
+                ->whereKey($data['patient_receivable_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            abort_if($receivable->status === 'settled', 422, 'Piutang pasien ini sudah lunas dan tidak dapat dilunasi kembali.');
+
+            $alreadyPaid = (float) PatientReceivableSettlement::query()
+                ->where('patient_receivable_id', $receivable->id)
+                ->sum('paid_amount');
+
+            abort_if(
+                $alreadyPaid + (float) $data['paid_amount'] > (float) $receivable->amount,
+                422,
+                'Total pelunasan melebihi jumlah piutang pasien.'
+            );
+
             $settlement = PatientReceivableSettlement::create($data);
-            PatientReceivable::whereKey($data['patient_receivable_id'])->update(['status' => 'settled']);
+            $receivable->update(['status' => 'settled']);
 
             return $settlement;
         });

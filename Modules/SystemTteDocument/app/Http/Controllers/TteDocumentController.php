@@ -4,6 +4,7 @@ namespace Modules\SystemTteDocument\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\GeneralEmployee\Models\Employee;
 use Modules\SystemTteDocument\Http\Requests\SignTteDocumentRequest;
 use Modules\SystemTteDocument\Http\Requests\StoreTteDocumentRequest;
 use Modules\SystemTteDocument\Http\Resources\TteDocumentResource;
@@ -60,7 +61,14 @@ class TteDocumentController extends Controller
      */
     public function sign(SignTteDocumentRequest $request, TteDocument $tteDocument): TteDocumentResource
     {
-        $document = $this->documents->sign($tteDocument->id, (int) $request->validated('employee_id'));
+        // Signer SELALU profil pegawai milik user yang login -- tidak pernah
+        // dari input klien, supaya petugas tidak bisa menandatangani dokumen
+        // klinis atas nama pegawai lain.
+        $employeeId = Employee::query()->where('user_id', $request->user()->id)->value('id');
+
+        abort_if($employeeId === null, 422, 'User login belum terhubung ke profil pegawai, tidak bisa menandatangani dokumen.');
+
+        $document = $this->documents->sign($tteDocument->id, (int) $employeeId);
 
         return new TteDocumentResource($document);
     }

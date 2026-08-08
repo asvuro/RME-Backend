@@ -4,6 +4,7 @@ namespace Modules\BerkasKlaimClaimFile\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Modules\BerkasKlaimClaimFile\Models\ClaimFile;
 
 class BerkasKlaimClaimFileController extends Controller
@@ -18,7 +19,7 @@ class BerkasKlaimClaimFileController extends Controller
         $data = $request->validate([
             'visit_id' => ['required', 'exists:visits,id'],
             'invoice_id' => ['nullable', 'exists:invoices,id'],
-            'status' => ['sometimes', 'string'],
+            'status' => ['sometimes', Rule::in(ClaimFile::STATUSES)],
         ]);
 
         $data['claim_number'] = ClaimFile::generateClaimNumber();
@@ -36,8 +37,16 @@ class BerkasKlaimClaimFileController extends Controller
         $data = $request->validate([
             'invoice_id' => ['nullable', 'exists:invoices,id'],
             'submitted_at' => ['nullable', 'date'],
-            'status' => ['sometimes', 'string'],
+            'status' => ['sometimes', Rule::in(ClaimFile::STATUSES)],
         ]);
+
+        if (isset($data['status']) && $data['status'] !== $claim_file->status) {
+            abort_if(
+                ! in_array($data['status'], ClaimFile::ALLOWED_TRANSITIONS[$claim_file->status] ?? [], true),
+                422,
+                "Transisi status dari '{$claim_file->status}' ke '{$data['status']}' tidak diizinkan."
+            );
+        }
 
         $claim_file->update($data);
 

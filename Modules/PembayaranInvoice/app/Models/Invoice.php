@@ -93,9 +93,16 @@ class Invoice extends Model
     public function recalculateTotals(): void
     {
         $subtotal = $this->items()->sum('subtotal');
+        $total = $subtotal + $this->rounding_adjustment;
+
+        // Total tagihan tidak boleh negatif -- rounding_adjustment sudah
+        // dibatasi rentang wajar di UpdateInvoiceRequest, ini lapis kedua
+        // (mis. subtotal 0 + rounding negatif masih bisa lolos rentang itu).
+        abort_if($total < 0, 422, 'Total tagihan tidak boleh negatif.');
+
         $this->update([
             'subtotal' => $subtotal,
-            'total_amount' => $subtotal + $this->rounding_adjustment,
+            'total_amount' => $total,
         ]);
     }
 

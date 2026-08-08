@@ -51,6 +51,38 @@ class DepositRefundControllerTest extends TestCase
         $this->assertEquals('refunded', $deposit->fresh()->status);
     }
 
+    public function test_it_rejects_refund_exceeding_deposit_balance(): void
+    {
+        $this->actingUser();
+        $deposit = Deposit::factory()->create(['status' => 'held', 'amount' => 1000]);
+
+        $this->postJson('/api/v1/deposit-refunds', [
+            'deposit_id' => $deposit->id,
+            'refunded_amount' => 1000.01,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('deposit_refunds', 0);
+        $this->assertSame('held', $deposit->fresh()->status);
+    }
+
+    public function test_it_rejects_second_refund_after_deposit_already_refunded(): void
+    {
+        $this->actingUser();
+        $deposit = Deposit::factory()->create(['status' => 'held', 'amount' => 1000]);
+
+        $this->postJson('/api/v1/deposit-refunds', [
+            'deposit_id' => $deposit->id,
+            'refunded_amount' => 1000,
+        ])->assertCreated();
+
+        $this->postJson('/api/v1/deposit-refunds', [
+            'deposit_id' => $deposit->id,
+            'refunded_amount' => 1,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('deposit_refunds', 1);
+    }
+
     public function test_it_requires_refunded_amount(): void
     {
         $this->actingUser();

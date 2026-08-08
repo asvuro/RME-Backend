@@ -57,6 +57,25 @@ class ClaimFileTest extends TestCase
         $this->assertEquals('submitted', $file->fresh()->status);
     }
 
+    public function test_cannot_revert_submitted_claim_back_to_draft()
+    {
+        $file = ClaimFile::factory()->create(['status' => 'draft']);
+        $this->putJson("/api/v1/claim-files/{$file->id}", ['status' => 'submitted'])->assertOk();
+
+        $this->putJson("/api/v1/claim-files/{$file->id}", ['status' => 'draft'])
+            ->assertStatus(422);
+
+        $this->assertEquals('submitted', $file->fresh()->status);
+    }
+
+    public function test_rejects_arbitrary_status_string()
+    {
+        $file = ClaimFile::factory()->create(['status' => 'draft']);
+
+        $this->putJson("/api/v1/claim-files/{$file->id}", ['status' => 'totally-arbitrary-state'])
+            ->assertStatus(422);
+    }
+
     public function test_can_delete_claim_file()
     {
         $file = ClaimFile::factory()->create();

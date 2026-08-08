@@ -68,14 +68,44 @@ class RequestLogApiTest extends TestCase
             ->where('method', 'POST')
             ->firstOrFail();
         $this->assertSame(422, (int) $row->status);
+        // 'items' adalah container bersarang -- TIDAK direkam sama sekali
+        // (bukan direkursi) supaya klien tak bisa menyuntik referensi palsu
+        // lewat penamaan kunci apa pun di kedalaman berapa pun.
         $this->assertSame([
             'registration_id' => 999999999,
-            'items' => [
-                [
-                    'service_id' => 123,
-                ],
-            ],
         ], $row->payload);
+    }
+
+    public function test_nested_containers_are_never_recorded_regardless_of_leaf_key(): void
+    {
+        $this->actingAs($this->admin, 'sanctum');
+
+        $this->postJson('/api/v1/visits', [
+            'registration_id' => 1,
+            'meta' => ['id' => 'INJECTED-ID'],
+            'deeply' => ['nested' => ['payment_ref_id' => 'FORGED']],
+        ]);
+
+        $row = RequestLog::query()->where('method', 'POST')->firstOrFail();
+        $this->assertSame(['registration_id' => 1], $row->payload);
+    }
+
+    public function test_payload_field_count_is_capped(): void
+    {
+        $this->actingAs($this->admin, 'sanctum');
+
+        $body = [];
+        for ($i = 0; $i < 60; $i++) {
+            $body["field_{$i}_id"] = str_repeat('B', 5000);
+        }
+
+        $this->postJson('/api/v1/visits', $body);
+
+        $row = RequestLog::query()->where('method', 'POST')->firstOrFail();
+        $this->assertLessThanOrEqual(20, count($row->payload));
+        foreach ($row->payload as $value) {
+            $this->assertLessThanOrEqual(255 + 20, strlen($value));
+        }
     }
 
     public function test_path_bukan_api_tidak_dicatat(): void

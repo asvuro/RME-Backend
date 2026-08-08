@@ -16,7 +16,10 @@ class SelfCheckinQueueResource extends JsonResource
         return [
             'id' => $this->id,
             'patient_id' => $this->patient_id,
-            'nik' => $this->nik,
+            // NIK disamarkan di layar monitor/kiosk (dilihat semua sesi
+            // terautentikasi) -- 4 digit terakhir cukup utk staf mencocokkan
+            // pasien tanpa mendistribusikan NIK penuh ke setiap sesi login.
+            'nik' => $this->nik ? '****'.substr($this->nik, -4) : null,
             'queue_number' => $this->queue_number,
             'ward_id' => $this->ward_id,
             'queue_date' => $this->queue_date?->toDateString(),

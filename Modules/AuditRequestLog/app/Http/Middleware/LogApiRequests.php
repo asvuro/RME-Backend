@@ -16,7 +16,15 @@ use Symfony\Component\HttpFoundation\Response;
 class LogApiRequests
 {
     /** Batas jumlah karakter per nilai payload yang disimpan. */
-    protected const MAX_VALUE_LENGTH = 5000;
+    protected const MAX_VALUE_LENGTH = 255;
+
+    /**
+     * Batas jumlah field yang disimpan per payload -- bersama MAX_VALUE_LENGTH
+     * ini membatasi ukuran total payload secara deterministik (tanpa perlu
+     * memotong string JSON yang sudah jadi, yang berisiko menghasilkan JSON
+     * tidak valid dan membuang seluruh payload).
+     */
+    protected const MAX_PAYLOAD_KEYS = 20;
 
     /** Field body yang boleh masuk audit log. Hindari data klinis/pasien mentah. */
     protected const ALLOWED_PAYLOAD_KEYS = [
@@ -84,6 +92,12 @@ class LogApiRequests
     }
 
     /**
+     * Hanya kunci skalar top-level yang di-allowlist -- TIDAK direkursi ke
+     * dalam container bersarang. Rekursi ke container arbitrer (mis.
+     * {"meta":{"id":"..."}}) memungkinkan klien menyuntikkan referensi palsu
+     * lewat penamaan kunci apa pun di kedalaman berapa pun; top-level saja
+     * yang benar-benar berasal dari field request yang divalidasi endpoint.
+     *
      * @param  array<string|int, mixed>  $input
      * @return array<string|int, mixed>
      */
@@ -92,17 +106,11 @@ class LogApiRequests
         $filtered = [];
 
         foreach ($input as $key => $value) {
-            if (is_array($value)) {
-                $nested = $this->filterAllowedPayload($value);
-
-                if ($nested !== []) {
-                    $filtered[$key] = $nested;
-                }
-
-                continue;
+            if (count($filtered) >= self::MAX_PAYLOAD_KEYS) {
+                break;
             }
 
-            if (! $this->isAllowedPayloadKey($key)) {
+            if (is_array($value) || ! $this->isAllowedPayloadKey($key)) {
                 continue;
             }
 

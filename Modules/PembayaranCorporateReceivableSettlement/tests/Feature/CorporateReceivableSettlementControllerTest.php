@@ -51,6 +51,38 @@ class CorporateReceivableSettlementControllerTest extends TestCase
         $this->assertEquals('settled', $receivable->fresh()->status);
     }
 
+    public function test_it_rejects_settlement_exceeding_receivable_balance(): void
+    {
+        $this->actingUser();
+        $receivable = CorporateReceivable::factory()->create(['status' => 'outstanding', 'amount' => 500]);
+
+        $this->postJson('/api/v1/corporate-receivable-settlements', [
+            'corporate_receivable_id' => $receivable->id,
+            'paid_amount' => 999999,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('corporate_receivable_settlements', 0);
+        $this->assertEquals('outstanding', $receivable->fresh()->status);
+    }
+
+    public function test_it_rejects_settlement_replay_after_already_settled(): void
+    {
+        $this->actingUser();
+        $receivable = CorporateReceivable::factory()->create(['status' => 'outstanding', 'amount' => 500]);
+
+        $this->postJson('/api/v1/corporate-receivable-settlements', [
+            'corporate_receivable_id' => $receivable->id,
+            'paid_amount' => 500,
+        ])->assertCreated();
+
+        $this->postJson('/api/v1/corporate-receivable-settlements', [
+            'corporate_receivable_id' => $receivable->id,
+            'paid_amount' => 1,
+        ])->assertStatus(422);
+
+        $this->assertDatabaseCount('corporate_receivable_settlements', 1);
+    }
+
     public function test_it_shows_settlement(): void
     {
         $this->actingUser();

@@ -57,7 +57,7 @@ class SelfCheckinStoreTest extends TestCase
         ]);
 
         $response->assertCreated();
-        $response->assertJsonPath('data.nik', '3204010101900001');
+        $response->assertJsonPath('data.nik', '****0001');
         $this->assertDatabaseHas('self_checkin_queues', [
             'patient_id' => null,
             'nik' => '3204010101900001',

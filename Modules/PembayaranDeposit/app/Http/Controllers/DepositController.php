@@ -34,6 +34,16 @@ class DepositController extends Controller
         $data['received_by'] = $request->user()->id;
         $data['status'] = 'held';
 
+        // Jumlah deposit adalah jangkar batas refund kumulatif. Petugas tidak
+        // boleh menetapkannya di atas plafon wajar tanpa jejak persetujuan
+        // admin, kalau tidak kap refund di DepositRefundController menjadi
+        // tidak bermakna (anchor inflation).
+        abort_if(
+            (float) $data['amount'] > Deposit::MAX_AMOUNT && ! $request->user()->hasRole('admin'),
+            422,
+            'Jumlah deposit melebihi plafon wajar; hanya admin yang dapat menyetujuinya.'
+        );
+
         $deposit = Deposit::create($data);
 
         return (new DepositResource($deposit))->response()->setStatusCode(201);

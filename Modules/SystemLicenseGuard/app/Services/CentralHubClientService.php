@@ -13,9 +13,11 @@ class CentralHubClientService
         protected HardwareFingerprintService $fingerprintService
     ) {}
 
-    public function activateOnline(string $licenseKey, ?string $centralUrl = null): array
+    public function activateOnline(string $licenseKey): array
     {
-        $url = rtrim($centralUrl ?: config('license.central_hub_url'), '/');
+        // URL hub selalu dari konfigurasi server - tidak pernah menerima nilai
+        // dari pemanggil HTTP agar endpoint publik tidak bisa dipakai sebagai SSRF.
+        $url = rtrim((string) config('license.central_hub_url'), '/');
         $hwid = $this->fingerprintService->getFingerprint();
 
         $endpoint = "{$url}/api/v1/licenses/activate";
@@ -53,9 +55,10 @@ class CentralHubClientService
             ];
         } catch (\Throwable $e) {
             Log::error('Central hub activation failed: ' . $e->getMessage());
+
             return [
                 'success' => false,
-                'message' => 'Failed to connect to central SaaS server: ' . $e->getMessage(),
+                'message' => 'Failed to reach the configured central SaaS server.',
             ];
         }
     }
@@ -107,9 +110,11 @@ class CentralHubClientService
                 'message' => 'Central server returned error: ' . $response->status(),
             ];
         } catch (\Throwable $e) {
+            Log::error('Central hub heartbeat failed: ' . $e->getMessage());
+
             return [
                 'success' => false,
-                'message' => 'Heartbeat connection error: ' . $e->getMessage(),
+                'message' => 'Failed to reach the configured central SaaS server.',
             ];
         }
     }

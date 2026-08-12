@@ -94,7 +94,18 @@ EOD;
 
     protected function signBody(string $body, string $secret): array
     {
-        return ['X-Hub-Signature-256' => 'sha256=' . hash_hmac('sha256', $body, $secret)];
+        // Envelope wajib membawa event_id + timestamp yang ikut di-HMAC.
+        $envelope = is_array($decoded = json_decode($body, true)) ? $decoded : [];
+        $envelope += [
+            'event_id' => uniqid('evt-', true),
+            'timestamp' => time(),
+        ];
+        $signedBody = json_encode($envelope);
+
+        return [
+            'X-Hub-Signature-256' => 'sha256=' . hash_hmac('sha256', $signedBody, $secret),
+            '__raw_body__' => $signedBody,
+        ];
     }
 
     public function test_it_rejects_webhook_entirely_when_secret_is_not_configured(): void
@@ -132,11 +143,20 @@ EOD;
 
         $this->assertDatabaseHas('system_licenses', ['client_code' => 'RSHS-001', 'status' => 'active']);
 
-        $payload = ['event' => 'license.suspended'];
-        $body = json_encode($payload);
+        $headers = $this->signBody(json_encode(['event' => 'license.suspended']), 'rahasia-hub');
+        $rawBody = $headers['__raw_body__'];
+        unset($headers['__raw_body__']);
+        $headers['HTTP_X_HUB_SIGNATURE_256'] = $headers['X-Hub-Signature-256'];
 
-        $this->postJson('/api/v1/system/license/webhook', $payload, $this->signBody($body, 'rahasia-hub'))
-            ->assertOk()
+        $this->call(
+            'POST',
+            '/api/v1/system/license/webhook',
+            [],
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'] + $headers,
+            $rawBody,
+        )->assertOk()
             ->assertJsonPath('success', true);
 
         $this->assertDatabaseHas('system_licenses', ['client_code' => 'RSHS-001', 'status' => 'suspended']);

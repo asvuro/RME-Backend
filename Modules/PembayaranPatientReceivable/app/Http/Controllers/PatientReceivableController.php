@@ -4,6 +4,7 @@ namespace Modules\PembayaranPatientReceivable\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PembayaranPatientReceivable\Http\Requests\StorePatientReceivableRequest;
 use Modules\PembayaranPatientReceivable\Http\Requests\UpdatePatientReceivableRequest;
 use Modules\PembayaranPatientReceivable\Http\Resources\PatientReceivableResource;
@@ -25,6 +26,18 @@ class PatientReceivableController extends Controller
     public function store(StorePatientReceivableRequest $request)
     {
         $data = $request->validated();
+
+        // Piutang pasien adalah jangkar batas settlement kumulatif, jadi
+        // jumlahnya dibatasi bagian tagihan yang memang ditanggung pasien
+        // (total - coverage penjamin). Tanpa ini petugas bisa mencetak
+        // piutang oversized lalu melunasinya penuh lewat endpoint settlement.
+        $invoice = Invoice::findOrFail($data['invoice_id']);
+        abort_if(
+            (float) $data['amount'] > (float) $invoice->patient_share,
+            422,
+            'Jumlah piutang melebihi bagian tagihan yang ditanggung pasien.'
+        );
+
         $data['status'] = 'outstanding';
 
         $receivable = PatientReceivable::create($data);

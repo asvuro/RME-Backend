@@ -3,6 +3,8 @@
 namespace Modules\SystemTteDocument\Services;
 
 use Illuminate\Support\Facades\DB;
+use Modules\PendaftaranVisit\Models\Visit;
+use Modules\MedicalRecordDischargeSummary\Models\DischargeSummary;
 use Modules\SystemTteDocument\Models\TteDocument;
 
 /**
@@ -17,6 +19,19 @@ use Modules\SystemTteDocument\Models\TteDocument;
 class TteDocumentService
 {
     /**
+     * Referensi yang sah untuk dokumen TTE. ref_type/ref_id TIDAK PERNAH
+     * diterima mentah dari klien: setiap entri dipetakan ke kelas model
+     * sungguhan supaya create() bisa memverifikasi bahwa baris referensinya
+     * benar-benar ada sebelum dokumen draft dibuat (temuan lanjutan vuln-0007:
+     * dulu petugas bisa mencetak dokumen "tertandatangani" atas kunjungan
+     * orang lain -- atau referensi fiktif yang tidak ada sama sekali).
+     */
+    public const ALLOWED_REFERENCES = [
+        'visits' => Visit::class,
+        'medical_record_discharge_summaries' => DischargeSummary::class,
+    ];
+
+    /**
      * Buat dokumen TTE baru berstatus draft atas satu referensi.
      *
      * Gerbang: tidak boleh ada dokumen TTE lain yang MASIH AKTIF (draft/
@@ -26,6 +41,20 @@ class TteDocumentService
     public function create(array $data): TteDocument
     {
         return DB::transaction(function () use ($data) {
+            $modelClass = self::ALLOWED_REFERENCES[$data['ref_type']] ?? null;
+
+            abort_if(
+                $modelClass === null,
+                422,
+                'ref_type tidak dikenal; dokumen TTE hanya bisa dibuat untuk referensi terdaftar.',
+            );
+
+            abort_if(
+                ! $modelClass::query()->whereKey($data['ref_id'])->exists(),
+                422,
+                "Referensi {$data['ref_type']} #{$data['ref_id']} tidak ditemukan.",
+            );
+
             $adaYangAktif = TteDocument::query()
                 ->where('ref_type', $data['ref_type'])
                 ->where('ref_id', $data['ref_id'])

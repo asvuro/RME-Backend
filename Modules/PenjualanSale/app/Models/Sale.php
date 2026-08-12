@@ -5,9 +5,11 @@ namespace Modules\PenjualanSale\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\GeneralEmployee\Models\Employee;
 use Modules\GeneralPatient\Models\Patient;
 use Modules\PenjualanSale\Database\Factories\SaleFactory;
+use Modules\PenjualanSaleItem\Models\SaleItem;
 
 class Sale extends Model
 {
@@ -38,6 +40,11 @@ class Sale extends Model
     public function soldBy(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'sold_by');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(SaleItem::class);
     }
 
     /**

@@ -3,7 +3,9 @@
 namespace Modules\PembayaranInvoiceItem\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Contracts\VisitGate;
 use Illuminate\Http\Request;
+use Modules\GeneralService\Models\Service;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PembayaranInvoiceItem\Http\Requests\StoreInvoiceItemRequest;
 use Modules\PembayaranInvoiceItem\Http\Requests\UpdateInvoiceItemRequest;
@@ -12,6 +14,10 @@ use Modules\PembayaranInvoiceItem\Models\InvoiceItem;
 
 class InvoiceItemController extends Controller
 {
+    public function __construct(protected readonly VisitGate $visitGate)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = InvoiceItem::query();
@@ -28,7 +34,47 @@ class InvoiceItemController extends Controller
         $invoice = Invoice::findOrFail($request->integer('invoice_id'));
         abort_if($invoice->is_locked, 422, 'Tagihan ini sudah dikunci, tidak bisa ditambah item.');
 
-        $item = InvoiceItem::create($request->validated());
+        // Gerbang state machine kunjungan (ala DispenseService): layanan baru
+        // tidak boleh ditagihkan ke kunjungan yang sudah pulang/batal.
+        abort_if(
+            ! $this->visitGate->isActive((int) $invoice->visit_id),
+            422,
+            'Kunjungan sudah pulang/batal; tidak bisa menambah item tagihan.',
+        );
+
+        $data = $request->validated();
+
+        // Kebijakan identik dengan update(): petugas tidak boleh menetapkan
+        // harga satuan -- termasuk lewat jalur pembuatan item baru ini.
+        abort_if(
+            $request->has('unit_price') && ! $request->user()->hasRole('admin'),
+            403,
+            'Hanya admin yang dapat menetapkan harga satuan item tagihan.'
+        );
+
+        // Tutup celah sibling-write-path dari gerbang unit_price update():
+        // kalau harga satuan tidak datang dari admin, nilainya WAJIB diambil
+        // dari tarif katalog layanan -- bukan dari input klien. Tanpa ini,
+        // petugas biasa cukup membuat item baru (bukan mengedit) untuk
+        // menentukan harga bebas, termasuk menolkan tagihan.
+        if (! isset($data['unit_price'])) {
+            abort_if(
+                empty($data['service_id']),
+                422,
+                'Petugas wajib memilih service_id agar harga mengikuti tarif katalog.'
+            );
+
+            $tariff = Service::query()->find($data['service_id'])?->currentTariff();
+            abort_if(
+                $tariff === null,
+                422,
+                'Tidak ada tarif katalog aktif untuk layanan ini.'
+            );
+
+            $data['unit_price'] = (float) $tariff->price;
+        }
+
+        $item = InvoiceItem::create($data);
         $invoice->recalculateTotals();
 
         return (new InvoiceItemResource($item))->response()->setStatusCode(201);
@@ -42,6 +88,14 @@ class InvoiceItemController extends Controller
     public function update(UpdateInvoiceItemRequest $request, InvoiceItem $invoice_item): InvoiceItemResource
     {
         abort_if($invoice_item->invoice->is_locked, 422, 'Tagihan ini sudah dikunci, tidak bisa diubah.');
+
+        // Gerbang state machine kunjungan: nilai tagihan kunjungan yang sudah
+        // pulang/batal tidak boleh diubah dari jalur mana pun.
+        abort_if(
+            ! $this->visitGate->isActive((int) $invoice_item->invoice->visit_id),
+            422,
+            'Kunjungan sudah pulang/batal; item tagihan tidak bisa diubah.',
+        );
 
         // unit_price bukan sekadar detail tampilan -- itu yang menentukan
         // subtotal/total_amount tagihan. Petugas biasa boleh koreksi
@@ -63,6 +117,14 @@ class InvoiceItemController extends Controller
     public function destroy(InvoiceItem $invoice_item)
     {
         abort_if($invoice_item->invoice->is_locked, 422, 'Tagihan ini sudah dikunci, tidak bisa dihapus.');
+
+        // Gerbang state machine kunjungan: baris tagihan kunjungan yang sudah
+        // pulang/batal tidak boleh dibuang diam-diam.
+        abort_if(
+            ! $this->visitGate->isActive((int) $invoice_item->invoice->visit_id),
+            422,
+            'Kunjungan sudah pulang/batal; item tagihan tidak bisa dihapus.',
+        );
 
         $invoice = $invoice_item->invoice;
         $invoice_item->delete();

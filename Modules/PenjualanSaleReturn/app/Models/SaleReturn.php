@@ -5,6 +5,7 @@ namespace Modules\PenjualanSaleReturn\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\PenjualanSale\Models\Sale;
 use Modules\PenjualanSaleReturn\Database\Factories\SaleReturnFactory;
 
@@ -30,6 +31,11 @@ class SaleReturn extends Model
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(SaleReturnItem::class);
     }
 
     protected static function newFactory(): SaleReturnFactory

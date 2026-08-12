@@ -39,7 +39,9 @@ class PatientReceivableControllerTest extends TestCase
     public function test_it_creates_patient_receivable_as_outstanding(): void
     {
         $this->actingUser();
-        $invoice = Invoice::factory()->create();
+        // Piutang dibatasi bagian tagihan yang ditanggung pasien, jadi
+        // invoice fixture harus punya nilai yang memadai.
+        $invoice = Invoice::factory()->create(['total_amount' => 250000]);
         $patient = Patient::factory()->create();
 
         $this->postJson('/api/v1/patient-receivables', [

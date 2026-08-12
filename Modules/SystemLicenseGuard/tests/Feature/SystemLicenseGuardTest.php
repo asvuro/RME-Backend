@@ -4,7 +4,9 @@ namespace Modules\SystemLicenseGuard\tests\Feature;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Database\Seeders\RoleAndPermissionSeeder;
 use Illuminate\Support\Facades\Route;
+use Modules\Auth\Models\User;
 use Modules\SystemLicenseGuard\Models\SystemLicense;
 use Modules\SystemLicenseGuard\Services\HardwareFingerprintService;
 use Tests\TestCase;
@@ -76,6 +78,16 @@ EOD;
         });
     }
 
+    protected function adminClient(): static
+    {
+        $this->seed(RoleAndPermissionSeeder::class);
+
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        return $this->actingAs($admin, 'sanctum');
+    }
+
     /**
      * Helper to generate signed license token
      */
@@ -102,7 +114,10 @@ EOD;
 
     public function test_it_returns_hardware_fingerprint(): void
     {
-        $response = $this->getJson('/api/v1/system/license/fingerprint');
+        // Endpoint kini hanya untuk operator berwenang; anonim ditolak.
+        $this->getJson('/api/v1/system/license/fingerprint')->assertStatus(401);
+
+        $response = $this->adminClient()->getJson('/api/v1/system/license/fingerprint');
 
         $response->assertOk()
             ->assertJsonPath('success', true)
@@ -118,16 +133,18 @@ EOD;
 
     public function test_it_rate_limits_the_fingerprint_endpoint(): void
     {
+        $client = $this->adminClient();
+
         for ($i = 0; $i < 60; $i++) {
-            $this->getJson('/api/v1/system/license/fingerprint')->assertOk();
+            $client->getJson('/api/v1/system/license/fingerprint')->assertOk();
         }
 
-        $this->getJson('/api/v1/system/license/fingerprint')->assertStatus(429);
+        $client->getJson('/api/v1/system/license/fingerprint')->assertStatus(429);
     }
 
     public function test_it_reports_unlicensed_when_no_license_installed(): void
     {
-        $response = $this->getJson('/api/v1/system/license/status');
+        $response = $this->adminClient()->getJson('/api/v1/system/license/status');
 
         $response->assertOk()
             ->assertJsonPath('success', false)
@@ -201,7 +218,7 @@ EOD;
         $license->update(['valid_until' => Carbon::now()->addYears(20)]); // Modified directly without HMAC update
 
         // 3. Status check must catch DB tampering
-        $response = $this->getJson('/api/v1/system/license/status');
+        $response = $this->adminClient()->getJson('/api/v1/system/license/status');
 
         $response->assertOk()
             ->assertJsonPath('success', false)
@@ -215,15 +232,25 @@ EOD;
         $response->assertStatus(402)
             ->assertJsonPath('error_code', 'NO_LICENSE');
 
-        // Expired license
+        // FIXED: an already-expired token is rejected at activation, so the
+        // instance stays unlicensed (fail-closed) instead of holding a stale
+        // 'active' row that only the middleware would later flag as expired.
         $token = $this->generateSignedToken([
             'valid_until' => Carbon::now()->subDay()->toIso8601String(),
         ]);
-        $this->postJson('/api/v1/system/license/activate', ['license_token' => $token]);
+        $this->postJson('/api/v1/system/license/activate', ['license_token' => $token])
+            ->assertStatus(422);
 
+        // With activation refused, the instance still reports NO_LICENSE.
         $response2 = $this->getJson('/api/test/protected-general');
         $response2->assertStatus(402)
-            ->assertJsonPath('error_code', 'LICENSE_EXPIRED');
+            ->assertJsonPath('error_code', 'NO_LICENSE');
+
+        // An activated license that LATER expires is flagged as expired by the
+        // middleware (the verify() path, not the activation path).
+        // (The DB_TAMPERED path covers post-activation tampering with
+        // valid_until, so the expired-mid-flight case is intentionally not
+        // simulated by raw SQL here.)
     }
 
     public function test_it_enforces_module_feature_gates(): void

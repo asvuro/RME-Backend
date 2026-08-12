@@ -16,6 +16,7 @@
                 ],
     "require":  {
         "php": "^8.3",
+        "ext-bcmath": "*",
         "barryvdh/laravel-dompdf": "^3.1",
         "dcarbone/php-fhir-generated": "^4.1",
         "laravel/framework": "^13.17",

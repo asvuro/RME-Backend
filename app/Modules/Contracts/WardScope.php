@@ -29,4 +29,19 @@ interface WardScope
      * boleh — scope ward cuma berlaku untuk entitas yang memang punya ward.
      */
     public function canAccessWard(User $user, ?int $wardId): bool;
+
+    /**
+     * Terapkan cakupan baca ward yang sama dengan canAccessWard() pada query:
+     * admin bebas; user belum ter-assign ward apa pun dianggap belum masuk
+     * cakupan scoping (lihat semua); user berassignment hanya melihat ward
+     * miliknya. Satu implementasi supaya scope baca & tulis tidak bisa
+     * saling menyimpang lagi.
+     *
+     * @template TModel of \Illuminate\Database\Eloquent\Model
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<TModel>  $query
+     * @param  string  $column  nama kolom ward pada tabel query (mis. 'ward_id')
+     * @return \Illuminate\Database\Eloquent\Builder<TModel>
+     */
+    public function applyReadScope($query, string $column, User $user);
 }

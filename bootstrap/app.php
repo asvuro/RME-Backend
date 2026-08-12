@@ -3,7 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 spl_autoload_register(static function (string $class): void {
     if (! str_starts_with($class, 'Modules\\')) {
@@ -51,4 +54,39 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Defense-in-depth: even if APP_DEBUG is accidentally left on in a
+        // publicly reachable environment, JSON error payloads must never carry
+        // exception internals (class, file, line, trace — which embed SQL and
+        // database connection details). Legitimate messages (401 Unauthenticated,
+        // validation errors, HTTP exception messages) are left untouched.
+        $exceptions->respond(function (Response $response, Throwable $exception): Response {
+            if (! $response instanceof JsonResponse) {
+                return $response;
+            }
+
+            $payload = $response->getData(true);
+
+            if (! is_array($payload)) {
+                return $response;
+            }
+
+            $hadDebugEnvelope = false;
+
+            foreach (['exception', 'file', 'line', 'trace'] as $internalKey) {
+                $hadDebugEnvelope = $hadDebugEnvelope || array_key_exists($internalKey, $payload);
+                unset($payload[$internalKey]);
+            }
+
+            // A debug envelope also implies the raw exception message (for
+            // example a QueryException carrying host/port/database name); collapse
+            // it to the same opaque message used when debugging is disabled.
+            if ($hadDebugEnvelope && ! $exception instanceof HttpExceptionInterface) {
+                $payload['message'] = 'Server Error';
+            }
+
+            $response->setData($payload);
+
+            return $response;
+        });
     })->create();

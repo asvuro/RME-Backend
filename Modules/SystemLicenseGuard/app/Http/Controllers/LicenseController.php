@@ -5,6 +5,7 @@ namespace Modules\SystemLicenseGuard\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\SystemLicenseGuard\Models\SystemLicenseWebhookEvent;
 use Modules\SystemLicenseGuard\Http\Requests\ActivateLicenseRequest;
 use Modules\SystemLicenseGuard\Http\Requests\SyncLicenseRequest;
 use Modules\SystemLicenseGuard\Http\Resources\LicenseStatusResource;
@@ -54,16 +55,17 @@ class LicenseController extends Controller
                     'data' => new LicenseStatusResource($license),
                 ]);
             } catch (\Throwable $e) {
+                report($e);
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Activation failed: ' . $e->getMessage(),
+                    'message' => 'Activation failed via cryptographic token.',
                 ], 422);
             }
         }
 
         $result = $this->hubClient->activateOnline(
             $request->input('license_key'),
-            $request->input('central_hub_url')
         );
 
         if (!$result['success']) {
@@ -109,6 +111,30 @@ class LicenseController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid webhook signature.'], 403);
         }
 
+        // Anti-replay: event_id unik + timestamp di dalam body yang ikut di-HMAC.
+        // Tanpa itu, satu webhook yang terekam bisa diputar ulang selamanya.
+        $eventId = trim((string) $request->input('event_id'));
+        $timestamp = $request->input('timestamp');
+
+        if ($eventId === '' || !is_numeric($timestamp)) {
+            return response()->json(['success' => false, 'message' => 'Webhook envelope requires event_id and timestamp.'], 403);
+        }
+
+        $tolerance = max(1, (int) config('license.webhook_timestamp_tolerance', 300));
+        if (abs(time() - (int) $timestamp) > $tolerance) {
+            return response()->json(['success' => false, 'message' => 'Webhook timestamp outside allowed tolerance.'], 403);
+        }
+
+        try {
+            SystemLicenseWebhookEvent::query()->create([
+                'event_id' => $eventId,
+                'event_type' => $request->input('event'),
+                'processed_at' => now(),
+            ]);
+        } catch (\Throwable) {
+            return response()->json(['success' => false, 'message' => 'Webhook already processed.'], 409);
+        }
+
         $event = $request->input('event');
         $token = $request->input('token');
 
@@ -121,7 +147,9 @@ class LicenseController extends Controller
                     'data' => new LicenseStatusResource($license),
                 ]);
             } catch (\Throwable $e) {
-                return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+                report($e);
+
+                return response()->json(['success' => false, 'message' => 'License activation failed.'], 422);
             }
         }
 

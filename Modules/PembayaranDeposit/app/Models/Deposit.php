@@ -13,6 +13,13 @@ class Deposit extends Model
 {
     use HasFactory;
 
+    /**
+     * Plafon wajar satu kali setoran deposit tunai per kunjungan. Melampauinya
+     * hanya lewat persetujuan admin -- mencegah deposit fiktif berukuran
+     * raksasa dipakai untuk menggembungkan batas refund kumulatif.
+     */
+    public const MAX_AMOUNT = 100000000;
+
     protected $fillable = [
         'deposit_number',
         'visit_id',

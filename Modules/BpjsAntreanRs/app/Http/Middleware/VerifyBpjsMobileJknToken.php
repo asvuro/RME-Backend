@@ -23,7 +23,10 @@ class VerifyBpjsMobileJknToken
             return response()->json(['metadata' => ['message' => 'x-username/x-token required', 'code' => 401]], 401);
         }
 
-        $record = MobileJknToken::where('username', $username)->where('token', $token)->first();
+        // Stored tokens are sha256 digests; hash the presented token before lookup.
+        $record = MobileJknToken::where('username', $username)
+            ->where('token', hash('sha256', $token))
+            ->first();
 
         if (! $record || $record->isExpired()) {
             return response()->json(['metadata' => ['message' => 'Invalid or expired token', 'code' => 401]], 401);

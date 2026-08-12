@@ -34,7 +34,7 @@ class InvoiceItem extends Model
     protected static function booted(): void
     {
         static::saving(function (InvoiceItem $item) {
-            $item->subtotal = $item->quantity * $item->unit_price;
+            $item->subtotal = bcmul((string) $item->quantity, (string) $item->unit_price, 2);
         });
     }
 

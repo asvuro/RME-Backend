@@ -13,6 +13,10 @@ use Modules\PembayaranInvoiceCancellation\Models\InvoiceCancellation;
 
 class InvoiceCancellationController extends Controller
 {
+    public function __construct(private readonly \Modules\PembayaranInvoice\Services\InvoiceService $invoiceService)
+    {
+    }
+
     public function index(Request $request)
     {
         $query = InvoiceCancellation::query();
@@ -28,12 +32,11 @@ class InvoiceCancellationController extends Controller
      * Cancellation is a legal/financial record - append-only, no update/delete.
      * Locks the invoice and marks it cancelled.
      *
-     * Gerbang (temuan pentest vuln-0017): satu invoice hanya boleh punya SATU
-     * baris pembatalan (dicek+dikunci dalam transaksi yang sama supaya request
-     * paralel tidak lolos berdua), dan invoice yang statusnya 'paid' tidak
-     * boleh dibatalkan langsung lewat jalur ini -- pembayaran yang sudah
-     * masuk butuh alur refund/pembatalan pembayaran formal, bukan status
-     * flip mentah yang meninggalkan payment row menggantung tanpa reversal.
+     * Transisi lock + gerbang duplikat/paid + dispatch audit ada di
+     * InvoiceService::cancel() -- jalur kanonik tunggal untuk membatalkan
+     * invoice (regresi vuln-0017: dulu controller menulis status invoice
+     * langsung lalu memicu InvoiceLocked di luar service, sehingga semantik
+     * lock dan jejak audit menyimpang dari jalur resmi).
      */
     public function store(StoreInvoiceCancellationRequest $request)
     {
@@ -42,27 +45,12 @@ class InvoiceCancellationController extends Controller
         $data['cancelled_by'] = $request->user()->id;
 
         $cancellation = DB::transaction(function () use ($data) {
-            $invoice = Invoice::query()->whereKey($data['invoice_id'])->lockForUpdate()->firstOrFail();
-
-            abort_if(
-                InvoiceCancellation::where('invoice_id', $invoice->id)->exists(),
-                422,
-                'Invoice ini sudah pernah dibatalkan.'
-            );
-
-            abort_if(
-                $invoice->status === 'paid',
-                422,
-                'Invoice yang sudah dibayar tidak dapat langsung dibatalkan; gunakan alur refund/pembatalan pembayaran.'
-            );
+            $this->invoiceService->cancel((int) $data['invoice_id']);
 
             $cancellation = InvoiceCancellation::create($data);
-            $invoice->update(['status' => 'cancelled', 'is_locked' => true]);
 
             return $cancellation;
         });
-
-        InvoiceLocked::dispatch(Invoice::findOrFail($data['invoice_id']));
 
         return (new InvoiceCancellationResource($cancellation))->response()->setStatusCode(201);
     }

@@ -17,7 +17,9 @@ class StoreSaleReturnRequest extends FormRequest
             'sale_id' => ['required', 'integer', 'exists:sales,id'],
             'returned_at' => ['nullable', 'date'],
             'reason' => ['nullable', 'string'],
-            'refund_amount' => ['required', 'numeric', 'min:0'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.sale_item_id' => ['required', 'integer'],
+            'items.*.quantity' => ['required', 'integer', 'min:1', 'max:999999999'],
         ];
     }
 }

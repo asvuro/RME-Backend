@@ -88,4 +88,21 @@ class WardAccessResolver implements WardScope
 
         return in_array($wardId, $assigned, true);
     }
+
+    public function applyReadScope($query, string $column, User $user)
+    {
+        if ($user->hasRole('admin')) {
+            return $query;
+        }
+
+        $assigned = $this->assignedWardIds($user->id);
+
+        if ($assigned !== []) {
+            return $query->whereIn($column, $assigned);
+        }
+
+        // Rollout bertahap: user tanpa assignment apa pun dianggap belum masuk
+        // cakupan scoping -- lihat semua, identik dengan canAccessWard().
+        return $query;
+    }
 }

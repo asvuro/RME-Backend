@@ -100,6 +100,17 @@ class Invoice extends Model
         // (mis. subtotal 0 + rounding negatif masih bisa lolos rentang itu).
         abort_if($total < 0, 422, 'Total tagihan tidak boleh negatif.');
 
+        // Total baru tidak boleh jatuh DI BAWAH uang yang sudah diterima kasir.
+        // Tanpa gerbang ini, PUT rounding_adjustment negatif (atau penghapusan
+        // item) bisa membuat collected > total pada tagihan yang masih terbuka,
+        // sehingga sisa tagihan negatif, pelunasan tak terjadi, dan catatan
+        // kas tidak konsisten dengan nilai tagihan.
+        abort_if(
+            $this->status !== 'cancelled' && (float) $this->payments()->sum('amount') > $total,
+            422,
+            'Total tagihan baru lebih kecil dari pembayaran yang sudah diterima.',
+        );
+
         $this->update([
             'subtotal' => $subtotal,
             'total_amount' => $total,

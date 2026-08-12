@@ -19,7 +19,9 @@ class StoreLeftoverMedicationVoucherRequest extends FormRequest
             'visit_id' => ['required', 'integer', 'exists:visits,id'],
             'patient_id' => ['required', 'integer', 'exists:patients,id'],
             'prescription_id' => ['nullable', 'integer', 'exists:prescriptions,id'],
-            'status' => ['required', Rule::in(['pending', 'redeemed', 'expired'])],
+            // Status tidak lagi wajib dari klien: store() memaksa 'pending'
+            // secara server-side (lihat controller).
+            'status' => ['sometimes', Rule::in(['pending', 'redeemed', 'expired'])],
             'issued_at' => ['required', 'date'],
             'redeemed_at' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],

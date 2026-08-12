@@ -3,6 +3,7 @@
 namespace Modules\SystemLicenseGuard\Services;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\SystemLicenseGuard\Models\SystemLicense;
 use Modules\SystemLicenseGuard\Models\SystemLicenseAuditLog;
@@ -178,30 +179,50 @@ class LicenseVerifierService
             }
         }
 
-        SystemLicense::query()->where('status', 'active')->update(['status' => 'superseded']);
-
         $issuedAt = isset($payload['issued_at']) ? Carbon::parse($payload['issued_at']) : Carbon::now();
         $validUntil = Carbon::parse($payload['valid_until']);
 
-        $license = new SystemLicense([
-            'instance_id' => $payload['instance_id'],
-            'client_name' => $payload['client_name'],
-            'client_code' => $payload['client_code'],
-            'license_key' => $payload['license_key'],
-            'token_payload' => $payloadJson,
-            'digital_signature' => base64_encode($signature),
-            'hardware_id' => $payload['hardware_id'],
-            'tier' => $payload['tier'] ?? 'standard',
-            'issued_at' => $issuedAt,
-            'valid_until' => $validUntil,
-            'last_synced_at' => Carbon::now(),
-            'max_users' => (int) ($payload['max_users'] ?? 0),
-            'allowed_modules' => $payload['allowed_modules'],
-            'status' => 'active',
-        ]);
+        // Fail-closed: token yang sudah kedaluwarsa tidak boleh mengaktifkan
+        // lisensi (dulu webhook replay membawa token 2024 dan tetap 'active').
+        if (Carbon::now()->greaterThan($validUntil)) {
+            throw new \InvalidArgumentException('License token has already expired on '.$validUntil->format('Y-m-d H:i:s'));
+        }
 
-        $license->integrity_hash = $license->computeIntegrityHash($hwid);
-        $license->save();
+        // Atomik: supersede lisensi lama HANYA sesudah baris baru berhasil
+        // tersimpan (upsert per license_key). Sebelumnya supersede dijalankan
+        // dulu tanpa transaksi sehingga kegagalan UNIQUE meninggalkan instans
+        // tanpa lisensi aktif sama sekali.
+        $license = DB::transaction(function () use ($payload, $payloadJson, $signature, $issuedAt, $validUntil, $hwid): SystemLicense {
+            $license = SystemLicense::query()->firstOrNew([
+                'license_key' => $payload['license_key'],
+            ]);
+
+            $license->fill([
+                'instance_id' => $payload['instance_id'],
+                'client_name' => $payload['client_name'],
+                'client_code' => $payload['client_code'],
+                'token_payload' => $payloadJson,
+                'digital_signature' => base64_encode($signature),
+                'hardware_id' => $payload['hardware_id'],
+                'tier' => $payload['tier'] ?? 'standard',
+                'issued_at' => $issuedAt,
+                'valid_until' => $validUntil,
+                'last_synced_at' => Carbon::now(),
+                'max_users' => (int) ($payload['max_users'] ?? 0),
+                'allowed_modules' => $payload['allowed_modules'],
+                'status' => 'active',
+            ]);
+
+            $license->integrity_hash = $license->computeIntegrityHash($hwid);
+            $license->save();
+
+            SystemLicense::query()
+                ->where('status', 'active')
+                ->whereKeyNot($license->getKey())
+                ->update(['status' => 'superseded']);
+
+            return $license;
+        });
 
         $this->recordClockWatermark(Carbon::now()->timestamp);
 

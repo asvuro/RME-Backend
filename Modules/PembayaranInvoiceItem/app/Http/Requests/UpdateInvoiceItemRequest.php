@@ -16,8 +16,8 @@ class UpdateInvoiceItemRequest extends FormRequest
         return [
             'description' => ['sometimes', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:255'],
-            'quantity' => ['sometimes', 'integer', 'min:1'],
-            'unit_price' => ['sometimes', 'numeric', 'min:0'],
+            'quantity' => ['sometimes', 'integer', 'min:1', 'max:9999'],
+            'unit_price' => ['sometimes', 'numeric', 'min:0', 'max:999999999'],
         ];
     }
 }

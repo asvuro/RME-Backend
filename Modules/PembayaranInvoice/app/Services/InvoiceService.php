@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PembayaranInvoiceGuarantor\Models\InvoiceGuarantor;
 use Modules\PembayaranInvoiceItem\Models\InvoiceItem;
+use Modules\PembayaranInvoiceCancellation\Models\InvoiceCancellation;
+use Modules\PembayaranPayment\Models\Payment;
 use Modules\PendaftaranGuarantor\Models\Guarantor;
 use Modules\PendaftaranVisit\Models\Visit;
 
@@ -39,6 +41,17 @@ class InvoiceService implements BillingGate
     }
 
     /**
+     * Total uang tunai/non-tunai yang sudah diterima untuk satu invoice.
+     * Pembayaran adalah catatan kas append-only: selama masih ada barisnya,
+     * invoice tidak boleh dihapus karena FK cascadeOnDelete akan ikut
+     * menghancurkan bukti penerimaan uang.
+     */
+    protected function collectedAmount(int $invoiceId): float
+    {
+        return (float) Payment::query()->where('invoice_id', $invoiceId)->sum('amount');
+    }
+
+    /**
      * Kunci invoice (kasir menutup pembayaran). Ala config 69 simgos2:
      * setelah terkunci, tidak ada posting layanan baru ke kunjungan tsb.
      */
@@ -52,7 +65,9 @@ class InvoiceService implements BillingGate
 
         // Event di luar transaksi: listener hanya boleh menyentuh data yang
         // sudah commit (efek samping non-kritis; audit menyusul #12).
-        InvoiceLocked::dispatch($invoice->refresh());
+        $cancelled = Invoice::findOrFail($invoiceId);
+
+        InvoiceLocked::dispatch($cancelled->refresh());
     }
 
     /**
@@ -71,7 +86,9 @@ class InvoiceService implements BillingGate
             $invoice->update(['status' => 'paid', 'is_locked' => true]);
         });
 
-        InvoiceLocked::dispatch($invoice->refresh());
+        $cancelled = Invoice::findOrFail($invoiceId);
+
+        InvoiceLocked::dispatch($cancelled->refresh());
     }
 
     /**
@@ -79,16 +96,44 @@ class InvoiceService implements BillingGate
      * legal/finansial append-only). Statusnya jadi 'cancelled' + terkunci
      * sekaligus, lewat jalur resmi supaya event InvoiceLocked tetap terpicu
      * (audit trail invoice_lock) -- bukan raw update dari controller lain.
+     *
+     * Gerbang duplikat + paid dipindah ke sini (regresi vuln-0017): satu
+     * invoice hanya boleh punya SATU baris pembatalan, dan invoice 'paid'
+     * tidak boleh dibatalkan lewat jalur ini. Keduanya dicek dalam transaksi
+     * yang sama dengan lockForUpdate supaya request paralel tidak lolos
+     * berdua, dan dispatch InvoiceLocked tetap SETELAH commit dengan model
+     * hasil refresh -- satu-satunya jalur kunci tagihan agar listener audit
+     * selalu membaca state yang sudah konsisten.
      */
     public function cancel(int $invoiceId): void
     {
-        $invoice = Invoice::findOrFail($invoiceId);
+        DB::transaction(function () use ($invoiceId) {
+            $invoice = Invoice::query()->whereKey($invoiceId)->lockForUpdate()->firstOrFail();
 
-        DB::transaction(function () use ($invoice) {
+            abort_if(
+                InvoiceCancellation::query()->where('invoice_id', $invoice->id)->exists(),
+                422,
+                'Invoice ini sudah pernah dibatalkan.',
+            );
+
+            abort_if(
+                $invoice->status === 'paid',
+                422,
+                'Invoice yang sudah dibayar tidak dapat langsung dibatalkan; gunakan alur refund/pembatalan pembayaran.',
+            );
+
             $invoice->update(['status' => 'cancelled', 'is_locked' => true]);
         });
 
-        InvoiceLocked::dispatch($invoice->refresh());
+        // Dispatch SETELAH commit TERLUAR: cancel() bisa dipanggil dari dalam
+        // transaksi pemanggil (mis. controller PembayaranInvoiceCancellation
+        // membungkus cancel + pencatatan baris pembatalan jadi satu unit
+        // atomik). Listener audit tidak boleh membaca state yang belum commit,
+        // dan kalau transaksi pembungkus di-rollback, event ini tidak boleh
+        // terpicu sama sekali.
+        DB::afterCommit(function () use ($invoiceId) {
+            InvoiceLocked::dispatch(Invoice::query()->findOrFail($invoiceId));
+        });
     }
 
     public function unlock(int $invoiceId): void
@@ -185,6 +230,12 @@ class InvoiceService implements BillingGate
     public function deleteInvoice(Invoice $invoice): void
     {
         abort_if($this->isInvoiceLocked($invoice->id), 422, 'Tagihan ini sudah dikunci, tidak bisa dihapus.');
+
+        abort_if(
+            $this->collectedAmount($invoice->id) > 0,
+            422,
+            'Tagihan sudah memiliki pembayaran tercatat dan tidak bisa dihapus. Gunakan jalur pembatalan tagihan.',
+        );
 
         DB::transaction(function () use ($invoice) {
             $invoice->guarantorAttachments()->delete();

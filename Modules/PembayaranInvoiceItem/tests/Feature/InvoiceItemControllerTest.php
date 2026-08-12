@@ -33,12 +33,19 @@ class InvoiceItemControllerTest extends TestCase
     {
         $this->actingUser();
         $invoice = Invoice::factory()->create();
+        // Harga satuan kini bersumber tarif katalog untuk petugas (gerbang
+        // unit_price ala update()), jadi fixture memakai service_id.
+        $service = \Modules\GeneralService\Models\Service::factory()->create();
+        \Modules\GeneralServiceTariff\Models\ServiceTariff::factory()->create([
+            'service_id' => $service->id,
+            'price' => 50000,
+        ]);
 
         $this->postJson('/api/v1/invoice-items', [
             'invoice_id' => $invoice->id,
+            'service_id' => $service->id,
             'description' => 'Konsultasi Dokter',
             'quantity' => 2,
-            'unit_price' => 50000,
         ])->assertCreated()->assertJsonPath('data.subtotal', '100000.00');
 
         $this->assertEquals(100000, $invoice->fresh()->total_amount);

@@ -55,15 +55,27 @@ class TteDocumentControllerTest extends TestCase
     {
         $this->actingUser();
 
+        // ref_type kini diizinkan hanya dari allowlist service dan ref_id-nya
+        // wajib ada (temuan lanjutan vuln-0007: dokumen TTE tidak boleh
+        // dicetak atas referensi fiktif).
         $store = $this->postJson('/api/v1/tte-documents', [
             'ref_type' => 'medical_record_resumes',
             'ref_id' => 1,
             'content' => ['title' => 'Resume Medis', 'body' => 'Isi resume.'],
         ]);
 
+        $store->assertStatus(422);
+
+        $visit = \Modules\PendaftaranVisit\Models\Visit::factory()->create();
+        $store = $this->postJson('/api/v1/tte-documents', [
+            'ref_type' => 'visits',
+            'ref_id' => $visit->id,
+            'content' => ['title' => 'Resume Medis', 'body' => 'Isi resume.'],
+        ]);
+
         $store->assertCreated()
             ->assertJsonPath('data.status', TteDocument::STATUS_DRAFT)
-            ->assertJsonPath('data.ref_type', 'medical_record_resumes')
+            ->assertJsonPath('data.ref_type', 'visits')
             ->assertJsonPath('data.document_hash', null);
 
         $this->getJson('/api/v1/tte-documents')
@@ -152,15 +164,16 @@ class TteDocumentControllerTest extends TestCase
     {
         $this->actingUser();
 
+        $visit = \Modules\PendaftaranVisit\Models\Visit::factory()->create();
         TteDocument::factory()->create([
-            'ref_type' => 'medical_record_resumes',
-            'ref_id' => 42,
+            'ref_type' => 'visits',
+            'ref_id' => $visit->id,
             'status' => TteDocument::STATUS_PENDING_SIGN,
         ]);
 
         $this->postJson('/api/v1/tte-documents', [
-            'ref_type' => 'medical_record_resumes',
-            'ref_id' => 42,
+            'ref_type' => 'visits',
+            'ref_id' => $visit->id,
         ])->assertStatus(422);
     }
 

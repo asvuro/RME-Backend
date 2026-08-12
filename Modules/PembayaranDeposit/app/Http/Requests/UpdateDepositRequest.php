@@ -14,7 +14,10 @@ class UpdateDepositRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'string', 'in:applied,refunded'],
+            // 'refunded' sengaja tidak ada di sini: pengembalian dana harus
+            // lewat DepositRefundController agar tercipta baris refund yang
+            // tunduk pada batas kumulatif -- bukan flip status tanpa catatan.
+            'status' => ['required', 'string', 'in:applied'],
         ];
     }
 }

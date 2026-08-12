@@ -6,6 +6,8 @@ use App\Events\PrescriptionDispensed;
 use App\Modules\Contracts\BillingGate;
 use App\Modules\Contracts\HospitalConfig;
 use App\Modules\Contracts\StockGate;
+use App\Modules\Contracts\VisitGate;
+use App\Modules\Contracts\WardScope;
 use Illuminate\Support\Facades\DB;
 use Modules\Auth\Models\User;
 use Modules\LayananPharmacyDispense\Models\PharmacyDispense;
@@ -30,10 +32,30 @@ class DispenseService
         protected StockGate $stock,
         protected BillingGate $billing,
         protected HospitalConfig $config,
+        protected WardScope $wardScope,
+        protected VisitGate $visitGate,
     ) {}
 
     public function dispense(Prescription $prescription, User $user): PharmacyDispense
     {
+        // Data kunjungan untuk kedua gerbang akses di bawah.
+        $visit = $prescription->visit()->first();
+
+        // Gerbang least-privilege ward (#3 ANALISIS_RME_BACKEND.md): petugas
+        // hanya boleh melayani resep pada kunjungan di ward tempat dia
+        // ditugaskan. Admin selalu lolos; kunjungan tanpa ward selalu boleh.
+        abort_if(
+            ! $this->wardScope->canAccessWard($user, $visit?->ward_id),
+            403,
+            'Anda tidak ditugaskan pada ward kunjungan resep ini.',
+        );
+
+        // Gerbang status kunjungan: layanan tidak boleh diposting ke
+        // kunjungan yang sudah pulang/batal (pasien sudah pulang).
+        if ($visit !== null && ! $this->visitGate->isActive((int) $visit->id)) {
+            abort(422, 'Kunjungan sudah pulang/batal; pelayanan resep tidak dapat dilanjutkan.');
+        }
+
         // 1) Gerbang status resep: hanya resep hidup yang bisa dilayani,
         //    dan satu resep hanya sekali (port STATUS order_resep=2 di SP).
         abort_if(in_array($prescription->status, ['dispensed', 'cancelled'], true), 422, 'Resep sudah '.$prescription->status.' - tidak bisa dilayani lagi.');

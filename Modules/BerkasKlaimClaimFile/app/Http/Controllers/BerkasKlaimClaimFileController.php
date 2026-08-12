@@ -24,6 +24,12 @@ class BerkasKlaimClaimFileController extends Controller
 
         $data['claim_number'] = ClaimFile::generateClaimNumber();
 
+        // Status awal klaim selalu draft -- status lanjutan hanya boleh
+        // dicapai lewat transisi ALLOWED_TRANSITIONS di update(). Tanpa ini,
+        // store() menerima status final apa pun (mis. paid) langsung saat
+        // pembuatan, melewati mesin transisi yang baru saja dipasang.
+        $data['status'] = ClaimFile::STATUS_DRAFT;
+
         return response()->json(ClaimFile::create($data)->refresh(), 201);
     }
 

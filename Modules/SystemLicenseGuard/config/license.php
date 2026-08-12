@@ -7,9 +7,6 @@ return [
     |--------------------------------------------------------------------------
     */
     'central_hub_url' => env('SAAS_CENTRAL_HUB_URL', 'https://hub.simgos.id'),
-    // Optional secondary hub host allowed for activate overrides. Keep this
-    // empty in production so only central_hub_url can be used.
-    'central_hub_url_fallback' => env('SAAS_CENTRAL_HUB_URL_FALLBACK', null),
     'central_hub_timeout' => (int) env('SAAS_CENTRAL_HUB_TIMEOUT', 10),
 
     /*
@@ -27,8 +24,11 @@ return [
     | Webhook Secret
     |--------------------------------------------------------------------------
     | HMAC Secret used by Central SaaS Hub to push instant license/module updates.
+    | Setiap envelope webhook wajib membawa event_id unik dan timestamp unix di
+    | dalam body yang ikut di-HMAC; timestamp di luar jendela toleransi ditolak.
     */
     'webhook_secret' => env('SAAS_WEBHOOK_SECRET', ''),
+    'webhook_timestamp_tolerance' => (int) env('SAAS_WEBHOOK_TIMESTAMP_TOLERANCE', 300),
 
     /*
     |--------------------------------------------------------------------------

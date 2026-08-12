@@ -49,7 +49,11 @@ class DepositRefundController extends Controller
             );
 
             $refund = DepositRefund::create($data);
-            $deposit->update(['status' => 'refunded']);
+            $deposit->update([
+                'status' => $alreadyRefunded + (float) $data['refunded_amount'] >= (float) $deposit->amount
+                    ? 'refunded'
+                    : 'held',
+            ]);
 
             return $refund;
         });

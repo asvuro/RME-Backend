@@ -58,13 +58,23 @@ class TteDocumentController extends Controller
     /**
      * Aksi inti state machine TTE internal: hitung document_hash + tandai SIGNED.
      * Tidak ada panggilan eksternal ke PSrE/BSrE -- itu future work.
+     *
+     * Profil pegawai penanda tangan diikat deterministik ke identitas AKTIF
+     * milik user login. employees.user_id tidak unik (satu user bisa punya
+     * lebih dari satu baris Employee, mis. profil lama dinonaktifkan lalu
+     * profil baru dibuat) -- lookup tanpa filter bisa menebar tanda tangan
+     * legal ke baris Employee yang sudah tidak aktif.
      */
     public function sign(SignTteDocumentRequest $request, TteDocument $tteDocument): TteDocumentResource
     {
         // Signer SELALU profil pegawai milik user yang login -- tidak pernah
         // dari input klien, supaya petugas tidak bisa menandatangani dokumen
         // klinis atas nama pegawai lain.
-        $employeeId = Employee::query()->where('user_id', $request->user()->id)->value('id');
+        $employeeId = Employee::query()
+            ->where('user_id', $request->user()->id)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->value('id');
 
         abort_if($employeeId === null, 422, 'User login belum terhubung ke profil pegawai, tidak bisa menandatangani dokumen.');
 

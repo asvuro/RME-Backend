@@ -22,7 +22,14 @@ class LeftoverMedicationVoucherController extends Controller
     public function store(StoreLeftoverMedicationVoucherRequest $request)
     {
         $data = $request->validated();
-        $data['status'] = $data['status'] ?? 'pending';
+
+        // Voucher selalu lahir pending dan redeemed_at distempel server saat
+        // transisi redeem di update() -- kebijakan yang sama dengan gerbang
+        // forward-only di sana. Tanpa ini voucher bisa lahir dalam status
+        // redeemed dengan timestamp kiriman klien (audit trail palsu).
+        $data['status'] = 'pending';
+        unset($data['redeemed_at']);
+
         $voucher = LeftoverMedicationVoucher::create($data);
 
         return (new LeftoverMedicationVoucherResource($voucher))->response()->setStatusCode(201);

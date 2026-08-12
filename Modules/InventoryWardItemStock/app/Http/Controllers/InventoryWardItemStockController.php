@@ -26,13 +26,13 @@ class InventoryWardItemStockController extends Controller
             $query->where('item_id', $request->integer('item_id'));
         }
 
-        $user = $request->user();
-        if (! $user->hasRole('admin')) {
-            $assigned = $this->wardScope->assignedWardIds($user->id);
-            if ($assigned !== []) {
-                $query->whereIn('ward_id', $assigned);
-            }
-        }
+        // Cakupan baca lewat kontrak WardScope yang sama dengan show/store/
+        // update/destroy (canAccessWard: admin bebas; unassigned = belum masuk
+        // rollout, akses penuh; berassignment = ward miliknya saja). Dulu
+        // index() menyalin logika ini sendiri dengan semantik berbeda sehingga
+        // petugas berassignment bisa melihat stok SEMUA ward lewat list sambil
+        // tetap 403 saat membuka satu barisnya.
+        $query = $this->wardScope->applyReadScope($query, 'ward_id', $request->user());
 
         return WardItemStockResource::collection($query->paginate($request->integer('per_page', 15)));
     }

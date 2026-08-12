@@ -64,6 +64,7 @@ class RsSettingSeeder extends Seeder
 
             // === PropertiConfig dari patch ===
             ['bed.reserved_bed_usage_deadline', '02:00:00', 'string', 'PropertiConfig 35 BATAS_WAKTU_RESERVASI_KAMAR_TIDUR_DIPESAN_DIGUNAKAN'],
+            ['bed.reservation_ttl_minutes', 60, 'int', 'Gerbang #11 lanjutan: TTL reservasi bed (BedService::reserve) sebelum disapu bed:release-expired-reservations'],
             ['auth.failed_login_lock_duration', '00:01:00', 'string', 'PropertiConfig 37 BATAS_WAKTU_LOCK_GAGAL_LOGIN'],
             ['auth.max_failed_logins', 3, 'int', 'PropertiConfig 38 MAKSIMAL_GAGAL_LOGIN'],
             ['auth.captcha_enabled', false, 'bool', 'PropertiConfig 39 AKTIFKAN_CAPTCHA'],

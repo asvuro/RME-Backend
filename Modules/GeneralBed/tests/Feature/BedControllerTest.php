@@ -137,4 +137,38 @@ class BedControllerTest extends TestCase
         $ids = array_column($response->json('data'), 'id');
         $this->assertSame([$ownBed->id], $ids);
     }
+
+    public function test_it_reserves_a_bed(): void
+    {
+        $this->actingUser();
+        $bed = Bed::factory()->create();
+
+        $this->postJson("/api/v1/beds/{$bed->id}/reserve")
+            ->assertOk()
+            ->assertJsonPath('status', Bed::STATUS_RESERVED);
+
+        $this->assertNotNull($bed->refresh()->reserved_until);
+    }
+
+    public function test_it_releases_a_bed_reservation(): void
+    {
+        $this->actingUser();
+        $bed = Bed::factory()->create(['status' => Bed::STATUS_RESERVED, 'reserved_until' => now()->addMinutes(30)]);
+
+        $this->postJson("/api/v1/beds/{$bed->id}/release-reservation")
+            ->assertOk()
+            ->assertJsonPath('status', Bed::STATUS_AVAILABLE);
+    }
+
+    public function test_ward_staff_cannot_reserve_bed_in_another_ward(): void
+    {
+        $ownWard = \Modules\GeneralWard\Models\Ward::factory()->create();
+        $otherWard = \Modules\GeneralWard\Models\Ward::factory()->create();
+        $this->actingWardStaff($ownWard->id);
+        $room = Room::factory()->create(['ward_id' => $otherWard->id]);
+        $bed = Bed::factory()->create(['room_id' => $room->id]);
+
+        $this->postJson("/api/v1/beds/{$bed->id}/reserve")
+            ->assertStatus(403);
+    }
 }

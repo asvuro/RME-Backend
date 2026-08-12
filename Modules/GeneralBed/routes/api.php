@@ -8,5 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
     Route::middleware('role:petugas|admin')->group(function () {
         Route::apiResource('beds', BedController::class)->only(['store', 'update', 'destroy']);
+        Route::post('beds/{bed}/reserve', [BedController::class, 'reserve']);
+        Route::post('beds/{bed}/release-reservation', [BedController::class, 'releaseReservation']);
     });
 });

@@ -27,11 +27,11 @@ class Bed extends Model
 
     public const STATUS_MAINTENANCE = 'maintenance';
 
-    protected $fillable = ['room_id', 'bed_number', 'is_active', 'status'];
+    protected $fillable = ['room_id', 'bed_number', 'is_active', 'status', 'reserved_until'];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return ['is_active' => 'boolean', 'reserved_until' => 'datetime'];
     }
 
     public function room(): BelongsTo

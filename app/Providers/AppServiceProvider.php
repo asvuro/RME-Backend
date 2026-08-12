@@ -43,6 +43,33 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->assertDatabasePasswordConfigured();
+    }
+
+    /**
+     * Fail fast di luar local/testing kalau koneksi DB non-sqlite dikonfigurasi
+     * tanpa password -- lebih baik proses tidak jalan sama sekali daripada
+     * server produksi diam-diam menerima koneksi database tanpa kredensial.
+     */
+    protected function assertDatabasePasswordConfigured(): void
+    {
+        if ($this->app->environment(['local', 'testing'])) {
+            return;
+        }
+
+        $connectionName = config('database.default');
+
+        if ($connectionName === 'sqlite') {
+            return;
+        }
+
+        $password = config("database.connections.{$connectionName}.password");
+
+        if (blank($password)) {
+            throw new \RuntimeException(
+                "DB_PASSWORD kosong untuk koneksi database '{$connectionName}' di luar environment local/testing. ".
+                'Set kredensial database sebelum menjalankan aplikasi di lingkungan ini.'
+            );
+        }
     }
 }

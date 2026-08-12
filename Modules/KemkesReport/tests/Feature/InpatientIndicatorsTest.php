@@ -7,6 +7,9 @@ use Modules\GeneralBed\Models\Bed;
 use Modules\GeneralRoom\Models\Room;
 use Modules\GeneralWard\Models\Ward;
 use Modules\LayananPatientDischargeRecord\Models\PatientDischargeRecord;
+use Modules\PendaftaranRegistration\Models\Registration;
+use Modules\PendaftaranReferral\Models\Referral;
+use Modules\PendaftaranVisit\Models\Visit;
 use Modules\PendaftaranVisit\Models\VisitTransfer;
 
 /**
@@ -120,6 +123,56 @@ class InpatientIndicatorsTest extends KemkesReportTestCase
             ->json('data.days.0');
 
         $this->assertSame(1, $day['dipindahkan']);
+    }
+
+    public function test_rujukan_masuk_dari_rs_lain_terhitung_sebagai_pindahan(): void
+    {
+        $ward = Ward::factory()->create();
+        $room = $this->makeRoom($ward);
+
+        $referral = Referral::factory()->create(['direction' => 'incoming']);
+        $registration = Registration::factory()->create([
+            'patient_id' => $this->makePatient($this->male)->id,
+            'referral_id' => $referral->id,
+        ]);
+        $visitWithReferral = Visit::factory()->create([
+            'registration_id' => $registration->id,
+            'ward_id' => $ward->id,
+            'admitted_at' => now(),
+        ]);
+
+        // Kunjungan tanpa rujukan pada hari yang sama tidak boleh ikut terhitung.
+        $this->makeInpatientVisit($ward, null, now()->toDateTimeString());
+
+        $day = $this->getJson('/api/v1/kemkes-reports/inpatient-indicators?from='.now()->toDateString())
+            ->assertOk()
+            ->json('data.days.0');
+
+        $this->assertSame(1, $day['pindahan']);
+        $this->assertSame(2, $day['masuk']);
+    }
+
+    public function test_rujukan_keluar_tidak_terhitung_sebagai_pindahan(): void
+    {
+        $ward = Ward::factory()->create();
+        $room = $this->makeRoom($ward);
+
+        $referral = Referral::factory()->create(['direction' => 'outgoing']);
+        $registration = Registration::factory()->create([
+            'patient_id' => $this->makePatient($this->male)->id,
+            'referral_id' => $referral->id,
+        ]);
+        Visit::factory()->create([
+            'registration_id' => $registration->id,
+            'ward_id' => $ward->id,
+            'admitted_at' => now(),
+        ]);
+
+        $day = $this->getJson('/api/v1/kemkes-reports/inpatient-indicators?from='.now()->toDateString())
+            ->assertOk()
+            ->json('data.days.0');
+
+        $this->assertSame(0, $day['pindahan']);
     }
 
     public function test_rasio_rentang_tiga_hari(): void

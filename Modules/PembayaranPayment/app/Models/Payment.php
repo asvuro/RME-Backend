@@ -5,13 +5,14 @@ namespace Modules\PembayaranPayment\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\Auth\Models\User;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PembayaranPayment\Database\Factories\PaymentFactory;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $fillable = [
         'payment_number',

@@ -4,6 +4,7 @@ namespace Modules\GeneralBed\Providers;
 
 use Nwidart\Modules\Support\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
+use Modules\GeneralBed\Console\Commands\ReleaseExpiredBedReservationsCommand;
 
 class GeneralBedServiceProvider extends ModuleServiceProvider
 {
@@ -22,7 +23,9 @@ class GeneralBedServiceProvider extends ModuleServiceProvider
      *
      * @var string[]
      */
-    // protected array $commands = [];
+    protected array $commands = [
+        ReleaseExpiredBedReservationsCommand::class,
+    ];
 
     /**
      * Provider classes to register.
@@ -36,11 +39,14 @@ class GeneralBedServiceProvider extends ModuleServiceProvider
 
     /**
      * Define module schedules.
-     * 
+     *
+     * TTL reservasi default 60 menit (bed.reservation_ttl_minutes) -- sapuan
+     * tiap 5 menit supaya bed yang kedaluwarsa cepat kembali tersedia.
+     *
      * @param $schedule
      */
-    // protected function configureSchedules(Schedule $schedule): void
-    // {
-    //     $schedule->command('inspire')->hourly();
-    // }
+    protected function configureSchedules(Schedule $schedule): void
+    {
+        $schedule->command(ReleaseExpiredBedReservationsCommand::class)->everyFiveMinutes();
+    }
 }

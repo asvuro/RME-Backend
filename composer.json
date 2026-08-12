@@ -23,7 +23,7 @@
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
         "laravolt/indonesia": "^0.41.0",
-        "nullpunkt/lz-string-php": "dev-master",
+        "nullpunkt/lz-string-php": "dev-master#699a9574713a38af62af2fc6287cc7ba8edd0dc8",
         "nwidart/laravel-modules": "^13.0",
         "spatie/laravel-permission": "^8.3"
     },

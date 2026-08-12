@@ -32,4 +32,20 @@ interface BedGate
      * ingin masuk perbaikan.
      */
     public function setMaintenance(int $bedId, bool $on): void;
+
+    /**
+     * Pesan bed (STATUS=reserved) untuk admission yang direncanakan. Tolak
+     * 422 bila bed nonaktif/maintenance/sudah dipesan/terisi. Expiry diambil
+     * dari HospitalConfig key bed.reservation_ttl_minutes (default 60 menit).
+     */
+    public function reserve(int $bedId): void;
+
+    /**
+     * Bebaskan reservasi (STATUS=reserved -> available). Idempoten bila bed
+     * tidak sedang reserved. $auto=true dipakai oleh sapuan expiry otomatis
+     * (bed:release-expired-reservations) — hanya efektif bila reserved_until
+     * sudah lewat; $auto=false (rilis manual) selalu diizinkan selama masih
+     * reserved.
+     */
+    public function releaseReservation(int $bedId, bool $auto = false): void;
 }

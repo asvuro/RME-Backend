@@ -142,4 +142,97 @@ class BedServiceTest extends TestCase
             $this->assertSame(422, $e->getStatusCode());
         }
     }
+
+    public function test_reserve_bed_kosong_mengubah_ke_reserved_dengan_ttl(): void
+    {
+        $this->service->reserve($this->bed->id);
+
+        $this->bed->refresh();
+        $this->assertSame(Bed::STATUS_RESERVED, $this->bed->status);
+        $this->assertNotNull($this->bed->reserved_until);
+        $this->assertTrue($this->bed->reserved_until->between(now()->addMinutes(59), now()->addMinutes(61)));
+    }
+
+    public function test_reserve_bed_terisi_ditolak_422(): void
+    {
+        $this->bed->update(['status' => Bed::STATUS_OCCUPIED]);
+
+        $this->assertThrows(
+            fn () => $this->service->reserve($this->bed->id),
+            HttpException::class,
+        );
+    }
+
+    public function test_reserve_bed_perbaikan_ditolak_422(): void
+    {
+        $this->bed->update(['status' => Bed::STATUS_MAINTENANCE]);
+
+        $this->assertThrows(
+            fn () => $this->service->reserve($this->bed->id),
+            HttpException::class,
+        );
+    }
+
+    public function test_occupy_dari_reserved_sukses_dan_bersihkan_reserved_until(): void
+    {
+        $this->service->reserve($this->bed->id);
+
+        $this->service->occupy($this->bed->id);
+
+        $this->bed->refresh();
+        $this->assertSame(Bed::STATUS_OCCUPIED, $this->bed->status);
+        $this->assertNull($this->bed->reserved_until);
+    }
+
+    public function test_releaseReservation_manual_selalu_diizinkan_walau_belum_kedaluwarsa(): void
+    {
+        $this->service->reserve($this->bed->id);
+
+        $this->service->releaseReservation($this->bed->id);
+
+        $this->bed->refresh();
+        $this->assertSame(Bed::STATUS_AVAILABLE, $this->bed->status);
+        $this->assertNull($this->bed->reserved_until);
+    }
+
+    public function test_releaseReservation_auto_ditolak_sebelum_kedaluwarsa(): void
+    {
+        $this->service->reserve($this->bed->id);
+
+        $this->assertThrows(
+            fn () => $this->service->releaseReservation($this->bed->id, auto: true),
+            HttpException::class,
+        );
+        $this->assertSame(Bed::STATUS_RESERVED, $this->bed->refresh()->status);
+    }
+
+    public function test_releaseReservation_auto_sukses_setelah_kedaluwarsa(): void
+    {
+        $this->bed->update(['status' => Bed::STATUS_RESERVED, 'reserved_until' => now()->subMinute()]);
+
+        $this->service->releaseReservation($this->bed->id, auto: true);
+
+        $this->bed->refresh();
+        $this->assertSame(Bed::STATUS_AVAILABLE, $this->bed->status);
+        $this->assertNull($this->bed->reserved_until);
+    }
+
+    public function test_releaseReservation_idempoten_bila_bukan_reserved(): void
+    {
+        $this->service->releaseReservation($this->bed->id);
+
+        $this->assertSame(Bed::STATUS_AVAILABLE, $this->bed->refresh()->status);
+    }
+
+    public function test_releaseExpiredReservations_hanya_melepas_yang_kedaluwarsa(): void
+    {
+        $expired = Bed::factory()->create(['status' => Bed::STATUS_RESERVED, 'reserved_until' => now()->subMinute()]);
+        $stillValid = Bed::factory()->create(['status' => Bed::STATUS_RESERVED, 'reserved_until' => now()->addMinutes(30)]);
+
+        $count = $this->service->releaseExpiredReservations();
+
+        $this->assertSame(1, $count);
+        $this->assertSame(Bed::STATUS_AVAILABLE, $expired->refresh()->status);
+        $this->assertSame(Bed::STATUS_RESERVED, $stillValid->refresh()->status);
+    }
 }

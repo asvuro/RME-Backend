@@ -293,38 +293,125 @@ class VisitService implements VisitGate
         return $visit->refresh();
     }
 
-    /** Posting item "Akomodasi" dari masa rawat × tarif ward/kelas kamar. */
+    /**
+     * Posting item "Akomodasi" tersegmentasi per periode ward/kelas kamar.
+     *
+     * simgos2 (storeAkomodasi) sendiri tidak melakukan ini -- ia hanya
+     * meng-upsert SATU baris tagihan berdasar ward/kelas TERAKHIR × total
+     * lama rawat (kerumitan aslinya ada di tempat lain: paket/TITIPAN/hak
+     * kelas, tidak ada di RME-Backend). Segmentasi di bawah adalah
+     * modernisasi yang disengaja: tiap kali pasien dimutasi ward/kelas kamar
+     * (riwayat VisitTransfer, #11), periode itu ditagih dengan tarif ward/
+     * kelasnya sendiri, bukan disamaratakan dengan tarif ward terakhir.
+     */
     protected function postAccommodation(Visit $visit, $dischargedAt): void
     {
-        $tariff = WardTariff::query()
-            ->where('ward_id', $visit->ward_id)
-            ->when($visit->bed_id !== null && $visit->bed?->room?->class_id !== null,
-                fn ($q) => $q->where(function ($qq) use ($visit) {
-                    $qq->where('room_class_id', $visit->bed->room->class_id)
-                        ->orWhereNull('room_class_id');
+        foreach ($this->buildAccommodationSegments($visit, $dischargedAt) as $segment) {
+            if ($segment['ward_id'] === null) {
+                continue;
+            }
+
+            $roomClassId = $segment['bed_id'] !== null
+                ? Bed::query()->with('room')->find($segment['bed_id'])?->room?->class_id
+                : null;
+
+            $tariff = $this->resolveWardTariff($segment['ward_id'], $roomClassId, $segment['start']);
+
+            if ($tariff === null) {
+                continue; // tanpa tarif terpasang untuk segmen ini, tidak ada yang bisa diposting.
+            }
+
+            // Lama dirawat per segmen minimal 1 hari (ala getLamaDirawat), sama
+            // seperti perilaku lama untuk stay tanpa mutasi.
+            $nights = max(1, (int) ceil($segment['start']->diffInHours($segment['end']) / 24));
+
+            $wardName = Ward::query()->whereKey($segment['ward_id'])->value('name');
+
+            $this->billingGate->postServiceItem(
+                $visit->id,
+                sprintf(
+                    'Akomodasi %s (%d hari, %s–%s)',
+                    $wardName ?? 'rawat inap',
+                    $nights,
+                    $segment['start']->format('d/m/Y H:i'),
+                    $segment['end']->format('d/m/Y H:i'),
+                ),
+                'accommodation',
+                $nights,
+                (float) $tariff->price,
+            );
+        }
+    }
+
+    /**
+     * Bangun daftar periode [ward_id, bed_id, start, end] dari riwayat
+     * VisitTransfer (#11) + admitted_at/dischargedAt. Tanpa mutasi sama
+     * sekali, hasilnya SATU segmen mencakup seluruh masa rawat (perilaku
+     * lama, tak berubah).
+     *
+     * @return array<int, array{ward_id: ?int, bed_id: ?int, start: \Carbon\CarbonInterface, end: \Carbon\CarbonInterface}>
+     */
+    protected function buildAccommodationSegments(Visit $visit, $dischargedAt): array
+    {
+        $transfers = VisitTransfer::query()
+            ->where('visit_id', $visit->id)
+            ->orderBy('transferred_at')
+            ->get(['ward_from_id', 'bed_from_id', 'ward_to_id', 'bed_to_id', 'transferred_at']);
+
+        if ($transfers->isEmpty()) {
+            return [[
+                'ward_id' => $visit->ward_id,
+                'bed_id' => $visit->bed_id,
+                'start' => $visit->admitted_at,
+                'end' => $dischargedAt,
+            ]];
+        }
+
+        $segments = [[
+            'ward_id' => $transfers->first()->ward_from_id ?? $visit->ward_id,
+            'bed_id' => $transfers->first()->bed_from_id,
+            'start' => $visit->admitted_at,
+            'end' => $transfers->first()->transferred_at,
+        ]];
+
+        foreach ($transfers as $i => $transfer) {
+            $next = $transfers->get($i + 1);
+
+            $segments[] = [
+                'ward_id' => $transfer->ward_to_id,
+                'bed_id' => $transfer->bed_to_id,
+                'start' => $transfer->transferred_at,
+                'end' => $next?->transferred_at ?? $dischargedAt,
+            ];
+        }
+
+        return $segments;
+    }
+
+    /**
+     * Resolve tarif ward/kelas kamar yang berlaku PADA TANGGAL segmen (dulu
+     * effective_date tidak pernah dipakai -- selalu ambil tarif aktif apa
+     * saja). Preferensi: baris match kelas kamar > baris ward-level tanpa
+     * kelas; di antara kandidat, effective_date terbaru yang <= tanggal
+     * segmen menang.
+     */
+    protected function resolveWardTariff(int $wardId, ?int $roomClassId, $asOf): ?WardTariff
+    {
+        return WardTariff::query()
+            ->where('ward_id', $wardId)
+            ->when($roomClassId !== null,
+                fn ($q) => $q->where(function ($qq) use ($roomClassId) {
+                    $qq->where('room_class_id', $roomClassId)->orWhereNull('room_class_id');
                 }),
                 fn ($q) => $q->whereNull('room_class_id'),
             )
             ->where('is_active', true)
+            ->where(function ($q) use ($asOf) {
+                $q->whereNull('effective_date')->orWhere('effective_date', '<=', $asOf);
+            })
             ->orderByRaw('room_class_id IS NULL')
+            ->orderByDesc('effective_date')
             ->first();
-
-        if ($tariff === null) {
-            return; // tanpa tarif terpasang, tidak ada yang bisa diposting.
-        }
-
-        // Lama dirawat minimal 1 hari (ala getLamaDirawat).
-        $nights = max(1, (int) ceil($visit->admitted_at->diffInHours($dischargedAt) / 24));
-
-        $wardName = Ward::query()->whereKey($visit->ward_id)->value('name');
-
-        $this->billingGate->postServiceItem(
-            $visit->id,
-            sprintf('Akomodasi %s (%d hari)', $wardName ?? 'rawat inap', $nights),
-            'accommodation',
-            $nights,
-            (float) $tariff->price,
-        );
     }
 
     /** Gerbang 2: registrasi terkait sudah pulang → tolak admit baru. */

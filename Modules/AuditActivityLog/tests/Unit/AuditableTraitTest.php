@@ -4,11 +4,12 @@ namespace Modules\AuditActivityLog\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\AuditActivityLog\Models\ActivityLog;
+use Modules\PembayaranPayment\Models\Payment;
 use Modules\PendaftaranVisit\Models\Visit;
 use Tests\TestCase;
 
 /**
- * Trait Auditable pada model mesin state (#7–#11): Visit, Invoice, Bed.
+ * Trait Auditable pada model mesin state (#7–#11): Visit, Invoice, Bed, Payment.
  */
 class AuditableTraitTest extends TestCase
 {
@@ -61,5 +62,20 @@ class AuditableTraitTest extends TestCase
         $this->assertSame(ActivityLog::ACTION_DELETED, $row->action);
         $this->assertSame('meninggal', $row->before['final_outcome']);
         $this->assertNull($row->after);
+    }
+
+    public function test_payment_create_dan_delete_tercatat(): void
+    {
+        $payment = Payment::factory()->create(['amount' => 150000]);
+
+        $created = ActivityLog::query()->where('object', 'payments')->where('action', ActivityLog::ACTION_CREATED)->firstOrFail();
+        $this->assertSame((string) $payment->id, $created->ref);
+        $this->assertEquals(150000, $created->after['amount']);
+
+        $payment->delete();
+
+        $deleted = ActivityLog::query()->where('object', 'payments')->where('action', ActivityLog::ACTION_DELETED)->firstOrFail();
+        $this->assertSame((string) $payment->id, $deleted->ref);
+        $this->assertNull($deleted->after);
     }
 }

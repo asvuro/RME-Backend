@@ -21,7 +21,12 @@ use Modules\PendaftaranVisit\Models\VisitTransfer;
  * - inpatientVisitsByClass<- informasi.listKunjunganRIKemkes: rekap kunjungan RI per kelas.
  *
  * Penyederhanaan dinyatakan vs simgos2:
- * - PINDAHAN (dari RS lain) dilaporkan 0 — visits RME tidak menautkan rujukan masuk.
+ * - PINDAHAN (dari RS lain) = kunjungan yang registrasinya menunjuk Referral
+ *   direction=incoming (Registration::referral()). Semantik legacy sedikit
+ *   lebih luas (kunjungan.REF simgos2 juga mencakup mutasi/konsul intra-RS),
+ *   tapi mutasi intra-RS di sini sudah tercakup terpisah di kolom DIPINDAHKAN
+ *   (VisitTransfer) — interpretasi sempit "rujukan masuk dari RS lain" lebih
+ *   sesuai nama field dan tidak dobel-hitung dengan DIPINDAHKAN.
  * - LD dihitung di PHP (DATEDIFF MySQL tidak tersedia di driver sqlite test suite).
  * - kemkes.statistikPasien (ODP/PDP/OTG COVID) tidak diport — konteks pandemi.
  */
@@ -133,7 +138,12 @@ class KemkesReportService
                     ->where('status', '!=', 'cancelled')
                     ->whereBetween('admitted_at', [$dayStart, $nextStart])
                     ->count(),
-                'pindahan' => 0,
+                'pindahan' => Visit::query()
+                    ->whereNotNull('ward_id')
+                    ->where('status', '!=', 'cancelled')
+                    ->whereBetween('admitted_at', [$dayStart, $nextStart])
+                    ->whereHas('registration.referral', fn ($q) => $q->where('direction', 'incoming'))
+                    ->count(),
                 'dipindahkan' => VisitTransfer::query()
                     ->whereBetween('transferred_at', [$dayStart, $nextStart])
                     ->count(),

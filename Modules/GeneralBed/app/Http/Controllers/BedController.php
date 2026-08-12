@@ -80,4 +80,30 @@ class BedController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function reserve(Request $request, Bed $bed)
+    {
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), $bed->room?->ward_id),
+            403,
+            'Anda tidak ditugaskan ke ward bed ini.',
+        );
+
+        $this->bedService->reserve($bed->id);
+
+        return $bed->refresh();
+    }
+
+    public function releaseReservation(Request $request, Bed $bed)
+    {
+        abort_if(
+            ! $this->wardScope->canAccessWard($request->user(), $bed->room?->ward_id),
+            403,
+            'Anda tidak ditugaskan ke ward bed ini.',
+        );
+
+        $this->bedService->releaseReservation($bed->id);
+
+        return $bed->refresh();
+    }
 }

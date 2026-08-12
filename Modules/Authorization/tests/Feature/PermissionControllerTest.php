@@ -32,11 +32,18 @@ class PermissionControllerTest extends TestCase
     {
         $this->actingUser();
 
+        // RBAC dinamis (rbac:sync-permissions) sudah men-seed ~2.900 permission
+        // rute nyata lewat RoleAndPermissionSeeder -- daftar TIDAK kosong sejak
+        // awal (index() paginate(15) urut id, permission baru ID-nya paling
+        // besar sehingga tidak tentu muncul di halaman 1). Cek persistensi
+        // lewat DB langsung + list tetap 200 dengan meta paginasi masuk akal.
         $this->postJson('/api/v1/permissions', ['name' => 'edit-pasien'])->assertCreated();
+
+        $this->assertDatabaseHas('permissions', ['name' => 'edit-pasien']);
 
         $response = $this->getJson('/api/v1/permissions');
 
-        $response->assertOk()->assertJsonCount(1, 'data');
+        $response->assertOk()->assertJsonCount(15, 'data');
     }
 
     public function test_it_rejects_permission_with_duplicate_name(): void

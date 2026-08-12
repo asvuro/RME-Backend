@@ -4,6 +4,7 @@ namespace Modules\Authorization\Providers;
 
 use Nwidart\Modules\Support\ModuleServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
+use Modules\Authorization\Console\Commands\SyncRoutePermissionsCommand;
 
 class AuthorizationServiceProvider extends ModuleServiceProvider
 {
@@ -22,7 +23,9 @@ class AuthorizationServiceProvider extends ModuleServiceProvider
      *
      * @var string[]
      */
-    // protected array $commands = [];
+    protected array $commands = [
+        SyncRoutePermissionsCommand::class,
+    ];
 
     /**
      * Provider classes to register.

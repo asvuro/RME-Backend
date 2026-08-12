@@ -46,8 +46,13 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Jejak request API (#12) — port semangat logs.bridge_log simgos2.
+        // RoutePermissionGate (RBAC dinamis): gerbang izin per-aksi terpusat,
+        // menggantikan middleware role:... yang tersebar di tiap file rute
+        // secara bertahap (lihat rbac-dynamic-permission-plan). Aman aktif
+        // global sebelum semua modul dimigrasi -- lihat docblock kelasnya.
         $middleware->api(append: [
             \Modules\AuditRequestLog\Http\Middleware\LogApiRequests::class,
+            \Modules\Authorization\Http\Middleware\RoutePermissionGate::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Modules\Auth\Http\Controllers\AuthController;
 use Modules\Auth\Http\Controllers\UserController;
 
+// Gerbang peran role:admin lama sudah digantikan RoutePermissionGate global
+// (RBAC dinamis, per-aksi) -- lihat rbac-dynamic-permission-plan.
 Route::prefix('v1')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 
@@ -12,8 +14,6 @@ Route::prefix('v1')->group(function () {
         Route::post('logout-all', [AuthController::class, 'logoutAll']);
         Route::get('me', [AuthController::class, 'me']);
 
-        Route::middleware('role:admin')->group(function () {
-            Route::apiResource('users', UserController::class);
-        });
+        Route::apiResource('users', UserController::class);
     });
 });

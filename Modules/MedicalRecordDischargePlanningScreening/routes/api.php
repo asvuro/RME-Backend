@@ -6,7 +6,5 @@ use Modules\MedicalRecordDischargePlanningScreening\Http\Controllers\DischargePl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('discharge-planning-screenings', DischargePlanningScreeningController::class)->only(['index', 'show'])->parameters(['discharge-planning-screenings' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('discharge-planning-screenings', DischargePlanningScreeningController::class)->only(['store', 'update', 'destroy'])->parameters(['discharge-planning-screenings' => 'record']);
-    });
+    Route::apiResource('discharge-planning-screenings', DischargePlanningScreeningController::class)->only(['store', 'update', 'destroy'])->parameters(['discharge-planning-screenings' => 'record']);
 });

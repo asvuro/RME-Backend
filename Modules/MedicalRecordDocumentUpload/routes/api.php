@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'document-uploads' => 'upload',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('document-uploads', DocumentUploadController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'document-uploads' => 'upload',
-    ]);
-    });
+    Route::apiResource('document-uploads', DocumentUploadController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'document-uploads' => 'upload',
+]);
 });

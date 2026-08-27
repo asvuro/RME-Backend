@@ -6,7 +6,5 @@ use Modules\MedicalRecordOtherHistory\Http\Controllers\OtherHistoryController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('other-histories', OtherHistoryController::class)->only(['index', 'show'])->parameters(['other-histories' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('other-histories', OtherHistoryController::class)->only(['store'])->parameters(['other-histories' => 'record']);
-    });
+    Route::apiResource('other-histories', OtherHistoryController::class)->only(['store'])->parameters(['other-histories' => 'record']);
 });

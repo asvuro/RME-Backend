@@ -6,7 +6,5 @@ use Modules\GeneralMedicationUsageType\Http\Controllers\MedicationUsageTypeContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('medication-usage-types', MedicationUsageTypeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medication-usage-types', MedicationUsageTypeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('medication-usage-types', MedicationUsageTypeController::class)->only(['store', 'update', 'destroy']);
 });

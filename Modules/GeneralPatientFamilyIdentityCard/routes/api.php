@@ -5,4 +5,4 @@ use Modules\GeneralPatientFamilyIdentityCard\Http\Controllers\PatientFamilyIdent
 
 Route::apiResource('patientfamilyidentitycards', PatientFamilyIdentityCardController::class)->names('generalpatientfamilyidentitycard.patientfamilyidentitycards')->only(['index', 'show'])->middleware('auth:sanctum');
 
-Route::apiResource('patientfamilyidentitycards', PatientFamilyIdentityCardController::class)->names('generalpatientfamilyidentitycard.patientfamilyidentitycards')->only(['store', 'update', 'destroy'])->middleware(['auth:sanctum', 'role:petugas|admin']);
+Route::apiResource('patientfamilyidentitycards', PatientFamilyIdentityCardController::class)->names('generalpatientfamilyidentitycard.patientfamilyidentitycards')->only(['store', 'update', 'destroy'])->middleware(['auth:sanctum']);

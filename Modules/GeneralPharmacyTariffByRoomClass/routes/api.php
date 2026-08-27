@@ -6,7 +6,5 @@ use Modules\GeneralPharmacyTariffByRoomClass\Http\Controllers\PharmacyTariffByRo
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pharmacy-tariff-by-room-classes', PharmacyTariffByRoomClassController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pharmacy-tariff-by-room-classes', PharmacyTariffByRoomClassController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('pharmacy-tariff-by-room-classes', PharmacyTariffByRoomClassController::class)->only(['store', 'update', 'destroy']);
 });

@@ -6,7 +6,5 @@ use Modules\MedicalRecordEyeExamination\Http\Controllers\EyeExaminationControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('eye-examinations', EyeExaminationController::class)->only(['index', 'show'])->parameters(['eye-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('eye-examinations', EyeExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['eye-examinations' => 'record']);
-    });
+    Route::apiResource('eye-examinations', EyeExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['eye-examinations' => 'record']);
 });

@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'abci-procedures' => 'procedure',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('abci-procedures', AbciProcedureController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'abci-procedures' => 'procedure',
-    ]);
-    });
+    Route::apiResource('abci-procedures', AbciProcedureController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'abci-procedures' => 'procedure',
+]);
 });

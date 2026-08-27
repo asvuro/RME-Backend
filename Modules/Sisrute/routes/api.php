@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Sisrute\Http\Controllers\ReferensiController;
 use Modules\Sisrute\Http\Controllers\RujukanController;
 
-Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('sisrute/rujukan', [RujukanController::class, 'index']);
     Route::get('sisrute/rujukan/{rujukan}', [RujukanController::class, 'show']);
     Route::post('sisrute/rujukan', [RujukanController::class, 'kirim']);

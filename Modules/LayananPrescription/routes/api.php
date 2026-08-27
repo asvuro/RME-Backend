@@ -6,7 +6,5 @@ use Modules\LayananPrescription\Http\Controllers\PrescriptionController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('prescriptions', PrescriptionController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('prescriptions', PrescriptionController::class)->only(['store']);
-    });
+    Route::apiResource('prescriptions', PrescriptionController::class)->only(['store']);
 });

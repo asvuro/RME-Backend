@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'clinical-note-verifications' => 'verification',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('clinical-note-verifications', ClinicalNoteVerificationController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'clinical-note-verifications' => 'verification',
-    ]);
-    });
+    Route::apiResource('clinical-note-verifications', ClinicalNoteVerificationController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'clinical-note-verifications' => 'verification',
+]);
 });

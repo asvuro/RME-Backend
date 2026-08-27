@@ -6,7 +6,5 @@ use Modules\MedicalRecordLabResultSummaryItem\Http\Controllers\LabResultSummaryI
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('lab-result-summary-items', LabResultSummaryItemController::class)->only(['index', 'show'])->parameters(['lab-result-summary-items' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('lab-result-summary-items', LabResultSummaryItemController::class)->only(['store'])->parameters(['lab-result-summary-items' => 'record']);
-    });
+    Route::apiResource('lab-result-summary-items', LabResultSummaryItemController::class)->only(['store'])->parameters(['lab-result-summary-items' => 'record']);
 });

@@ -6,7 +6,5 @@ use Modules\MedicalRecordDischargePlanningRiskFactor\Http\Controllers\DischargeP
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('discharge-planning-risk-factors', DischargePlanningRiskFactorController::class)->only(['index', 'show'])->parameters(['discharge-planning-risk-factors' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('discharge-planning-risk-factors', DischargePlanningRiskFactorController::class)->only(['store', 'update', 'destroy'])->parameters(['discharge-planning-risk-factors' => 'record']);
-    });
+    Route::apiResource('discharge-planning-risk-factors', DischargePlanningRiskFactorController::class)->only(['store', 'update', 'destroy'])->parameters(['discharge-planning-risk-factors' => 'record']);
 });

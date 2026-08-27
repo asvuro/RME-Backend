@@ -6,7 +6,5 @@ use Modules\GeneralVisitCancellationReason\Http\Controllers\VisitCancellationRea
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('visit-cancellation-reasons', VisitCancellationReasonController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('visit-cancellation-reasons', VisitCancellationReasonController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('visit-cancellation-reasons', VisitCancellationReasonController::class)->only(['store', 'update', 'destroy']);
 });

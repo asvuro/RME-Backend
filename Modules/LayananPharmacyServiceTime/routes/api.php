@@ -6,7 +6,5 @@ use Modules\LayananPharmacyServiceTime\Http\Controllers\PharmacyServiceTimeContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pharmacy-service-times', PharmacyServiceTimeController::class)->only(['index', 'show'])->parameters(['pharmacy-service-times' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pharmacy-service-times', PharmacyServiceTimeController::class)->only(['store', 'update', 'destroy'])->parameters(['pharmacy-service-times' => 'record']);
-    });
+    Route::apiResource('pharmacy-service-times', PharmacyServiceTimeController::class)->only(['store', 'update', 'destroy'])->parameters(['pharmacy-service-times' => 'record']);
 });

@@ -6,7 +6,5 @@ use Modules\MedicalRecordDiagnosisIndicatorMapping\Http\Controllers\DiagnosisInd
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('diagnosis-indicator-mappings', DiagnosisIndicatorMappingController::class)->only(['index', 'show'])->parameters(['diagnosis-indicator-mappings' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('diagnosis-indicator-mappings', DiagnosisIndicatorMappingController::class)->only(['store', 'update', 'destroy'])->parameters(['diagnosis-indicator-mappings' => 'record']);
-    });
+    Route::apiResource('diagnosis-indicator-mappings', DiagnosisIndicatorMappingController::class)->only(['store', 'update', 'destroy'])->parameters(['diagnosis-indicator-mappings' => 'record']);
 });

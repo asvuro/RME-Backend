@@ -6,7 +6,5 @@ use Modules\GeneralService\Http\Controllers\ServiceController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('services', ServiceController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('services', ServiceController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('services', ServiceController::class)->only(['store', 'update', 'destroy']);
 });

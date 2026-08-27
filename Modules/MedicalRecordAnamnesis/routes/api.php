@@ -6,7 +6,5 @@ use Modules\MedicalRecordAnamnesis\Http\Controllers\AnamnesisController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('anamneses', AnamnesisController::class)->only(['index', 'show'])->parameters(['anamneses' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('anamneses', AnamnesisController::class)->only(['store', 'update', 'destroy'])->parameters(['anamneses' => 'record']);
-    });
+    Route::apiResource('anamneses', AnamnesisController::class)->only(['store', 'update', 'destroy'])->parameters(['anamneses' => 'record']);
 });

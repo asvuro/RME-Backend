@@ -6,7 +6,5 @@ use Modules\MedicalRecordFamilyPlanningObstetrics\Http\Controllers\FamilyPlannin
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('family-planning-obstetrics', FamilyPlanningObstetricsController::class)->only(['index', 'show'])->parameters(['family-planning-obstetrics' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('family-planning-obstetrics', FamilyPlanningObstetricsController::class)->only(['store', 'update', 'destroy'])->parameters(['family-planning-obstetrics' => 'record']);
-    });
+    Route::apiResource('family-planning-obstetrics', FamilyPlanningObstetricsController::class)->only(['store', 'update', 'destroy'])->parameters(['family-planning-obstetrics' => 'record']);
 });

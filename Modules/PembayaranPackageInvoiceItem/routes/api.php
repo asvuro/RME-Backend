@@ -6,7 +6,5 @@ use Modules\PembayaranPackageInvoiceItem\Http\Controllers\PackageInvoiceItemCont
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('package-invoice-items', PackageInvoiceItemController::class)->only(['index', 'show'])->parameters(['package-invoice-items' => 'package_invoice_item']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('package-invoice-items', PackageInvoiceItemController::class)->only(['store', 'update', 'destroy'])->parameters(['package-invoice-items' => 'package_invoice_item']);
-    });
+    Route::apiResource('package-invoice-items', PackageInvoiceItemController::class)->only(['store', 'update', 'destroy'])->parameters(['package-invoice-items' => 'package_invoice_item']);
 });

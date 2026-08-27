@@ -6,7 +6,5 @@ use Modules\PendaftaranPatientTransfer\Http\Controllers\PatientTransferControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('patienttransfers', PatientTransferController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('patienttransfers', PatientTransferController::class)->only(['store']);
-    });
+    Route::apiResource('patienttransfers', PatientTransferController::class)->only(['store']);
 });

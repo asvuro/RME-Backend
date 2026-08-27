@@ -6,7 +6,5 @@ use Modules\MedicalRecordTumorAssessment\Http\Controllers\TumorAssessmentControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('tumor-assessments', TumorAssessmentController::class)->only(['index', 'show'])->parameters(['tumor-assessments' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('tumor-assessments', TumorAssessmentController::class)->only(['store'])->parameters(['tumor-assessments' => 'record']);
-    });
+    Route::apiResource('tumor-assessments', TumorAssessmentController::class)->only(['store'])->parameters(['tumor-assessments' => 'record']);
 });

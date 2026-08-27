@@ -6,7 +6,5 @@ use Modules\GeneralGuarantorItemCategoryMapping\Http\Controllers\GuarantorItemCa
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('guarantor-item-category-mappings', GuarantorItemCategoryMappingController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('guarantor-item-category-mappings', GuarantorItemCategoryMappingController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('guarantor-item-category-mappings', GuarantorItemCategoryMappingController::class)->only(['store', 'update', 'destroy']);
 });

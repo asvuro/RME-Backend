@@ -6,7 +6,5 @@ use Modules\LayananLabMicroscopicResult\Http\Controllers\LabMicroscopicResultCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('lab-microscopic-results', LabMicroscopicResultController::class)->only(['index', 'show'])->parameters(['lab-microscopic-results' => 'microscopic_result']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('lab-microscopic-results', LabMicroscopicResultController::class)->only(['store'])->parameters(['lab-microscopic-results' => 'microscopic_result']);
-    });
+    Route::apiResource('lab-microscopic-results', LabMicroscopicResultController::class)->only(['store'])->parameters(['lab-microscopic-results' => 'microscopic_result']);
 });

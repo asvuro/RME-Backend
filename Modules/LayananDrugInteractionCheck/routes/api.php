@@ -12,12 +12,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     // Baca master rule: bebas untuk semua user terautentikasi.
     Route::apiResource('drug-interaction-rules', DrugInteractionRuleController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('drug-interaction-rules', DrugInteractionRuleController::class)->only(['store', 'update', 'destroy']);
+    Route::apiResource('drug-interaction-rules', DrugInteractionRuleController::class)->only(['store', 'update', 'destroy']);
 
-        // CDSS advisory read-only: hasil cek tidak pernah mengubah/memblokir
-        // alur resep & dispense yang sudah ada.
-        Route::get('prescriptions/{prescription}/interaction-check', DrugInteractionCheckController::class)
-            ->name('prescriptions.interaction-check');
-    });
+    // CDSS advisory read-only: hasil cek tidak pernah mengubah/memblokir
+    // alur resep & dispense yang sudah ada.
+    Route::get('prescriptions/{prescription}/interaction-check', DrugInteractionCheckController::class)
+        ->name('prescriptions.interaction-check');
 });

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\RsOnline\Http\Controllers\ReferensiController;
 use Modules\RsOnline\Http\Controllers\RsOnlineController;
 
-Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1/rs-online')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('v1/rs-online')->group(function () {
     Route::get('/', [RsOnlineController::class, 'index']);
     Route::get('{rsOnlineSubmission}', [RsOnlineController::class, 'show']);
 

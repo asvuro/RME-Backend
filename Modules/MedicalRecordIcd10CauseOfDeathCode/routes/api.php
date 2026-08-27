@@ -6,7 +6,5 @@ use Modules\MedicalRecordIcd10CauseOfDeathCode\Http\Controllers\Icd10CauseOfDeat
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('icd10-cause-of-death-codes', Icd10CauseOfDeathCodeController::class)->only(['index', 'show'])->parameters(['icd10-cause-of-death-codes' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('icd10-cause-of-death-codes', Icd10CauseOfDeathCodeController::class)->only(['store', 'update', 'destroy'])->parameters(['icd10-cause-of-death-codes' => 'record']);
-    });
+    Route::apiResource('icd10-cause-of-death-codes', Icd10CauseOfDeathCodeController::class)->only(['store', 'update', 'destroy'])->parameters(['icd10-cause-of-death-codes' => 'record']);
 });

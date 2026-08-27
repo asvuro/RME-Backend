@@ -6,7 +6,5 @@ use Modules\GeneralAdmissionDiagnosis\Http\Controllers\AdmissionDiagnosisControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('admission-diagnoses', AdmissionDiagnosisController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('admission-diagnoses', AdmissionDiagnosisController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('admission-diagnoses', AdmissionDiagnosisController::class)->only(['store', 'update', 'destroy']);
 });

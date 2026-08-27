@@ -6,7 +6,5 @@ use Modules\MedicalRecordEmgExamination\Http\Controllers\EmgExaminationControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('emg-examinations', EmgExaminationController::class)->only(['index', 'show'])->parameters(['emg-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('emg-examinations', EmgExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['emg-examinations' => 'record']);
-    });
+    Route::apiResource('emg-examinations', EmgExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['emg-examinations' => 'record']);
 });

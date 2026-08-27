@@ -6,7 +6,5 @@ use Modules\GeneralSitbChestXrayResult\Http\Controllers\SitbChestXrayResultContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-chest-xray-results', SitbChestXrayResultController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-chest-xray-results', SitbChestXrayResultController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-chest-xray-results', SitbChestXrayResultController::class)->only(['store', 'update', 'destroy']);
 });

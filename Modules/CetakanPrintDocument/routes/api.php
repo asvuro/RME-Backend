@@ -7,7 +7,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('print-documents', [PrintDocumentController::class, 'index']);
     Route::get('print-documents/{document}', [PrintDocumentController::class, 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::post('print-documents/issue', [PrintDocumentController::class, 'issue']);
-    });
+    Route::post('print-documents/issue', [PrintDocumentController::class, 'issue']);
 });

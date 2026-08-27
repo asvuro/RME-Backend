@@ -6,7 +6,5 @@ use Modules\LayananPharmacyOutpatientQueue\Http\Controllers\PharmacyOutpatientQu
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pharmacy-outpatient-queues', PharmacyOutpatientQueueController::class)->only(['index', 'show'])->parameters(['pharmacy-outpatient-queues' => 'queue']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pharmacy-outpatient-queues', PharmacyOutpatientQueueController::class)->only(['store', 'update'])->parameters(['pharmacy-outpatient-queues' => 'queue']);
-    });
+    Route::apiResource('pharmacy-outpatient-queues', PharmacyOutpatientQueueController::class)->only(['store', 'update'])->parameters(['pharmacy-outpatient-queues' => 'queue']);
 });

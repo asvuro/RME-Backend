@@ -6,7 +6,5 @@ use Modules\GeneralDiagnosisRestriction\Http\Controllers\DiagnosisRestrictionCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('diagnosis-restrictions', DiagnosisRestrictionController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('diagnosis-restrictions', DiagnosisRestrictionController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('diagnosis-restrictions', DiagnosisRestrictionController::class)->only(['store', 'update', 'destroy']);
 });

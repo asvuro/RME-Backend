@@ -6,7 +6,5 @@ use Modules\PembayaranInvoiceGuarantor\Http\Controllers\InvoiceGuarantorControll
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('invoice-guarantors', InvoiceGuarantorController::class)->only(['index', 'show'])->parameters(['invoice-guarantors' => 'invoice_guarantor']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('invoice-guarantors', InvoiceGuarantorController::class)->only(['store', 'update', 'destroy'])->parameters(['invoice-guarantors' => 'invoice_guarantor']);
-    });
+    Route::apiResource('invoice-guarantors', InvoiceGuarantorController::class)->only(['store', 'update', 'destroy'])->parameters(['invoice-guarantors' => 'invoice_guarantor']);
 });

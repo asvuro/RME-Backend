@@ -6,7 +6,5 @@ use Modules\LayananMedicalSupplyUsage\Http\Controllers\MedicalSupplyUsageControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('medical-supply-usages', MedicalSupplyUsageController::class)->only(['index', 'show'])->parameters(['medical-supply-usages' => 'supply_usage']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medical-supply-usages', MedicalSupplyUsageController::class)->only(['store', 'update'])->parameters(['medical-supply-usages' => 'supply_usage']);
-    });
+    Route::apiResource('medical-supply-usages', MedicalSupplyUsageController::class)->only(['store', 'update'])->parameters(['medical-supply-usages' => 'supply_usage']);
 });

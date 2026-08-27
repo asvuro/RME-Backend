@@ -6,7 +6,5 @@ use Modules\GeneralAntibioticRestriction\Http\Controllers\AntibioticRestrictionC
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('antibiotic-restrictions', AntibioticRestrictionController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('antibiotic-restrictions', AntibioticRestrictionController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('antibiotic-restrictions', AntibioticRestrictionController::class)->only(['store', 'update', 'destroy']);
 });

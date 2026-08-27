@@ -6,7 +6,5 @@ use Modules\MedicalRecordNursingCarePlan\Http\Controllers\NursingCarePlanControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('nursing-care-plans', NursingCarePlanController::class)->only(['index', 'show'])->parameters(['nursing-care-plans' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('nursing-care-plans', NursingCarePlanController::class)->only(['store', 'update', 'destroy'])->parameters(['nursing-care-plans' => 'record']);
-    });
+    Route::apiResource('nursing-care-plans', NursingCarePlanController::class)->only(['store', 'update', 'destroy'])->parameters(['nursing-care-plans' => 'record']);
 });

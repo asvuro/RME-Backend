@@ -6,7 +6,5 @@ use Modules\GeneralSitbHivStatusClassification\Http\Controllers\SitbHivStatusCla
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-hiv-status-classifications', SitbHivStatusClassificationController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-hiv-status-classifications', SitbHivStatusClassificationController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-hiv-status-classifications', SitbHivStatusClassificationController::class)->only(['store', 'update', 'destroy']);
 });

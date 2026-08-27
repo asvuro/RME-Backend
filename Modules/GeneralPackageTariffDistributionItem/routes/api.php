@@ -6,7 +6,5 @@ use Modules\GeneralPackageTariffDistributionItem\Http\Controllers\PackageTariffD
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('package-tariff-distribution-items', PackageTariffDistributionItemController::class)->only(['index', 'show'])->parameters(['package-tariff-distribution-items' => 'distribution_item']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('package-tariff-distribution-items', PackageTariffDistributionItemController::class)->only(['store', 'update', 'destroy'])->parameters(['package-tariff-distribution-items' => 'distribution_item']);
-    });
+    Route::apiResource('package-tariff-distribution-items', PackageTariffDistributionItemController::class)->only(['store', 'update', 'destroy'])->parameters(['package-tariff-distribution-items' => 'distribution_item']);
 });

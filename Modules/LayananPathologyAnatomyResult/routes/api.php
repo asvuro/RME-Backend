@@ -6,7 +6,5 @@ use Modules\LayananPathologyAnatomyResult\Http\Controllers\PathologyAnatomyResul
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pathology-anatomy-results', PathologyAnatomyResultController::class)->only(['index', 'show'])->parameters(['pathology-anatomy-results' => 'pa_result']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pathology-anatomy-results', PathologyAnatomyResultController::class)->only(['store', 'update'])->parameters(['pathology-anatomy-results' => 'pa_result']);
-    });
+    Route::apiResource('pathology-anatomy-results', PathologyAnatomyResultController::class)->only(['store', 'update'])->parameters(['pathology-anatomy-results' => 'pa_result']);
 });

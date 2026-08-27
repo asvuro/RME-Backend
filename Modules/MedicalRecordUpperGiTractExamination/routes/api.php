@@ -6,7 +6,5 @@ use Modules\MedicalRecordUpperGiTractExamination\Http\Controllers\UpperGiTractEx
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('upper-gi-examinations', UpperGiTractExaminationController::class)->only(['index', 'show'])->parameters(['upper-gi-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('upper-gi-examinations', UpperGiTractExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['upper-gi-examinations' => 'record']);
-    });
+    Route::apiResource('upper-gi-examinations', UpperGiTractExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['upper-gi-examinations' => 'record']);
 });

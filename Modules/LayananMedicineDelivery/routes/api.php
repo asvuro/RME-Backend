@@ -11,13 +11,11 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->only(['index', 'show'])
         ->parameters(['medicine-deliveries' => 'delivery']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medicine-deliveries', MedicineDeliveryController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->parameters(['medicine-deliveries' => 'delivery']);
+    Route::apiResource('medicine-deliveries', MedicineDeliveryController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->parameters(['medicine-deliveries' => 'delivery']);
 
-        // Gerbang kurir: penugasan (paket berangkat) dan serah terima.
-        Route::post('medicine-deliveries/{delivery}/assign-courier', [MedicineDeliveryController::class, 'assignCourier']);
-        Route::post('medicine-deliveries/{delivery}/mark-delivered', [MedicineDeliveryController::class, 'markDelivered']);
-    });
+    // Gerbang kurir: penugasan (paket berangkat) dan serah terima.
+    Route::post('medicine-deliveries/{delivery}/assign-courier', [MedicineDeliveryController::class, 'assignCourier']);
+    Route::post('medicine-deliveries/{delivery}/mark-delivered', [MedicineDeliveryController::class, 'markDelivered']);
 });

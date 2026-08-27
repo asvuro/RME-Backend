@@ -9,8 +9,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sterilized-items', SterilizedItemController::class)->only(['index', 'show']);
     Route::get('sterilized-items/{sterilized_item}/check-expiry', [SterilizedItemController::class, 'checkExpiry']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sterilization-cycles', SterilizationCycleController::class)->only(['store', 'update', 'destroy']);
-        Route::apiResource('sterilized-items', SterilizedItemController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sterilization-cycles', SterilizationCycleController::class)->only(['store', 'update', 'destroy']);
+    Route::apiResource('sterilized-items', SterilizedItemController::class)->only(['store', 'update', 'destroy']);
 });

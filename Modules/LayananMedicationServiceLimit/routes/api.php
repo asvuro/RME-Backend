@@ -6,7 +6,5 @@ use Modules\LayananMedicationServiceLimit\Http\Controllers\MedicationServiceLimi
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('medication-service-limits', MedicationServiceLimitController::class)->only(['index', 'show'])->parameters(['medication-service-limits' => 'service_limit']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medication-service-limits', MedicationServiceLimitController::class)->only(['store', 'update', 'destroy'])->parameters(['medication-service-limits' => 'service_limit']);
-    });
+    Route::apiResource('medication-service-limits', MedicationServiceLimitController::class)->only(['store', 'update', 'destroy'])->parameters(['medication-service-limits' => 'service_limit']);
 });

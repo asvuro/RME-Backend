@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'pediatric-statuses' => 'status',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pediatric-statuses', PediatricStatusController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'pediatric-statuses' => 'status',
-    ]);
-    });
+    Route::apiResource('pediatric-statuses', PediatricStatusController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'pediatric-statuses' => 'status',
+]);
 });

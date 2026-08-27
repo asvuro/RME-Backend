@@ -6,7 +6,5 @@ use Modules\MedicalRecordTonsilExamination\Http\Controllers\TonsilExaminationCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('tonsil-examinations', TonsilExaminationController::class)->only(['index', 'show'])->parameters(['tonsil-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('tonsil-examinations', TonsilExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['tonsil-examinations' => 'record']);
-    });
+    Route::apiResource('tonsil-examinations', TonsilExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['tonsil-examinations' => 'record']);
 });

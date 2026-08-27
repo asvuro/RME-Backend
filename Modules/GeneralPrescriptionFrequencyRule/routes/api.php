@@ -6,7 +6,5 @@ use Modules\GeneralPrescriptionFrequencyRule\Http\Controllers\PrescriptionFreque
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('prescription-frequency-rules', PrescriptionFrequencyRuleController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('prescription-frequency-rules', PrescriptionFrequencyRuleController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('prescription-frequency-rules', PrescriptionFrequencyRuleController::class)->only(['store', 'update', 'destroy']);
 });

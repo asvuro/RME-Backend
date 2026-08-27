@@ -6,7 +6,5 @@ use Modules\GeneralWardType\Http\Controllers\WardTypeController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('ward-types', WardTypeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('ward-types', WardTypeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('ward-types', WardTypeController::class)->only(['store', 'update', 'destroy']);
 });

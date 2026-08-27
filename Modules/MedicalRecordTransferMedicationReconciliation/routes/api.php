@@ -6,7 +6,5 @@ use Modules\MedicalRecordTransferMedicationReconciliation\Http\Controllers\Trans
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('transfer-med-reconciliations', TransferMedicationReconciliationController::class)->only(['index', 'show'])->parameters(['transfer-med-reconciliations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('transfer-med-reconciliations', TransferMedicationReconciliationController::class)->only(['store'])->parameters(['transfer-med-reconciliations' => 'record']);
-    });
+    Route::apiResource('transfer-med-reconciliations', TransferMedicationReconciliationController::class)->only(['store'])->parameters(['transfer-med-reconciliations' => 'record']);
 });

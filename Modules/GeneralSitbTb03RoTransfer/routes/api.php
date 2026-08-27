@@ -6,7 +6,5 @@ use Modules\GeneralSitbTb03RoTransfer\Http\Controllers\SitbTb03RoTransferControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-tb03-ro-transfers', SitbTb03RoTransferController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-tb03-ro-transfers', SitbTb03RoTransferController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-tb03-ro-transfers', SitbTb03RoTransferController::class)->only(['store', 'update', 'destroy']);
 });

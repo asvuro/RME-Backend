@@ -6,7 +6,5 @@ use Modules\InventoryStockRequest\Http\Controllers\StockRequestController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('stock-requests', StockRequestController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('stock-requests', StockRequestController::class)->only(['store', 'update']);
-    });
+    Route::apiResource('stock-requests', StockRequestController::class)->only(['store', 'update']);
 });

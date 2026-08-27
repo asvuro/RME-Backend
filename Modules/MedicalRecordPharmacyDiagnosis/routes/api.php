@@ -6,7 +6,5 @@ use Modules\MedicalRecordPharmacyDiagnosis\Http\Controllers\PharmacyDiagnosisCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pharmacy-diagnoses', PharmacyDiagnosisController::class)->only(['index', 'show'])->parameters(['pharmacy-diagnoses' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pharmacy-diagnoses', PharmacyDiagnosisController::class)->only(['store', 'update', 'destroy'])->parameters(['pharmacy-diagnoses' => 'record']);
-    });
+    Route::apiResource('pharmacy-diagnoses', PharmacyDiagnosisController::class)->only(['store', 'update', 'destroy'])->parameters(['pharmacy-diagnoses' => 'record']);
 });

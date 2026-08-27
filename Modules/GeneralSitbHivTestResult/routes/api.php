@@ -6,7 +6,5 @@ use Modules\GeneralSitbHivTestResult\Http\Controllers\SitbHivTestResultControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-hiv-test-results', SitbHivTestResultController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-hiv-test-results', SitbHivTestResultController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-hiv-test-results', SitbHivTestResultController::class)->only(['store', 'update', 'destroy']);
 });

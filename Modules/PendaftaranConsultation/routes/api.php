@@ -6,7 +6,5 @@ use Modules\PendaftaranConsultation\Http\Controllers\ConsultationController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('consultations', ConsultationController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('consultations', ConsultationController::class)->only(['store']);
-    });
+    Route::apiResource('consultations', ConsultationController::class)->only(['store']);
 });

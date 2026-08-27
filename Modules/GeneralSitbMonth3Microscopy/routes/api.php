@@ -6,7 +6,5 @@ use Modules\GeneralSitbMonth3Microscopy\Http\Controllers\SitbMonth3MicroscopyCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-month3-microscopies', SitbMonth3MicroscopyController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-month3-microscopies', SitbMonth3MicroscopyController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-month3-microscopies', SitbMonth3MicroscopyController::class)->only(['store', 'update', 'destroy']);
 });

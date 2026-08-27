@@ -6,7 +6,5 @@ use Modules\MedicalRecordDischargeSummary\Http\Controllers\DischargeSummaryContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('discharge-summaries', DischargeSummaryController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('discharge-summaries', DischargeSummaryController::class)->only(['store']);
-    });
+    Route::apiResource('discharge-summaries', DischargeSummaryController::class)->only(['store']);
 });

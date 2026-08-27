@@ -10,7 +10,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
     Route::apiResource('remuneration-entries', RemunerationEntryController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('remuneration-entries', RemunerationEntryController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('remuneration-entries', RemunerationEntryController::class)->only(['store', 'update', 'destroy']);
 });

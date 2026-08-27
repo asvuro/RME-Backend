@@ -6,7 +6,5 @@ use Modules\PendaftaranReferralLetter\Http\Controllers\ReferralLetterController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('referralletters', ReferralLetterController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('referralletters', ReferralLetterController::class)->only(['store']);
-    });
+    Route::apiResource('referralletters', ReferralLetterController::class)->only(['store']);
 });

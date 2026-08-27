@@ -6,7 +6,5 @@ use Modules\MedicalRecordAdmissionMedicationReconciliationItem\Http\Controllers\
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('admission-med-reconciliation-items', AdmissionMedicationReconciliationItemController::class)->only(['index', 'show'])->parameters(['admission-med-reconciliation-items' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('admission-med-reconciliation-items', AdmissionMedicationReconciliationItemController::class)->only(['store'])->parameters(['admission-med-reconciliation-items' => 'record']);
-    });
+    Route::apiResource('admission-med-reconciliation-items', AdmissionMedicationReconciliationItemController::class)->only(['store'])->parameters(['admission-med-reconciliation-items' => 'record']);
 });

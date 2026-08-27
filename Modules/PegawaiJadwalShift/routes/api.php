@@ -7,7 +7,5 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('shift-schedules', ShiftScheduleController::class)->only(['index', 'show']);
     Route::get('shift-schedules-by-ward', [ShiftScheduleController::class, 'byWardAndDateRange']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('shift-schedules', ShiftScheduleController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('shift-schedules', ShiftScheduleController::class)->only(['store', 'update', 'destroy']);
 });

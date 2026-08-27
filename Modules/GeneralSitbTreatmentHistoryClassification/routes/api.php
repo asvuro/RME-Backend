@@ -6,7 +6,5 @@ use Modules\GeneralSitbTreatmentHistoryClassification\Http\Controllers\SitbTreat
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-treatment-history-classifications', SitbTreatmentHistoryClassificationController::class)->only(['index', 'show'])->parameters(['sitb-treatment-history-classifications' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-treatment-history-classifications', SitbTreatmentHistoryClassificationController::class)->only(['store', 'update', 'destroy'])->parameters(['sitb-treatment-history-classifications' => 'record']);
-    });
+    Route::apiResource('sitb-treatment-history-classifications', SitbTreatmentHistoryClassificationController::class)->only(['store', 'update', 'destroy'])->parameters(['sitb-treatment-history-classifications' => 'record']);
 });

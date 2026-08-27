@@ -6,7 +6,5 @@ use Modules\MedicalRecordTranscranialDopplerWindow\Http\Controllers\Transcranial
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('tcd-windows', TranscranialDopplerWindowController::class)->only(['index', 'show'])->parameters(['tcd-windows' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('tcd-windows', TranscranialDopplerWindowController::class)->only(['store', 'update', 'destroy'])->parameters(['tcd-windows' => 'record']);
-    });
+    Route::apiResource('tcd-windows', TranscranialDopplerWindowController::class)->only(['store', 'update', 'destroy'])->parameters(['tcd-windows' => 'record']);
 });

@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'mmpi-tests' => 'test',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('mmpi-tests', MmpiTestController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'mmpi-tests' => 'test',
-    ]);
-    });
+    Route::apiResource('mmpi-tests', MmpiTestController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'mmpi-tests' => 'test',
+]);
 });

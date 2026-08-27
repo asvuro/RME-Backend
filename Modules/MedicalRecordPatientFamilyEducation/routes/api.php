@@ -6,7 +6,5 @@ use Modules\MedicalRecordPatientFamilyEducation\Http\Controllers\PatientFamilyEd
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('patient-family-educations', PatientFamilyEducationController::class)->only(['index', 'show'])->parameters(['patient-family-educations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('patient-family-educations', PatientFamilyEducationController::class)->only(['store', 'update', 'destroy'])->parameters(['patient-family-educations' => 'record']);
-    });
+    Route::apiResource('patient-family-educations', PatientFamilyEducationController::class)->only(['store', 'update', 'destroy'])->parameters(['patient-family-educations' => 'record']);
 });

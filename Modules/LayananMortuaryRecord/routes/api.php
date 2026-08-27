@@ -8,11 +8,9 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->only(['index', 'show'])
         ->parameters(['mortuary-records' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('mortuary-records', MortuaryRecordController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->parameters(['mortuary-records' => 'record']);
+    Route::apiResource('mortuary-records', MortuaryRecordController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->parameters(['mortuary-records' => 'record']);
 
-        Route::post('mortuary-records/{record}/release', [MortuaryRecordController::class, 'release']);
-    });
+    Route::post('mortuary-records/{record}/release', [MortuaryRecordController::class, 'release']);
 });

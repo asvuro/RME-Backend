@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'blood-transfusion-details' => 'detail',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('blood-transfusion-details', BloodTransfusionDetailController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'blood-transfusion-details' => 'detail',
-    ]);
-    });
+    Route::apiResource('blood-transfusion-details', BloodTransfusionDetailController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'blood-transfusion-details' => 'detail',
+]);
 });

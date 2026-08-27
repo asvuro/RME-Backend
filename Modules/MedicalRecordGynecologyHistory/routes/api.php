@@ -6,7 +6,5 @@ use Modules\MedicalRecordGynecologyHistory\Http\Controllers\GynecologyHistoryCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('gynecology-histories', GynecologyHistoryController::class)->only(['index', 'show'])->parameters(['gynecology-histories' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('gynecology-histories', GynecologyHistoryController::class)->only(['store'])->parameters(['gynecology-histories' => 'record']);
-    });
+    Route::apiResource('gynecology-histories', GynecologyHistoryController::class)->only(['store'])->parameters(['gynecology-histories' => 'record']);
 });

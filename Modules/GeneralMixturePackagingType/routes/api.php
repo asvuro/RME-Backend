@@ -6,7 +6,5 @@ use Modules\GeneralMixturePackagingType\Http\Controllers\MixturePackagingTypeCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('mixture-packaging-types', MixturePackagingTypeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('mixture-packaging-types', MixturePackagingTypeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('mixture-packaging-types', MixturePackagingTypeController::class)->only(['store', 'update', 'destroy']);
 });

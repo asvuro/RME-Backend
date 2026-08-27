@@ -6,7 +6,5 @@ use Modules\GeneralScannedDocument\Http\Controllers\GeneralScannedDocumentContro
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('scanned-documents', GeneralScannedDocumentController::class)->only(['index', 'show'])->parameters(['scanned-documents' => 'scannedDocument']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('scanned-documents', GeneralScannedDocumentController::class)->only(['store'])->parameters(['scanned-documents' => 'scannedDocument']);
-    });
+    Route::apiResource('scanned-documents', GeneralScannedDocumentController::class)->only(['store'])->parameters(['scanned-documents' => 'scannedDocument']);
 });

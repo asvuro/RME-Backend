@@ -6,7 +6,5 @@ use Modules\GeneralSitbChildTbScore0To13\Http\Controllers\SitbChildTbScore0To13C
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-child-tb-score0-to13s', SitbChildTbScore0To13Controller::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-child-tb-score0-to13s', SitbChildTbScore0To13Controller::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-child-tb-score0-to13s', SitbChildTbScore0To13Controller::class)->only(['store', 'update', 'destroy']);
 });

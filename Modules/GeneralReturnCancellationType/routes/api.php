@@ -6,7 +6,5 @@ use Modules\GeneralReturnCancellationType\Http\Controllers\ReturnCancellationTyp
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('return-cancellation-types', ReturnCancellationTypeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('return-cancellation-types', ReturnCancellationTypeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('return-cancellation-types', ReturnCancellationTypeController::class)->only(['store', 'update', 'destroy']);
 });

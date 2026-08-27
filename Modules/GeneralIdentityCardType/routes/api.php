@@ -6,7 +6,5 @@ use Modules\GeneralIdentityCardType\Http\Controllers\IdentityCardTypeController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('identity-card-types', IdentityCardTypeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('identity-card-types', IdentityCardTypeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('identity-card-types', IdentityCardTypeController::class)->only(['store', 'update', 'destroy']);
 });

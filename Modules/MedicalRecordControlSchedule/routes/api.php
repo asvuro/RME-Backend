@@ -6,7 +6,5 @@ use Modules\MedicalRecordControlSchedule\Http\Controllers\ControlScheduleControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('control-schedules', ControlScheduleController::class)->only(['index', 'show'])->parameters(['control-schedules' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('control-schedules', ControlScheduleController::class)->only(['store', 'update', 'destroy'])->parameters(['control-schedules' => 'record']);
-    });
+    Route::apiResource('control-schedules', ControlScheduleController::class)->only(['store', 'update', 'destroy'])->parameters(['control-schedules' => 'record']);
 });

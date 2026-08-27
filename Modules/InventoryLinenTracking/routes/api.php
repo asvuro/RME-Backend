@@ -8,8 +8,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('linen-items', LinenItemController::class)->only(['index', 'show']);
     Route::apiResource('linen-cycles', LinenCycleController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('linen-items', LinenItemController::class)->only(['store', 'update', 'destroy']);
-        Route::apiResource('linen-cycles', LinenCycleController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('linen-items', LinenItemController::class)->only(['store', 'update', 'destroy']);
+    Route::apiResource('linen-cycles', LinenCycleController::class)->only(['store', 'update', 'destroy']);
 });

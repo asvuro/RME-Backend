@@ -6,7 +6,5 @@ use Modules\LayananPatientDischargeRecord\Http\Controllers\PatientDischargeRecor
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('patient-discharge-records', PatientDischargeRecordController::class)->only(['index', 'show'])->parameters(['patient-discharge-records' => 'discharge_record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('patient-discharge-records', PatientDischargeRecordController::class)->only(['store', 'update'])->parameters(['patient-discharge-records' => 'discharge_record']);
-    });
+    Route::apiResource('patient-discharge-records', PatientDischargeRecordController::class)->only(['store', 'update'])->parameters(['patient-discharge-records' => 'discharge_record']);
 });

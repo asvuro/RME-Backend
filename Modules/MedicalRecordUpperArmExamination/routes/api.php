@@ -6,7 +6,5 @@ use Modules\MedicalRecordUpperArmExamination\Http\Controllers\UpperArmExaminatio
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('upper-arm-examinations', UpperArmExaminationController::class)->only(['index', 'show'])->parameters(['upper-arm-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('upper-arm-examinations', UpperArmExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['upper-arm-examinations' => 'record']);
-    });
+    Route::apiResource('upper-arm-examinations', UpperArmExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['upper-arm-examinations' => 'record']);
 });

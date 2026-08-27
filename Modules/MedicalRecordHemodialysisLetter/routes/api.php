@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'hemodialysis-letters' => 'letter',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('hemodialysis-letters', HemodialysisLetterController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'hemodialysis-letters' => 'letter',
-    ]);
-    });
+    Route::apiResource('hemodialysis-letters', HemodialysisLetterController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'hemodialysis-letters' => 'letter',
+]);
 });

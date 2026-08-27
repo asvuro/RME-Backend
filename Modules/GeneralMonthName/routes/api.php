@@ -6,7 +6,5 @@ use Modules\GeneralMonthName\Http\Controllers\MonthNameController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('month-names', MonthNameController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('month-names', MonthNameController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('month-names', MonthNameController::class)->only(['store', 'update', 'destroy']);
 });

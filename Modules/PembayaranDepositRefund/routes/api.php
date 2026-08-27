@@ -6,7 +6,5 @@ use Modules\PembayaranDepositRefund\Http\Controllers\DepositRefundController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('deposit-refunds', DepositRefundController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('deposit-refunds', DepositRefundController::class)->only(['store']);
-    });
+    Route::apiResource('deposit-refunds', DepositRefundController::class)->only(['store']);
 });

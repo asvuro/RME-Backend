@@ -6,7 +6,5 @@ use Modules\MedicalRecordRehabilitationProcedureExaminationItem\Http\Controllers
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('rehab-procedure-examination-items', RehabilitationProcedureExaminationItemController::class)->only(['index', 'show'])->parameters(['rehab-procedure-examination-items' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('rehab-procedure-examination-items', RehabilitationProcedureExaminationItemController::class)->only(['store', 'update', 'destroy'])->parameters(['rehab-procedure-examination-items' => 'record']);
-    });
+    Route::apiResource('rehab-procedure-examination-items', RehabilitationProcedureExaminationItemController::class)->only(['store', 'update', 'destroy'])->parameters(['rehab-procedure-examination-items' => 'record']);
 });

@@ -6,7 +6,5 @@ use Modules\InventoryReceivingItem\Http\Controllers\ReceivingItemController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('receiving-items', ReceivingItemController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('receiving-items', ReceivingItemController::class)->only(['store']);
-    });
+    Route::apiResource('receiving-items', ReceivingItemController::class)->only(['store']);
 });

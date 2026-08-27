@@ -6,7 +6,5 @@ use Modules\BerkasKlaimPharmacyClaimItem\Http\Controllers\PharmacyClaimItemContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pharmacy-claim-items', PharmacyClaimItemController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pharmacy-claim-items', PharmacyClaimItemController::class)->only(['store']);
-    });
+    Route::apiResource('pharmacy-claim-items', PharmacyClaimItemController::class)->only(['store']);
 });

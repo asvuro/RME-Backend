@@ -6,7 +6,5 @@ use Modules\MedicalRecordNeckExamination\Http\Controllers\NeckExaminationControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('neck-examinations', NeckExaminationController::class)->only(['index', 'show'])->parameters(['neck-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('neck-examinations', NeckExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['neck-examinations' => 'record']);
-    });
+    Route::apiResource('neck-examinations', NeckExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['neck-examinations' => 'record']);
 });

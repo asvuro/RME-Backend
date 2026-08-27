@@ -6,7 +6,5 @@ use Modules\GeneralMedicalDepartmentWardAssignment\Http\Controllers\MedicalDepar
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('medical-department-ward-assignments', MedicalDepartmentWardAssignmentController::class)->only(['index', 'show'])->parameters(['medical-department-ward-assignments' => 'assignment']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medical-department-ward-assignments', MedicalDepartmentWardAssignmentController::class)->only(['store', 'update', 'destroy'])->parameters(['medical-department-ward-assignments' => 'assignment']);
-    });
+    Route::apiResource('medical-department-ward-assignments', MedicalDepartmentWardAssignmentController::class)->only(['store', 'update', 'destroy'])->parameters(['medical-department-ward-assignments' => 'assignment']);
 });

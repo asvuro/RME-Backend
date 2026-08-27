@@ -6,7 +6,5 @@ use Modules\GeneralDiagnosisCode\Http\Controllers\DiagnosisCodeController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('diagnosis-codes', DiagnosisCodeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('diagnosis-codes', DiagnosisCodeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('diagnosis-codes', DiagnosisCodeController::class)->only(['store', 'update', 'destroy']);
 });

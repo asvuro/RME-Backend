@@ -6,7 +6,5 @@ use Modules\BerkasKlaimClinicalLabClaimItem\Http\Controllers\ClinicalLabClaimIte
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('clinical-lab-claim-items', ClinicalLabClaimItemController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('clinical-lab-claim-items', ClinicalLabClaimItemController::class)->only(['store']);
-    });
+    Route::apiResource('clinical-lab-claim-items', ClinicalLabClaimItemController::class)->only(['store']);
 });

@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'health-certificates' => 'certificate',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('health-certificates', HealthCertificateController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'health-certificates' => 'certificate',
-    ]);
-    });
+    Route::apiResource('health-certificates', HealthCertificateController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'health-certificates' => 'certificate',
+]);
 });

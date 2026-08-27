@@ -6,7 +6,5 @@ use Modules\MedicalRecordIcd9CmCode\Http\Controllers\Icd9CmCodeController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('icd9-cm-codes', Icd9CmCodeController::class)->only(['index', 'show'])->parameters(['icd9-cm-codes' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('icd9-cm-codes', Icd9CmCodeController::class)->only(['store', 'update', 'destroy'])->parameters(['icd9-cm-codes' => 'record']);
-    });
+    Route::apiResource('icd9-cm-codes', Icd9CmCodeController::class)->only(['store', 'update', 'destroy'])->parameters(['icd9-cm-codes' => 'record']);
 });

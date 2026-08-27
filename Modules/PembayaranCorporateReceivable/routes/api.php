@@ -6,7 +6,5 @@ use Modules\PembayaranCorporateReceivable\Http\Controllers\CorporateReceivableCo
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('corporate-receivables', CorporateReceivableController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('corporate-receivables', CorporateReceivableController::class)->only(['store', 'update']);
-    });
+    Route::apiResource('corporate-receivables', CorporateReceivableController::class)->only(['store', 'update']);
 });

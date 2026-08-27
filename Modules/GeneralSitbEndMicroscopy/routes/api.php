@@ -6,7 +6,5 @@ use Modules\GeneralSitbEndMicroscopy\Http\Controllers\SitbEndMicroscopyControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-end-microscopies', SitbEndMicroscopyController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-end-microscopies', SitbEndMicroscopyController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-end-microscopies', SitbEndMicroscopyController::class)->only(['store', 'update', 'destroy']);
 });

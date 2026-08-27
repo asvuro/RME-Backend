@@ -6,7 +6,5 @@ use Modules\MedicalRecordMorseFallScaleAssessment\Http\Controllers\MorseFallScal
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('morse-fall-scale-assessments', MorseFallScaleAssessmentController::class)->only(['index', 'show'])->parameters(['morse-fall-scale-assessments' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('morse-fall-scale-assessments', MorseFallScaleAssessmentController::class)->only(['store'])->parameters(['morse-fall-scale-assessments' => 'record']);
-    });
+    Route::apiResource('morse-fall-scale-assessments', MorseFallScaleAssessmentController::class)->only(['store'])->parameters(['morse-fall-scale-assessments' => 'record']);
 });

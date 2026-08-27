@@ -6,7 +6,5 @@ use Modules\GeneralPathologyExaminationType\Http\Controllers\PathologyExaminatio
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pathology-examination-types', PathologyExaminationTypeController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pathology-examination-types', PathologyExaminationTypeController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('pathology-examination-types', PathologyExaminationTypeController::class)->only(['store', 'update', 'destroy']);
 });

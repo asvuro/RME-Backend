@@ -6,7 +6,5 @@ use Modules\GeneralAdministrationTariff\Http\Controllers\AdministrationTariffCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('administration-tariffs', AdministrationTariffController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('administration-tariffs', AdministrationTariffController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('administration-tariffs', AdministrationTariffController::class)->only(['store', 'update', 'destroy']);
 });

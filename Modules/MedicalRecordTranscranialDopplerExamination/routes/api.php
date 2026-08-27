@@ -6,7 +6,5 @@ use Modules\MedicalRecordTranscranialDopplerExamination\Http\Controllers\Transcr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('tcd-examinations', TranscranialDopplerExaminationController::class)->only(['index', 'show'])->parameters(['tcd-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('tcd-examinations', TranscranialDopplerExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['tcd-examinations' => 'record']);
-    });
+    Route::apiResource('tcd-examinations', TranscranialDopplerExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['tcd-examinations' => 'record']);
 });

@@ -6,7 +6,5 @@ use Modules\GeneralPatientAccessLock\Http\Controllers\PatientAccessLockControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('patient-access-locks', PatientAccessLockController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('patient-access-locks', PatientAccessLockController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('patient-access-locks', PatientAccessLockController::class)->only(['store', 'update', 'destroy']);
 });

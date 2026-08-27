@@ -26,8 +26,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
     // Aksi petugas loket: panggil nomor, lalu tandai selesai.
     // Param {queue} sengaja pendek: nama param rute Symfony maksimal 32 karakter.
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::post('self-checkin-queues/{queue}/call', [SelfCheckinQueueController::class, 'call']);
-        Route::post('self-checkin-queues/{queue}/complete', [SelfCheckinQueueController::class, 'complete']);
-    });
+    Route::post('self-checkin-queues/{queue}/call', [SelfCheckinQueueController::class, 'call']);
+    Route::post('self-checkin-queues/{queue}/complete', [SelfCheckinQueueController::class, 'complete']);
 });

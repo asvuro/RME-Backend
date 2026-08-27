@@ -11,15 +11,13 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->only(['index', 'show'])
         ->parameters(['ambulance-trips' => 'trip']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('ambulances', AmbulanceController::class)->only(['store', 'update']);
-        // destroy ambulans tidak ada: cascade ke riwayat trip (lihat docblock controller).
+    Route::apiResource('ambulances', AmbulanceController::class)->only(['store', 'update']);
+    // destroy ambulans tidak ada: cascade ke riwayat trip (lihat docblock controller).
 
-        Route::apiResource('ambulance-trips', AmbulanceTripController::class)
-            ->only(['store', 'update'])
-            ->parameters(['ambulance-trips' => 'trip']);
-        // destroy trip tidak ada: jejak operasional.
+    Route::apiResource('ambulance-trips', AmbulanceTripController::class)
+        ->only(['store', 'update'])
+        ->parameters(['ambulance-trips' => 'trip']);
+    // destroy trip tidak ada: jejak operasional.
 
-        Route::post('ambulance-trips/{trip}/complete', [AmbulanceTripController::class, 'complete']);
-    });
+    Route::post('ambulance-trips/{trip}/complete', [AmbulanceTripController::class, 'complete']);
 });

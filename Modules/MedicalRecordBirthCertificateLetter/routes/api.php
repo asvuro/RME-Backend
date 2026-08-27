@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'birth-certificate-letters' => 'letter',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('birth-certificate-letters', BirthCertificateLetterController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'birth-certificate-letters' => 'letter',
-    ]);
-    });
+    Route::apiResource('birth-certificate-letters', BirthCertificateLetterController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'birth-certificate-letters' => 'letter',
+]);
 });

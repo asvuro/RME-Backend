@@ -13,7 +13,7 @@ use Modules\BpjsVClaim\Http\Controllers\SepController;
 use Modules\BpjsVClaim\Http\Controllers\SepPengajuanController;
 use Modules\BpjsVClaim\Http\Controllers\SpriController;
 
-Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     // SEP - all 4 creation flows share one endpoint, StoreSepRequest branches on visit_type.
     Route::get('seps', [SepController::class, 'index']);
     Route::post('seps', [SepController::class, 'store']);

@@ -6,7 +6,5 @@ use Modules\MedicalRecordProcedureConsentPatientAcknowledgement\Http\Controllers
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('procedure-consent-patient-acks', ProcedureConsentPatientAcknowledgementController::class)->only(['index', 'show'])->parameters(['procedure-consent-patient-acks' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('procedure-consent-patient-acks', ProcedureConsentPatientAcknowledgementController::class)->only(['store'])->parameters(['procedure-consent-patient-acks' => 'record']);
-    });
+    Route::apiResource('procedure-consent-patient-acks', ProcedureConsentPatientAcknowledgementController::class)->only(['store'])->parameters(['procedure-consent-patient-acks' => 'record']);
 });

@@ -6,7 +6,5 @@ use Modules\MedicalRecordProcedureSurgery\Http\Controllers\ProcedureSurgeryContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('procedure-surgeries', ProcedureSurgeryController::class)->only(['index', 'show'])->parameters(['procedure-surgeries' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('procedure-surgeries', ProcedureSurgeryController::class)->only(['store', 'update', 'destroy'])->parameters(['procedure-surgeries' => 'record']);
-    });
+    Route::apiResource('procedure-surgeries', ProcedureSurgeryController::class)->only(['store', 'update', 'destroy'])->parameters(['procedure-surgeries' => 'record']);
 });

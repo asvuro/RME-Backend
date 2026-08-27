@@ -6,7 +6,5 @@ use Modules\MedicalRecordCatClamsExamination\Http\Controllers\CatClamsExaminatio
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('cat-clams-examinations', CatClamsExaminationController::class)->only(['index', 'show'])->parameters(['cat-clams-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('cat-clams-examinations', CatClamsExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['cat-clams-examinations' => 'record']);
-    });
+    Route::apiResource('cat-clams-examinations', CatClamsExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['cat-clams-examinations' => 'record']);
 });

@@ -21,13 +21,11 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->only(['index', 'show'])
         ->parameters(['quality-indicator-records' => 'quality_indicator_record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('quality-indicators', QualityIndicatorController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->parameters(['quality-indicators' => 'quality_indicator']);
+    Route::apiResource('quality-indicators', QualityIndicatorController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->parameters(['quality-indicators' => 'quality_indicator']);
 
-        Route::apiResource('quality-indicator-records', QualityIndicatorRecordController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->parameters(['quality-indicator-records' => 'quality_indicator_record']);
-    });
+    Route::apiResource('quality-indicator-records', QualityIndicatorRecordController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->parameters(['quality-indicator-records' => 'quality_indicator_record']);
 });

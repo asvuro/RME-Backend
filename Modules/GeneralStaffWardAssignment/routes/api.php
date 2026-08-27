@@ -5,4 +5,4 @@ use Modules\GeneralStaffWardAssignment\Http\Controllers\StaffWardAssignmentContr
 
 Route::apiResource('staff-ward-assignments', StaffWardAssignmentController::class)->names('generalstaffwardassignment.staff-ward-assignments')->parameters(['staff-ward-assignments' => 'staffWardAssignment'])->only(['index', 'show'])->middleware('auth:sanctum');
 
-Route::apiResource('staff-ward-assignments', StaffWardAssignmentController::class)->names('generalstaffwardassignment.staff-ward-assignments')->parameters(['staff-ward-assignments' => 'staffWardAssignment'])->only(['store', 'update', 'destroy'])->middleware(['auth:sanctum', 'role:petugas|admin']);
+Route::apiResource('staff-ward-assignments', StaffWardAssignmentController::class)->names('generalstaffwardassignment.staff-ward-assignments')->parameters(['staff-ward-assignments' => 'staffWardAssignment'])->only(['store', 'update', 'destroy'])->middleware(['auth:sanctum']);

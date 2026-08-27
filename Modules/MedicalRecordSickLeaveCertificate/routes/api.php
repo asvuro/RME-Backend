@@ -8,9 +8,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         'sick-leave-certificates' => 'certificate',
     ]);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sick-leave-certificates', SickLeaveCertificateController::class)->only(['store', 'update', 'destroy'])->parameters([
-        'sick-leave-certificates' => 'certificate',
-    ]);
-    });
+    Route::apiResource('sick-leave-certificates', SickLeaveCertificateController::class)->only(['store', 'update', 'destroy'])->parameters([
+    'sick-leave-certificates' => 'certificate',
+]);
 });

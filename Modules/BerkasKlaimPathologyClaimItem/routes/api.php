@@ -6,7 +6,5 @@ use Modules\BerkasKlaimPathologyClaimItem\Http\Controllers\PathologyClaimItemCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('pathology-claim-items', PathologyClaimItemController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('pathology-claim-items', PathologyClaimItemController::class)->only(['store']);
-    });
+    Route::apiResource('pathology-claim-items', PathologyClaimItemController::class)->only(['store']);
 });

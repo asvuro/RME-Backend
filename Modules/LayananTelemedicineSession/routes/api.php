@@ -10,12 +10,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->only(['index', 'show'])
         ->parameters(['telemedicine-sessions' => 'session']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('telemedicine-sessions', TelemedicineSessionController::class)
-            ->only(['store', 'update', 'destroy'])
-            ->parameters(['telemedicine-sessions' => 'session']);
+    Route::apiResource('telemedicine-sessions', TelemedicineSessionController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->parameters(['telemedicine-sessions' => 'session']);
 
-        Route::post('telemedicine-sessions/{session}/start', [TelemedicineSessionController::class, 'start']);
-        Route::post('telemedicine-sessions/{session}/complete', [TelemedicineSessionController::class, 'complete']);
-    });
+    Route::post('telemedicine-sessions/{session}/start', [TelemedicineSessionController::class, 'start']);
+    Route::post('telemedicine-sessions/{session}/complete', [TelemedicineSessionController::class, 'complete']);
 });

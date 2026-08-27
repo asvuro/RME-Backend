@@ -6,7 +6,5 @@ use Modules\MedicalRecordImplementationChecklistItem\Http\Controllers\Implementa
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('implementation-checklist-items', ImplementationChecklistItemController::class)->only(['index', 'show'])->parameters(['implementation-checklist-items' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('implementation-checklist-items', ImplementationChecklistItemController::class)->only(['store', 'update', 'destroy'])->parameters(['implementation-checklist-items' => 'record']);
-    });
+    Route::apiResource('implementation-checklist-items', ImplementationChecklistItemController::class)->only(['store', 'update', 'destroy'])->parameters(['implementation-checklist-items' => 'record']);
 });

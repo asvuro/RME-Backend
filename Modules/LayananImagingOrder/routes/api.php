@@ -14,18 +14,16 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->only(['index', 'show'])
         ->parameters(['imaging-studies' => 'imaging_study']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('imaging-orders', ImagingOrderController::class)
-            ->only(['store', 'update'])
-            ->parameters(['imaging-orders' => 'imaging_order']);
+    Route::apiResource('imaging-orders', ImagingOrderController::class)
+        ->only(['store', 'update'])
+        ->parameters(['imaging-orders' => 'imaging_order']);
 
-        // Jadwal & batal lewat gerbang khusus, bukan edit bebas
-        // (pola yang sama dengan transfer/discharge di VisitController).
-        Route::post('imaging-orders/{imaging_order}/schedule', [ImagingOrderController::class, 'schedule']);
-        Route::post('imaging-orders/{imaging_order}/cancel', [ImagingOrderController::class, 'cancel']);
+    // Jadwal & batal lewat gerbang khusus, bukan edit bebas
+    // (pola yang sama dengan transfer/discharge di VisitController).
+    Route::post('imaging-orders/{imaging_order}/schedule', [ImagingOrderController::class, 'schedule']);
+    Route::post('imaging-orders/{imaging_order}/cancel', [ImagingOrderController::class, 'cancel']);
 
-        Route::apiResource('imaging-studies', ImagingStudyController::class)
-            ->only(['store', 'update'])
-            ->parameters(['imaging-studies' => 'imaging_study']);
-    });
+    Route::apiResource('imaging-studies', ImagingStudyController::class)
+        ->only(['store', 'update'])
+        ->parameters(['imaging-studies' => 'imaging_study']);
 });

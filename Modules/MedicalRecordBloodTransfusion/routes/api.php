@@ -6,7 +6,5 @@ use Modules\MedicalRecordBloodTransfusion\Http\Controllers\BloodTransfusionContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('blood-transfusions', BloodTransfusionController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('blood-transfusions', BloodTransfusionController::class)->only(['store', 'update']);
-    });
+    Route::apiResource('blood-transfusions', BloodTransfusionController::class)->only(['store', 'update']);
 });

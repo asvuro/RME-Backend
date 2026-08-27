@@ -6,7 +6,5 @@ use Modules\GeneralBedStatus\Http\Controllers\BedStatusController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('bed-statuses', BedStatusController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('bed-statuses', BedStatusController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('bed-statuses', BedStatusController::class)->only(['store', 'update', 'destroy']);
 });

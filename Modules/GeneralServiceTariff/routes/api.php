@@ -6,7 +6,5 @@ use Modules\GeneralServiceTariff\Http\Controllers\ServiceTariffController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('service-tariffs', ServiceTariffController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('service-tariffs', ServiceTariffController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('service-tariffs', ServiceTariffController::class)->only(['store', 'update', 'destroy']);
 });

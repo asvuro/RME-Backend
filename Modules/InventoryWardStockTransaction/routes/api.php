@@ -6,7 +6,5 @@ use Modules\InventoryWardStockTransaction\Http\Controllers\InventoryWardStockTra
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('ward-stock-transactions', InventoryWardStockTransactionController::class)->only(['index', 'show'])->parameters(['ward-stock-transactions' => 'ward_stock_transaction']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('ward-stock-transactions', InventoryWardStockTransactionController::class)->only(['store'])->parameters(['ward-stock-transactions' => 'ward_stock_transaction']);
-    });
+    Route::apiResource('ward-stock-transactions', InventoryWardStockTransactionController::class)->only(['store'])->parameters(['ward-stock-transactions' => 'ward_stock_transaction']);
 });

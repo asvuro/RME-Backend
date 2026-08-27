@@ -6,7 +6,5 @@ use Modules\GeneralExaminationGroupMapping\Http\Controllers\ExaminationGroupMapp
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('examination-group-mappings', ExaminationGroupMappingController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('examination-group-mappings', ExaminationGroupMappingController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('examination-group-mappings', ExaminationGroupMappingController::class)->only(['store', 'update', 'destroy']);
 });

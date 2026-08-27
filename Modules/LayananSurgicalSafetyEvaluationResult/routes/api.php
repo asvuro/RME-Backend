@@ -6,7 +6,5 @@ use Modules\LayananSurgicalSafetyEvaluationResult\Http\Controllers\SurgicalSafet
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('surgical-safety-evaluation-results', SurgicalSafetyEvaluationResultController::class)->only(['index', 'show'])->parameters(['surgical-safety-evaluation-results' => 'sst_result']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('surgical-safety-evaluation-results', SurgicalSafetyEvaluationResultController::class)->only(['store'])->parameters(['surgical-safety-evaluation-results' => 'sst_result']);
-    });
+    Route::apiResource('surgical-safety-evaluation-results', SurgicalSafetyEvaluationResultController::class)->only(['store'])->parameters(['surgical-safety-evaluation-results' => 'sst_result']);
 });

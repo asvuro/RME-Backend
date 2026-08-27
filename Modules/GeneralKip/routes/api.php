@@ -6,7 +6,5 @@ use Modules\GeneralKip\Http\Controllers\KipController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('kips', KipController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('kips', KipController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('kips', KipController::class)->only(['store', 'update', 'destroy']);
 });

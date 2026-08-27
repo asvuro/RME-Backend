@@ -6,7 +6,5 @@ use Modules\MedicalRecordMedicationAdministrationHistory\Http\Controllers\Medica
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('medication-admin-histories', MedicationAdministrationHistoryController::class)->only(['index', 'show'])->parameters(['medication-admin-histories' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medication-admin-histories', MedicationAdministrationHistoryController::class)->only(['store'])->parameters(['medication-admin-histories' => 'record']);
-    });
+    Route::apiResource('medication-admin-histories', MedicationAdministrationHistoryController::class)->only(['store'])->parameters(['medication-admin-histories' => 'record']);
 });

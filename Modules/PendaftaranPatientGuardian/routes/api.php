@@ -6,7 +6,5 @@ use Modules\PendaftaranPatientGuardian\Http\Controllers\PatientGuardianControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('patient-guardians', PatientGuardianController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('patient-guardians', PatientGuardianController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('patient-guardians', PatientGuardianController::class)->only(['store', 'update', 'destroy']);
 });

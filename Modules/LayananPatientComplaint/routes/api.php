@@ -13,8 +13,6 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('patient-complaints', PatientComplaintController::class)->only(['index', 'show']);
     Route::apiResource('patient-surveys', PatientSurveyController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('patient-complaints', PatientComplaintController::class)->only(['store', 'update', 'destroy']);
-        Route::apiResource('patient-surveys', PatientSurveyController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('patient-complaints', PatientComplaintController::class)->only(['store', 'update', 'destroy']);
+    Route::apiResource('patient-surveys', PatientSurveyController::class)->only(['store', 'update', 'destroy']);
 });

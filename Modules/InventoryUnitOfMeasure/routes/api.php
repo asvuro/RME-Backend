@@ -6,7 +6,5 @@ use Modules\InventoryUnitOfMeasure\Http\Controllers\InventoryUnitOfMeasureContro
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('inventoryunitofmeasures', InventoryUnitOfMeasureController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('inventoryunitofmeasures', InventoryUnitOfMeasureController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('inventoryunitofmeasures', InventoryUnitOfMeasureController::class)->only(['store', 'update', 'destroy']);
 });

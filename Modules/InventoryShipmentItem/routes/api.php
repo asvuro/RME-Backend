@@ -6,7 +6,5 @@ use Modules\InventoryShipmentItem\Http\Controllers\ShipmentItemController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('shipment-items', ShipmentItemController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('shipment-items', ShipmentItemController::class)->only(['store']);
-    });
+    Route::apiResource('shipment-items', ShipmentItemController::class)->only(['store']);
 });

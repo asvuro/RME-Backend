@@ -6,7 +6,5 @@ use Modules\MedicalRecordRadiologyResultSummary\Http\Controllers\RadiologyResult
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('radiology-result-summaries', RadiologyResultSummaryController::class)->only(['index', 'show'])->parameters(['radiology-result-summaries' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('radiology-result-summaries', RadiologyResultSummaryController::class)->only(['store'])->parameters(['radiology-result-summaries' => 'record']);
-    });
+    Route::apiResource('radiology-result-summaries', RadiologyResultSummaryController::class)->only(['store'])->parameters(['radiology-result-summaries' => 'record']);
 });

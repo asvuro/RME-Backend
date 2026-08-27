@@ -6,7 +6,5 @@ use Modules\GeneralDurationRestriction\Http\Controllers\DurationRestrictionContr
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('duration-restrictions', DurationRestrictionController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('duration-restrictions', DurationRestrictionController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('duration-restrictions', DurationRestrictionController::class)->only(['store', 'update', 'destroy']);
 });

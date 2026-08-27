@@ -6,7 +6,5 @@ use Modules\GeneralIcdSnomedCtMapping\Http\Controllers\IcdSnomedCtMappingControl
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('icd-snomed-ct-mappings', IcdSnomedCtMappingController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('icd-snomed-ct-mappings', IcdSnomedCtMappingController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('icd-snomed-ct-mappings', IcdSnomedCtMappingController::class)->only(['store', 'update', 'destroy']);
 });

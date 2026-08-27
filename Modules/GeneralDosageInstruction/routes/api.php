@@ -6,7 +6,5 @@ use Modules\GeneralDosageInstruction\Http\Controllers\DosageInstructionControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('dosage-instructions', DosageInstructionController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('dosage-instructions', DosageInstructionController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('dosage-instructions', DosageInstructionController::class)->only(['store', 'update', 'destroy']);
 });

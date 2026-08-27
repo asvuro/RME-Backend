@@ -6,7 +6,5 @@ use Modules\GeneralSitbDmTherapy\Http\Controllers\SitbDmTherapyController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-dm-therapies', SitbDmTherapyController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-dm-therapies', SitbDmTherapyController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-dm-therapies', SitbDmTherapyController::class)->only(['store', 'update', 'destroy']);
 });

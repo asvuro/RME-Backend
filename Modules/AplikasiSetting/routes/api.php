@@ -14,10 +14,8 @@ Route::prefix('v1')->group(function () {
         Route::get('settings', [RsSettingController::class, 'index']);
         Route::get('settings/{key}', [RsSettingController::class, 'show']);
 
-        Route::middleware('role:admin')->group(function () {
-            Route::post('settings', [RsSettingController::class, 'store']);
-            Route::put('settings/{key}', [RsSettingController::class, 'update']);
-            Route::patch('settings/{key}', [RsSettingController::class, 'update']);
-        });
+        Route::post('settings', [RsSettingController::class, 'store']);
+        Route::put('settings/{key}', [RsSettingController::class, 'update']);
+        Route::patch('settings/{key}', [RsSettingController::class, 'update']);
     });
 });

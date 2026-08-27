@@ -6,9 +6,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->parameters(['return-cancellations' => 'return_cancellation'])
         ->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('return-cancellations', PembatalanReturnCancellationController::class)
-            ->parameters(['return-cancellations' => 'return_cancellation'])
-            ->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('return-cancellations', PembatalanReturnCancellationController::class)
+        ->parameters(['return-cancellations' => 'return_cancellation'])
+        ->only(['store', 'update', 'destroy']);
 });

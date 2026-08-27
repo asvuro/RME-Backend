@@ -6,7 +6,5 @@ use Modules\GeneralLabReferenceValue\Http\Controllers\LabReferenceValueControlle
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('lab-reference-values', LabReferenceValueController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('lab-reference-values', LabReferenceValueController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('lab-reference-values', LabReferenceValueController::class)->only(['store', 'update', 'destroy']);
 });

@@ -6,7 +6,5 @@ use Modules\MedicalRecordTongueExamination\Http\Controllers\TongueExaminationCon
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('tongue-examinations', TongueExaminationController::class)->only(['index', 'show'])->parameters(['tongue-examinations' => 'record']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('tongue-examinations', TongueExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['tongue-examinations' => 'record']);
-    });
+    Route::apiResource('tongue-examinations', TongueExaminationController::class)->only(['store', 'update', 'destroy'])->parameters(['tongue-examinations' => 'record']);
 });

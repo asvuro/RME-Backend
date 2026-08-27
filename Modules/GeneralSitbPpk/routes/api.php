@@ -6,7 +6,5 @@ use Modules\GeneralSitbPpk\Http\Controllers\SitbPpkController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('sitb-ppks', SitbPpkController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('sitb-ppks', SitbPpkController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('sitb-ppks', SitbPpkController::class)->only(['store', 'update', 'destroy']);
 });

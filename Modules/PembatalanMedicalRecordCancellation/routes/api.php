@@ -6,9 +6,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
         ->parameters(['medical-record-cancellations' => 'medical_record_cancellation'])
         ->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('medical-record-cancellations', PembatalanMedicalRecordCancellationController::class)
-            ->parameters(['medical-record-cancellations' => 'medical_record_cancellation'])
-            ->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('medical-record-cancellations', PembatalanMedicalRecordCancellationController::class)
+        ->parameters(['medical-record-cancellations' => 'medical_record_cancellation'])
+        ->only(['store', 'update', 'destroy']);
 });

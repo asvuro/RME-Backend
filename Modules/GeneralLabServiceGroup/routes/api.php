@@ -6,7 +6,5 @@ use Modules\GeneralLabServiceGroup\Http\Controllers\LabServiceGroupController;
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('lab-service-groups', LabServiceGroupController::class)->only(['index', 'show']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('lab-service-groups', LabServiceGroupController::class)->only(['store', 'update', 'destroy']);
-    });
+    Route::apiResource('lab-service-groups', LabServiceGroupController::class)->only(['store', 'update', 'destroy']);
 });

@@ -6,7 +6,5 @@ use Modules\LayananAntimicrobialStewardshipMicrobiologyResult\Http\Controllers\A
 Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::apiResource('antimicrobial-stewardship-microbiology-results', AntimicrobialStewardshipMicrobiologyResultController::class)->only(['index', 'show'])->parameters(['antimicrobial-stewardship-microbiology-results' => 'amr_micro']);
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('antimicrobial-stewardship-microbiology-results', AntimicrobialStewardshipMicrobiologyResultController::class)->only(['store'])->parameters(['antimicrobial-stewardship-microbiology-results' => 'amr_micro']);
-    });
+    Route::apiResource('antimicrobial-stewardship-microbiology-results', AntimicrobialStewardshipMicrobiologyResultController::class)->only(['store'])->parameters(['antimicrobial-stewardship-microbiology-results' => 'amr_micro']);
 });

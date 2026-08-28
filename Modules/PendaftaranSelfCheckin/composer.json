@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/pendaftaranselfcheckin",
+    "name": "asvuro/pendaftaranselfcheckin",
     "description": "Anjungan Pasien Mandiri (kiosk) - backend antrian self-check-in pasien.",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

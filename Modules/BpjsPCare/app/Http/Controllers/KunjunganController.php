@@ -26,9 +26,9 @@ class KunjunganController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return KunjunganResource::collection(Kunjungan::all());
+        return KunjunganResource::collection(Kunjungan::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreKunjunganRequest $request): KunjunganResource

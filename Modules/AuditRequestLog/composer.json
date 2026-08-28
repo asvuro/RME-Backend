@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/auditrequestlog",
+    "name": "asvuro/auditrequestlog",
     "description": "Jejak request API masuk — port semangat logs.bridge_log simgos2",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

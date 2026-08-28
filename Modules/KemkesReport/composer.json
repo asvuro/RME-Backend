@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/kemkesreport",
+    "name": "asvuro/kemkesreport",
     "description": "RL SIRS lokal — port informasi.executeBedMonitorKemkes/executeIndikatorRS/listKunjunganRIKemkes simgos2",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

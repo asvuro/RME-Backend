@@ -28,9 +28,9 @@ class PendaftaranController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return PendaftaranResource::collection(Pendaftaran::all());
+        return PendaftaranResource::collection(Pendaftaran::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StorePendaftaranRequest $request): PendaftaranResource

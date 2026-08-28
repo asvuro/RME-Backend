@@ -4,6 +4,7 @@ namespace Modules\BpjsPCare\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Modules\Bpjs\Services\BpjsClient;
@@ -21,9 +22,9 @@ class PrognosaController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return PrognosaResource::collection(Prognosa::all());
+        return PrognosaResource::collection(Prognosa::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StorePrognosaRequest $request): PrognosaResource

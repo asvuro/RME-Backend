@@ -11,9 +11,9 @@ class PatientFamilyIdentityCardController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(['data' => PatientFamilyIdentityCard::all()]);
+        return response()->json(PatientFamilyIdentityCard::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(Request $request)

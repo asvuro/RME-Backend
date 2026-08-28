@@ -1,17 +1,17 @@
 {
     "$schema":  "https://getcomposer.org/schema.json",
-    "name":  "dhrigos/simgos-backend",
+    "name":  "asvuro/simgos-backend",
     "type":  "project",
     "description":  "Modular monolith backend, one Laravel module per source submodule.",
     "keywords":  [
                      "laravel",
                      "framework"
                  ],
-    "license":  "MIT",
+    "license":  "proprietary",
     "authors":  [
                     {
                         "name":  "Deva Indrayana Rahmat",
-                        "email":  "dhrigos@gmail.com"
+                        "email":  "asvuro@gmail.com"
                     }
                 ],
     "require":  {

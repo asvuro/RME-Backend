@@ -7,14 +7,15 @@ use Modules\GeneralDoctor\Models\Doctor;
 use Modules\GeneralDoctor\Http\Requests\StoreDoctorRequest;
 use Modules\GeneralDoctor\Http\Requests\UpdateDoctorRequest;
 use Modules\GeneralDoctor\Http\Resources\DoctorResource;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class DoctorController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return DoctorResource::collection(Doctor::all());
+        return DoctorResource::collection(Doctor::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreDoctorRequest $request): DoctorResource

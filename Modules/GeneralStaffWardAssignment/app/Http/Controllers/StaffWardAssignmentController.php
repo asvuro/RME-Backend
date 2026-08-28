@@ -7,14 +7,15 @@ use Modules\GeneralStaffWardAssignment\Models\StaffWardAssignment;
 use Modules\GeneralStaffWardAssignment\Http\Requests\StoreStaffWardAssignmentRequest;
 use Modules\GeneralStaffWardAssignment\Http\Requests\UpdateStaffWardAssignmentRequest;
 use Modules\GeneralStaffWardAssignment\Http\Resources\StaffWardAssignmentResource;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class StaffWardAssignmentController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return StaffWardAssignmentResource::collection(StaffWardAssignment::all());
+        return StaffWardAssignmentResource::collection(StaffWardAssignment::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreStaffWardAssignmentRequest $request): StaffWardAssignmentResource

@@ -7,14 +7,15 @@ use Modules\GeneralNurse\Models\Nurse;
 use Modules\GeneralNurse\Http\Requests\StoreNurseRequest;
 use Modules\GeneralNurse\Http\Requests\UpdateNurseRequest;
 use Modules\GeneralNurse\Http\Resources\NurseResource;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class NurseController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return NurseResource::collection(Nurse::all());
+        return NurseResource::collection(Nurse::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreNurseRequest $request): NurseResource

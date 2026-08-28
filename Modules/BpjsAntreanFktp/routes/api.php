@@ -23,7 +23,8 @@ use Modules\BpjsAntreanFktp\Http\Middleware\VerifyBpjsMobileJknToken;
 Route::middleware(['auth:sanctum'])->prefix('v1/antrean-fktp')->group(function () {
     Route::apiResource('antrean', AntreanController::class)
         ->only(['index', 'store', 'show'])
-        ->parameters(['antrean' => 'antrean']);
+        ->parameters(['antrean' => 'antrean'])
+        ->names('bpjsantreanfktp.antrean');
     Route::post('antrean/{antrean}/batal', [AntreanController::class, 'batal']);
 
     Route::get('antrean/{antrean}/waktu', [AntreanWaktuController::class, 'index']);

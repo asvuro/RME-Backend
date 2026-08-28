@@ -4,6 +4,7 @@ namespace Modules\BpjsPCare\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Modules\Bpjs\Services\BpjsClient;
@@ -21,9 +22,9 @@ class SkrinningController extends Controller
     {
     }
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return SkrinningResource::collection(Skrinning::all());
+        return SkrinningResource::collection(Skrinning::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreSkrinningRequest $request): SkrinningResource

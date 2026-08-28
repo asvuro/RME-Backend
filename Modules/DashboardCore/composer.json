@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/dashboardcore",
+    "name": "asvuro/dashboardcore",
     "description": "Dashboard inti RS — KPI okupansi/kunjungan/tagihan/farmasi satu endpoint",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

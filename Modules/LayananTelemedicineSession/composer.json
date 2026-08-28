@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/layanantelemedicinesession",
+    "name": "asvuro/layanantelemedicinesession",
     "description": "Sesi konsultasi telemedicine per kunjungan dengan gerbang urutan status scheduled -> ongoing -> completed/cancelled.",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

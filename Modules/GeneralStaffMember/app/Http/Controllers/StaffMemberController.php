@@ -7,14 +7,15 @@ use Modules\GeneralStaffMember\Models\StaffMember;
 use Modules\GeneralStaffMember\Http\Requests\StoreStaffMemberRequest;
 use Modules\GeneralStaffMember\Http\Requests\UpdateStaffMemberRequest;
 use Modules\GeneralStaffMember\Http\Resources\StaffMemberResource;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class StaffMemberController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return StaffMemberResource::collection(StaffMember::all());
+        return StaffMemberResource::collection(StaffMember::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreStaffMemberRequest $request): StaffMemberResource

@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/auditactivitylog",
+    "name": "asvuro/auditactivitylog",
     "description": "Jejak aktivitas CRUD & milestone domain — port logs.pengguna_akses_log simgos2",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

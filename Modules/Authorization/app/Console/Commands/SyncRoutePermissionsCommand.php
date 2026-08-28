@@ -34,10 +34,38 @@ class SyncRoutePermissionsCommand extends Command
             RoutePermission::TIER_AUTHENTICATED_ANY => 0,
         ];
 
+        // Rute yang SUDAH tercatat di fixture mempertahankan legacy_tier lama-nya
+        // apa pun middleware live-nya sekarang. Middleware role:... yang dulu jadi
+        // sinyal deteksi tier sudah dihapus total dari semua rute per migrasi RBAC
+        // dinamis (RoutePermissionGate menggantikannya) -- scan live middleware
+        // TIDAK BISA lagi membedakan admin_only/petugas_admin dari authenticated_any,
+        // jadi re-derive di sini akan selalu menurunkan semua rute ke
+        // authenticated_any (menonaktifkan gerbang izin diam-diam). Hanya rute BARU
+        // (controller_action belum pernah ada di fixture) yang diklasifikasi dari
+        // hasil analyzeRoute().
+        $existingByAction = collect(RoutePermissionFixture::load())->keyBy('controller_action');
+
         $analyzed = [];
         foreach (app('router')->getRoutes() as $route) {
             /** @var Route $route */
-            $row = $this->analyzeRoute($route);
+            $controllerAction = RoutePermission::deriveControllerAction($route);
+            $existing = $existingByAction->get($controllerAction);
+
+            if ($existing !== null) {
+                $method = $route->methods()[0] ?? 'GET';
+                $row = [
+                    'permission' => $existing['permission'],
+                    'controller_action' => $controllerAction,
+                    'method' => $method,
+                    'uri' => $route->uri(),
+                    'module' => $existing['is_public'] ? 'public' : $this->moduleFromAction($route->getActionName()),
+                    'legacy_tier' => $existing['legacy_tier'],
+                    'is_public' => $existing['is_public'],
+                ];
+            } else {
+                $row = $this->analyzeRoute($route);
+            }
+
             $counts[$row['legacy_tier']]++;
             $analyzed[] = $row;
         }
@@ -85,6 +113,15 @@ class SyncRoutePermissionsCommand extends Command
         ));
 
         return self::SUCCESS;
+    }
+
+    protected function moduleFromAction(string $action): string
+    {
+        if (preg_match('/^Modules\\\\([A-Za-z0-9]+)\\\\Http\\\\Controllers\\\\/', $action, $m)) {
+            return $m[1];
+        }
+
+        return 'system';
     }
 
     /**

@@ -7,14 +7,15 @@ use Modules\GeneralNurseWardAssignment\Models\NurseWardAssignment;
 use Modules\GeneralNurseWardAssignment\Http\Requests\StoreNurseWardAssignmentRequest;
 use Modules\GeneralNurseWardAssignment\Http\Requests\UpdateNurseWardAssignmentRequest;
 use Modules\GeneralNurseWardAssignment\Http\Resources\NurseWardAssignmentResource;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 class NurseWardAssignmentController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return NurseWardAssignmentResource::collection(NurseWardAssignment::all());
+        return NurseWardAssignmentResource::collection(NurseWardAssignment::latest()->paginate($request->integer('per_page', 15)));
     }
 
     public function store(StoreNurseWardAssignmentRequest $request): NurseWardAssignmentResource

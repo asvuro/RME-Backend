@@ -1,10 +1,10 @@
 {
-    "name": "dhrigos/auditinfectionsurveillance",
+    "name": "asvuro/auditinfectionsurveillance",
     "description": "",
     "authors": [
         {
             "name": "Deva Indrayana Rahmat",
-            "email": "dhrigos@gmail.com"
+            "email": "asvuro@gmail.com"
         }
     ],
     "extra": {

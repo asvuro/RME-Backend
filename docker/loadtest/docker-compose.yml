@@ -1,0 +1,36 @@
+name: rme-backend-loadtest
+
+services:
+  php-fpm:
+    build:
+      context: ../..
+      dockerfile: docker/loadtest/Dockerfile
+    network_mode: host
+    volumes:
+      - ../..:/var/www
+      # bootstrap/cache host berisi path absolut host (/home/dhrigo/...) yang
+      # tidak valid di container (/var/www) -- pisahkan supaya container bisa
+      # regenerasi cache-nya sendiri tanpa merusak cache host.
+      - loadtest_bootstrap_cache:/var/www/bootstrap/cache
+    working_dir: /var/www
+    environment:
+      DB_HOST: 127.0.0.1
+      APP_DEBUG: "false"
+    # Simulasi 1 kontainer klinik dengan resource terbatas -- lihat catatan
+    # "tetangga berisik" di memori simrs-license-hub-model.
+    cpus: "4"
+    mem_limit: "1536m"
+
+  nginx:
+    image: nginx:1.27-alpine
+    network_mode: host
+    volumes:
+      - ../..:/var/www
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php-fpm
+    cpus: "0.5"
+    mem_limit: "128m"
+
+volumes:
+  loadtest_bootstrap_cache:

@@ -13,7 +13,13 @@ class PatientFamilyController extends Controller
      */
     public function index(Request $request)
     {
-        return response()->json(PatientFamily::latest()->paginate($request->integer('per_page', 15)));
+        $query = PatientFamily::latest();
+
+        if ($request->filled('patient_id')) {
+            $query->where('patient_id', $request->integer('patient_id'));
+        }
+
+        return response()->json($query->paginate($request->integer('per_page', 15)));
     }
 
     /**

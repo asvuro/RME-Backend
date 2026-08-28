@@ -85,7 +85,8 @@ class GroupHubClient
             || empty($parts['host'])
             || (! $local && ($parts['scheme'] ?? null) !== 'https')
             || ! in_array($parts['scheme'] ?? null, ['http', 'https'], true)
-            || isset($parts['user'], $parts['pass'])
+            || isset($parts['user'])
+            || isset($parts['pass'])
             || isset($parts['query'])
             || isset($parts['fragment'])) {
             throw new RuntimeException('Konfigurasi GRUP_HUB_URL tidak aman.');

@@ -62,6 +62,19 @@ class GroupSecurityTest extends TestCase
             && ! str_contains($request->url(), '127.0.0.1'));
     }
 
+    public function test_hub_client_rejects_url_with_embedded_credentials(): void
+    {
+        config(['grup.hub_url' => 'https://hub.example.test@127.0.0.1']);
+        Http::fake();
+
+        $this->expectException(\RuntimeException::class);
+        try {
+            app(GroupHubClient::class)->context();
+        } finally {
+            Http::assertNothingSent();
+        }
+    }
+
     public function test_signed_hub_ingress_rejects_replay_and_wrong_group(): void
     {
         [$group, $local] = $this->localMembership();

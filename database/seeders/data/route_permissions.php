@@ -20629,4 +20629,88 @@ return array (
     'legacy_tier' => 'public',
     'is_public' => true,
   ),
+  2945 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupContextController@show',
+    'permission' => 'grup.group-context.show',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2946 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupContextController@sync',
+    'permission' => 'grup.group-context.sync',
+    'legacy_tier' => 'admin_only',
+    'is_public' => false,
+  ),
+  2947 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupPatientController@index',
+    'permission' => 'grup.group-patient.index',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2948 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupPatientController@show',
+    'permission' => 'grup.group-patient.show',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2949 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupReferralController@index',
+    'permission' => 'grup.group-referral.index',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2950 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupReferralController@store',
+    'permission' => 'grup.group-referral.store',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2951 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\GroupReferralController@update',
+    'permission' => 'grup.group-referral.update',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2952 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\RealtimeNotificationController@index',
+    'permission' => 'grup.realtime-notification.index',
+    'legacy_tier' => 'petugas_admin',
+    'is_public' => false,
+  ),
+  2953 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\HubRelayController@patients',
+    'permission' => NULL,
+    'legacy_tier' => 'public',
+    'is_public' => true,
+  ),
+  2954 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\HubRelayController@patient',
+    'permission' => NULL,
+    'legacy_tier' => 'public',
+    'is_public' => true,
+  ),
+  2955 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\HubRelayController@referral',
+    'permission' => NULL,
+    'legacy_tier' => 'public',
+    'is_public' => true,
+  ),
+  2956 =>
+  array (
+    'controller_action' => 'Modules\\Grup\\Http\\Controllers\\RealtimeNotificationController@store',
+    'permission' => NULL,
+    'legacy_tier' => 'public',
+    'is_public' => true,
+  ),
 );

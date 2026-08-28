@@ -26,7 +26,7 @@ class StaffMemberTest extends TestCase
     public function test_can_list_staff_members()
     {
         StaffMember::factory()->count(3)->create();
-        $response = $this->getJson('/api/staff-members');
+        $response = $this->getJson('/api/v1/staff-members');
         $response->assertOk()->assertJsonCount(3, 'data');
     }
 
@@ -38,7 +38,7 @@ class StaffMemberTest extends TestCase
             'staff_role' => 'Administrator',
             'is_active' => true,
         ];
-        $response = $this->postJson('/api/staff-members', $data);
+        $response = $this->postJson('/api/v1/staff-members', $data);
         $response->assertCreated();
         $this->assertDatabaseHas('staff_members', $data);
     }
@@ -46,14 +46,14 @@ class StaffMemberTest extends TestCase
     public function test_can_show_staff_member()
     {
         $staffMember = StaffMember::factory()->create();
-        $response = $this->getJson("/api/staff-members/{$staffMember->id}");
+        $response = $this->getJson("/api/v1/staff-members/{$staffMember->id}");
         $response->assertOk()->assertJsonPath('data.id', $staffMember->id);
     }
 
     public function test_can_update_staff_member()
     {
         $staffMember = StaffMember::factory()->create(['staff_role' => 'Old']);
-        $response = $this->putJson("/api/staff-members/{$staffMember->id}", [
+        $response = $this->putJson("/api/v1/staff-members/{$staffMember->id}", [
             'staff_role' => 'New',
         ]);
         $response->assertOk();
@@ -66,7 +66,7 @@ class StaffMemberTest extends TestCase
     public function test_can_delete_staff_member()
     {
         $staffMember = StaffMember::factory()->create();
-        $response = $this->deleteJson("/api/staff-members/{$staffMember->id}");
+        $response = $this->deleteJson("/api/v1/staff-members/{$staffMember->id}");
         $response->assertNoContent();
         $this->assertDatabaseMissing('staff_members', ['id' => $staffMember->id]);
     }

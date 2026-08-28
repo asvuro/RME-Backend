@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Modules\GeneralNurseWardAssignment\Http\Controllers\NurseWardAssignmentController;
 
-Route::apiResource('nurse-ward-assignments', NurseWardAssignmentController::class)->names('generalnursewardassignment.nurse-ward-assignments')->parameters(['nurse-ward-assignments' => 'nurseWardAssignment'])->only(['index', 'show'])->middleware('auth:sanctum');
+Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
+    Route::apiResource('nurse-ward-assignments', NurseWardAssignmentController::class)->names('generalnursewardassignment.nurse-ward-assignments')->parameters(['nurse-ward-assignments' => 'nurseWardAssignment'])->only(['index', 'show']);
 
-Route::apiResource('nurse-ward-assignments', NurseWardAssignmentController::class)->names('generalnursewardassignment.nurse-ward-assignments')->parameters(['nurse-ward-assignments' => 'nurseWardAssignment'])->only(['store', 'update', 'destroy'])->middleware(['auth:sanctum']);
+    Route::apiResource('nurse-ward-assignments', NurseWardAssignmentController::class)->names('generalnursewardassignment.nurse-ward-assignments')->parameters(['nurse-ward-assignments' => 'nurseWardAssignment'])->only(['store', 'update', 'destroy']);
+});

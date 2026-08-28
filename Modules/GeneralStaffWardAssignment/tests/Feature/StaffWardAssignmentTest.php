@@ -27,7 +27,7 @@ class StaffWardAssignmentTest extends TestCase
     public function test_can_list_assignments()
     {
         StaffWardAssignment::factory()->count(3)->create();
-        $response = $this->getJson('/api/staff-ward-assignments');
+        $response = $this->getJson('/api/v1/staff-ward-assignments');
         $response->assertOk()->assertJsonCount(3, 'data');
     }
 
@@ -40,7 +40,7 @@ class StaffWardAssignmentTest extends TestCase
             'ward_id' => $ward->id,
             'assigned_at' => now()->format('Y-m-d H:i:s'),
         ];
-        $response = $this->postJson('/api/staff-ward-assignments', $data);
+        $response = $this->postJson('/api/v1/staff-ward-assignments', $data);
         $response->assertCreated();
         $this->assertDatabaseHas('staff_ward_assignments', $data);
     }
@@ -48,14 +48,14 @@ class StaffWardAssignmentTest extends TestCase
     public function test_can_show_assignment()
     {
         $assignment = StaffWardAssignment::factory()->create();
-        $response = $this->getJson("/api/staff-ward-assignments/{$assignment->id}");
+        $response = $this->getJson("/api/v1/staff-ward-assignments/{$assignment->id}");
         $response->assertOk()->assertJsonPath('data.id', $assignment->id);
     }
 
     public function test_can_update_assignment()
     {
         $assignment = StaffWardAssignment::factory()->create(['assigned_at' => '2026-08-13 10:00:00']);
-        $response = $this->putJson("/api/staff-ward-assignments/{$assignment->id}", [
+        $response = $this->putJson("/api/v1/staff-ward-assignments/{$assignment->id}", [
             'assigned_at' => '2026-08-13 12:00:00',
         ]);
         $response->assertOk();
@@ -68,7 +68,7 @@ class StaffWardAssignmentTest extends TestCase
     public function test_can_delete_assignment()
     {
         $assignment = StaffWardAssignment::factory()->create();
-        $response = $this->deleteJson("/api/staff-ward-assignments/{$assignment->id}");
+        $response = $this->deleteJson("/api/v1/staff-ward-assignments/{$assignment->id}");
         $response->assertNoContent();
         $this->assertDatabaseMissing('staff_ward_assignments', ['id' => $assignment->id]);
     }

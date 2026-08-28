@@ -27,7 +27,7 @@ class DoctorMedicalDepartmentTest extends TestCase
     public function test_can_list_assignments()
     {
         DoctorMedicalDepartment::factory()->count(3)->create();
-        $response = $this->getJson('/api/doctor-medical-departments');
+        $response = $this->getJson('/api/v1/doctor-medical-departments');
         $response->assertOk()->assertJsonCount(3, 'data');
     }
 
@@ -40,7 +40,7 @@ class DoctorMedicalDepartmentTest extends TestCase
             'medical_department_id' => $dept->id,
             'is_head' => true,
         ];
-        $response = $this->postJson('/api/doctor-medical-departments', $data);
+        $response = $this->postJson('/api/v1/doctor-medical-departments', $data);
         $response->assertCreated();
         $this->assertDatabaseHas('doctor_medical_departments', $data);
     }
@@ -48,14 +48,14 @@ class DoctorMedicalDepartmentTest extends TestCase
     public function test_can_show_assignment()
     {
         $assignment = DoctorMedicalDepartment::factory()->create();
-        $response = $this->getJson("/api/doctor-medical-departments/{$assignment->id}");
+        $response = $this->getJson("/api/v1/doctor-medical-departments/{$assignment->id}");
         $response->assertOk()->assertJsonPath('data.id', $assignment->id);
     }
 
     public function test_can_update_assignment()
     {
         $assignment = DoctorMedicalDepartment::factory()->create(['is_head' => false]);
-        $response = $this->putJson("/api/doctor-medical-departments/{$assignment->id}", [
+        $response = $this->putJson("/api/v1/doctor-medical-departments/{$assignment->id}", [
             'is_head' => true,
         ]);
         $response->assertOk();
@@ -68,7 +68,7 @@ class DoctorMedicalDepartmentTest extends TestCase
     public function test_can_delete_assignment()
     {
         $assignment = DoctorMedicalDepartment::factory()->create();
-        $response = $this->deleteJson("/api/doctor-medical-departments/{$assignment->id}");
+        $response = $this->deleteJson("/api/v1/doctor-medical-departments/{$assignment->id}");
         $response->assertNoContent();
         $this->assertDatabaseMissing('doctor_medical_departments', ['id' => $assignment->id]);
     }

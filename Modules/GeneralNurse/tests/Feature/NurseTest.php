@@ -26,7 +26,7 @@ class NurseTest extends TestCase
     public function test_can_list_nurses()
     {
         Nurse::factory()->count(3)->create();
-        $response = $this->getJson('/api/nurses');
+        $response = $this->getJson('/api/v1/nurses');
         $response->assertOk()->assertJsonCount(3, 'data');
     }
 
@@ -38,7 +38,7 @@ class NurseTest extends TestCase
             'nurse_license_number' => 'NURSE-12345',
             'is_active' => true,
         ];
-        $response = $this->postJson('/api/nurses', $data);
+        $response = $this->postJson('/api/v1/nurses', $data);
         $response->assertCreated();
         $this->assertDatabaseHas('nurses', $data);
     }
@@ -46,14 +46,14 @@ class NurseTest extends TestCase
     public function test_can_show_nurse()
     {
         $nurse = Nurse::factory()->create();
-        $response = $this->getJson("/api/nurses/{$nurse->id}");
+        $response = $this->getJson("/api/v1/nurses/{$nurse->id}");
         $response->assertOk()->assertJsonPath('data.id', $nurse->id);
     }
 
     public function test_can_update_nurse()
     {
         $nurse = Nurse::factory()->create(['nurse_license_number' => 'Old']);
-        $response = $this->putJson("/api/nurses/{$nurse->id}", [
+        $response = $this->putJson("/api/v1/nurses/{$nurse->id}", [
             'nurse_license_number' => 'New',
         ]);
         $response->assertOk();
@@ -66,7 +66,7 @@ class NurseTest extends TestCase
     public function test_can_delete_nurse()
     {
         $nurse = Nurse::factory()->create();
-        $response = $this->deleteJson("/api/nurses/{$nurse->id}");
+        $response = $this->deleteJson("/api/v1/nurses/{$nurse->id}");
         $response->assertNoContent();
         $this->assertDatabaseMissing('nurses', ['id' => $nurse->id]);
     }

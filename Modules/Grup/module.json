@@ -1,0 +1,9 @@
+{
+    "name": "Grup",
+    "alias": "grup",
+    "description": "Pertukaran pasien dan rujukan antar cabang satu badan hukum melalui hub pusat",
+    "keywords": ["group", "branch", "realtime", "referral"],
+    "priority": 0,
+    "providers": ["Modules\\Grup\\Providers\\GrupServiceProvider"],
+    "files": []
+}

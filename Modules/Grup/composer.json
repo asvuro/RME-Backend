@@ -1,0 +1,10 @@
+{
+    "name": "asvuro/grup",
+    "description": "Secure central-hub relay for same-legal-entity branches",
+    "autoload": {
+        "psr-4": {
+            "Modules\\Grup\\": "app/",
+            "Modules\\Grup\\Tests\\": "tests/"
+        }
+    }
+}

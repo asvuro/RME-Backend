@@ -1,114 +1,112 @@
 # Matriks Otorisasi — RME-Backend
 
 Dokumen ini merangkum kondisi *actual* mekanisme autentikasi/otorisasi di repo
-ini per 2026-08-25, disusun dari pembacaan kode langsung (bukan asumsi/desain
+ini per **2026-08-31**, disusun dari pembacaan kode langsung (bukan asumsi/desain
 ideal). Tujuannya sebagai referensi cepat: apa yang sudah ada, pola apa yang
 dipakai, dan apa yang **belum** dikerjakan.
 
-## 1. Model Role
+> Revisi 2026-08-30/31: memperbarui versi 2026-08-25 setelah migrasi seluruh rute
+> ke RBAC dinamis `RoutePermissionGate` (commit `aee12555`, `263a28d5`,
+> `3d2d62ab`, ditambah modul `Grup`), pengaktifan 23 modul baru, penulisan
+> ulang middleware `LogApiRequests` menjadi berbasis allowlist, dan penutupan
+> gap audit write-path `WardStockTransaction`/`PrintDocument`.
 
-- Menggunakan paket `spatie/laravel-permission`.
-- Guard mengikuti guard default aplikasi (`config('auth.defaults.guard')` →
-  `sanctum`).
-- Hanya **2 role global**, dibuat oleh
+## 1. Model Role & Permission
+
+- Menggunakan paket `spatie/laravel-permission`. Guard mengikuti guard default
+  aplikasi (`config('auth.defaults.guard')` → `sanctum`).
+- Masih hanya **2 role global**, dibuat oleh
   `database/seeders/RoleAndPermissionSeeder.php`:
   - `admin`
   - `petugas`
-- Tidak ada definisi `Permission` granular per aksi — role dicek langsung via
-  middleware `role:...`, bukan `permission:...`.
-
-**Keterbatasan (bukan fitur yang sudah lengkap):** role bersifat **global**,
-tidak ada scoping per unit/ruangan/fasilitas maupun per pasien. Seorang user
-dengan role `petugas` memiliki hak yang sama di seluruh data lintas
-unit/ward/pasien — tidak ada object-level authorization (mis. "petugas ward A
-hanya boleh mengubah kunjungan di ward A"). Lihat Section 4 untuk detail.
+- Sejak RBAC dinamis, ada juga **~2.925 Permission granular** bernama
+  `{module}.{controller}.{method}`, digenerate dari seluruh rute terdaftar oleh
+  `php artisan rbac:sync-permissions` dan di-commit sebagai fixture statis
+  `database/seeders/data/route_permissions.php` (sumber kebenaran tunggal,
+  dibaca seeder DAN gerbang — keduanya tidak scan rute sendiri).
+- Grant baseline saat ini masih **meniru perilaku 2-role lama** (cutover
+  behavior-preserving): `admin` = semua permission non-public;
+  `petugas` = semua permission tier `petugas_admin` + `authenticated_any`.
+- **Keterbatasan yang masih berlaku:** role bersifat **global**, tidak ada
+  scoping per unit/ruangan/fasilitas maupun per pasien di luar WardScope
+  (lihat 4b). Permission granular sudah ADA sebagai infrastruktur, tetapi
+  pemetaan role→permission masih baseline; belum ada role per-job-function
+  (mis. kasir, perawat, apoteker) dengan grant berbeda.
 
 ## 2. Pola Gating Rute
 
-Dibaca langsung dari beberapa `Modules/*/routes/api.php` yang representatif.
+### 2.1 Gerbang terpusat: RoutePermissionGate (menggantikan middleware role:)
 
-### 2.1 Pola standar: baca publik-otentikasi, tulis butuh role
+Sejak 27 Agustus 2026 **tidak ada lagi middleware `role:petugas|admin` /
+`role:admin` literal di file `routes/api.php` manapun** (terverifikasi grep —
+yang tersisa hanya komentar penjelas). Otorisasi per-aksi kini lewat SATU
+middleware global `Modules\Authorization\Http\Middleware\RoutePermissionGate`
+(di-append ke grup `api` di `bootstrap/app.php`, bersama `LogApiRequests`):
 
-Pola paling umum di modul-modul domain klinis/administratif — baca (`index`,
-`show`) hanya butuh sesi valid, tulis (`store`/`update`/`destroy`/aksi state)
-butuh role `petugas` atau `admin`.
+1. Ambil `Controller@method` dari rute, cocokkan ke peta statis
+   `RoutePermissionFixture::map()` (di-cache forever).
+2. Tier `public` → lolos tanpa sesi.
+3. Tier `authenticated_any` → wajib login, **sengaja tidak dicek permission**
+   (rute itu dulu juga hanya `auth:sanctum` tanpa `role:` — mewajibkan
+   permission adalah pengetatan baru yang tidak diminta; nama permission
+   tetap dicatat sebagai metadata untuk masa depan).
+4. Tier `petugas_admin` / `admin_only` → wajib `$user->can(permission)`.
+5. Rute Closure ad-hoc (hanya terjadi di dalam test) → dilewatkan.
+6. Rute controller yang BELUM ada di peta (modul baru / lupa sync) →
+   **fail-closed 403** dengan pesan "jalankan php artisan rbac:sync-permissions".
 
-Contoh — `Modules/GeneralAbsenceType/routes/api.php`:
-```php
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('absence-types', AbsenceTypeController::class)->only(['index', 'show']);
+Klasifikasi 2.958 `controller_action` pada fixture (angka per 2026-08-30):
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('absence-types', AbsenceTypeController::class)->only(['store', 'update', 'destroy']);
-    });
-});
-```
+| Tier | Jumlah | Efek gerbang |
+|---|---|---|
+| `public` | 32 | Tanpa sesi |
+| `admin_only` | 31 | Login + permission khusus (baseline: hanya role admin) |
+| `petugas_admin` | 1.720 | Login + permission (baseline: petugas & admin) |
+| `authenticated_any` | 1.175 | Login saja (permission tercatat tapi belum ditegakkan) |
 
-Contoh — `Modules/PendaftaranVisit/routes/api.php` (aksi state tambahan juga
-di-gate role):
-```php
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('visits', VisitController::class)->only(['index', 'show']);
+Endpoint `admin_only` meliputi area paling sensitif: manajemen
+Role/Permission/UserRole dan User (modul `Authorization` & `Auth`),
+`ActivityLogController@index`, `RequestLogController@index`,
+`RsSettingController@store/update`, CRUD General Ledger (`FinanceGeneralLedger`),
+retensi rekam medis (`MedicalRecordRetentionSchedule`), `InvoiceGuarantorController@unlock`,
+`TteDocumentController@lock`, `LicenseController@status/fingerprint`,
+`GroupContextController@sync`. Ini menutup temuan privilege-escalation lama
+pada modul Authorization (endpoint RBAC dulu hanya `auth:sanctum`).
 
-    Route::middleware('role:petugas|admin')->group(function () {
-        Route::apiResource('visits', VisitController::class)->only(['store', 'update', 'destroy']);
-        Route::post('visits/{visit}/transfer', [VisitController::class, 'transfer']);
-        Route::post('visits/{visit}/discharge', [VisitController::class, 'discharge']);
-    });
-});
-```
+Endpoint bantu: `MyAccessController@index` (`Modules/Authorization`) mengembalikan
+modul + permission efektif milik user yang sedang login — dipakai frontend
+untuk membangun menu, dan konsisten dengan tier `authenticated_any` yang tidak
+digerbang permission.
 
-### 2.2 Modul integrasi outbound: seluruh grup di-gate role
+### 2.2 Endpoint publik yang sengaja tanpa `auth:sanctum`
 
-Modul yang memanggil layanan eksternal (BPJS V-Claim, BPJS Antrean, dsb.)
-tidak membedakan baca/tulis — seluruh endpoint di dalam grup langsung
-digate `auth:sanctum` + `role:petugas|admin` sejak awal, karena semua
-operasinya berdampak transaksional ke sistem BPJS.
-
-Contoh — `Modules/BpjsVClaim/routes/api.php`:
-```php
-Route::middleware(['auth:sanctum', 'role:petugas|admin'])->prefix('v1')->group(function () {
-    // seluruh endpoint SEP, SPRI, Rencana Kontrol, Rujukan, Peserta, Referensi, PRB/LPK/Monitoring
-    ...
-});
-```
-
-Pola yang sama dipakai modul integrasi outbound lain (mis.
-`Modules/BpjsAntreanRs`, blok "Outbound" untuk endpoint yang berasal dari
-RS ke WS BPJS).
-
-### 2.3 Endpoint publik yang sengaja tanpa `auth:sanctum`
-
-Ada beberapa endpoint yang memang dirancang tanpa sesi login, dengan
-mekanisme keamanannya sendiri:
+Dari 32 entri tier `public` (3 di antaranya rute framework: `sanctum/csrf-cookie`,
+`up`, `storage/{path}`), semuanya punya mekanisme keamanannya sendiri:
 
 | Endpoint | Modul | Mekanisme |
 |---|---|---|
-| `POST /v1/login` | `Auth` | Kredensial + `throttle:10,1` (tidak butuh sesi karena ini yang *menerbitkan* sesi) |
-| `POST /v1/system/license/webhook` | `SystemLicenseGuard` | Verifikasi HMAC SHA-256 (`X-Hub-Signature-256`, `hash_equals`) + `throttle:30,1`; endpoint `status`/`fingerprint`/`activate`/`sync` di modul yang sama juga publik (device-bound, bukan user-bound), masing-masing dengan throttle sendiri |
-| `GET /v1/antrean-rs/mobile-jkn/token` dan seluruh rute `mobile-jkn/*` | `BpjsAntreanRs` (juga pola sama di `BpjsAntreanFktp`) | Bukan `auth:sanctum` — token endpoint memvalidasi header `x-username`/`x-password`; endpoint lain di grup ini digate middleware custom `VerifyBpjsMobileJknToken` (cek header `x-token`/`x-username`) karena caller-nya adalah aplikasi Mobile JKN milik BPJS, bukan user internal |
+| `POST /v1/login` | `Auth` | Kredensial + `throttle:10,1` |
+| `POST /v1/system/license/webhook` + `activate`/`sync` | `SystemLicenseGuard` | HMAC SHA-256 (`X-Hub-Signature-256`, `hash_equals`), fail-closed saat secret kosong, throttle per-endpoint; device-bound, bukan user-bound |
+| `GET /v1/antrean-*/mobile-jkn/*` (token + antrean, 18 rute) | `BpjsAntreanRs`, `BpjsAntreanFktp` | Bukan `auth:sanctum` — token endpoint memvalidasi header `x-username`/`x-password`; rute lain digate middleware custom `VerifyBpjsMobileJknToken` (header `x-token`) karena caller-nya aplikasi Mobile JKN milik BPJS |
+| `HubRelayController@patients/patient/referral`, `RealtimeNotificationController@store` | `Grup` | Relay hub lintas cabang: HMAC + freshness + anti-replay (nonce) + group/target binding + throttle + PHI terenkripsi at rest; base URL hub tidak pernah dari user (anti-SSRF) |
 
-Modul infrastruktur tanpa rute HTTP sama sekali (dipakai sebagai
-service-kernel internal, bukan endpoint publik maupun ter-auth):
-`Modules/Bpjs` (config/signature/crypto/HTTP client dasar dipakai
-BpjsVClaim/BpjsApotek/BpjsPCare/dst), `Modules/BpjsSmartClaim` (ledger ID
-FHIR outbound), `Modules/SatuSehat` (OAuth2 token cache + FHIR client dasar
-dipakai SatuSehatRawatJalan/RawatInap/Igd/Farmasi/dst).
+Modul infrastruktur tanpa rute HTTP sama sekali (dipakai sebagai service-kernel
+internal): `Modules/Bpjs` (config/signature/crypto/HTTP client dasar),
+`Modules/BpjsSmartClaim`, `Modules/SatuSehat` (OAuth2 token cache + FHIR client).
 
-### 2.4 Ringkasan cakupan
+### 2.3 Cakupan
 
-Dari 579 file `Modules/*/routes/api.php`, 587 baris memakai middleware
-`auth:sanctum` (sebagian modul mendaftarkan lebih dari satu grup rute).
-Modul yang tidak menyebut `auth:sanctum` sama sekali hanya 4:
-`Bpjs`, `BpjsSmartClaim`, `SatuSehat` (tanpa rute HTTP — lihat 2.3), dan
-`SystemLicenseGuard` (publik dengan HMAC/throttle by design — lihat 2.3).
+Fixture RBAC mencakup 2.958 `controller_action` untuk 603 modul aktif
+(`modules_statuses.json`). Rute controller modul yang belum terdaftar di
+fixture gagal-closed 403 — jadi modul baru otomatis TERKUNCI sampai
+`rbac:sync-permissions` dijalankan, bukan terbuka.
 
 ## 3. Domain Service Inti & Kontrak Lintas Modul
 
 Kontrak lintas modul didefinisikan di `app/Modules/Contracts/*.php` dan
 di-bind ke implementasinya di `app/Providers/AppServiceProvider.php`. Ini
 adalah mekanisme "gate" level bisnis (mis. cegah posting ke kunjungan yang
-sudah pulang / invoice yang sudah terkunci) — terpisah dari gating role di
+sudah pulang / invoice yang sudah terkunci) — terpisah dari gating RBAC di
 Section 2, dan berlaku di dalam service layer, bukan di HTTP layer.
 
 | Kontrak | Model/tabel yang dilindungi | Implementasi | Fungsi inti |
@@ -118,64 +116,59 @@ Section 2, dan berlaku di dalam service layer, bukan di HTTP layer.
 | `BillingGate` | `Invoice` (tagihan) | `Modules\PembayaranInvoice\Services\InvoiceService` | `isVisitLocked()`, `lock()`/`unlock()`, `postServiceItem()` — modul klinis dilarang menyentuh tabel invoice langsung |
 | `StockGate` | `WardStockTransaction` (mutasi stok ruangan) | `Modules\InventoryWardStockTransaction\Services\WardStockService` | `adjust()`, `currentStock()` — ledger mutasi stok per ward/item |
 | `HospitalConfig` | `properti_config`-setara (setting RS) | `App\Support\RsSettingService` | `get()`/`set()`/`entries()` — gerbang konfigurasi bisnis (mis. `billing.lock_on_cashier_close`) |
+| `WardScope` | objek milik ward | `App\Support\WardAccessResolver` | `canAccessWard()`, `assignedWardIds()`, `applyReadScope()` — least-privilege per ward (lihat 4b) |
 
-Service lain yang disebut dalam scope tugas ini:
-- `Modules\LayananPharmacyDispense\Services\DispenseService` — melindungi
-  model `PharmacyDispense`, tidak diekspos sebagai kontrak lintas modul
-  (`app/Modules/Contracts/`), hanya dipakai langsung oleh modul
-  `LayananPharmacyDispense` sendiri.
-- `Modules\CetakanPrintDocument\Services\PrintDocumentService` — melindungi
-  model `PrintDocument`, juga tidak diekspos sebagai kontrak lintas modul.
-- `Modules\AuditActivityLog\Support\AuditLogger` — bukan gate bisnis,
-  melainkan satu pintu penulisan jejak aktivitas ke model `ActivityLog`
-  (lihat Section 4 untuk cakupannya yang sebenarnya).
-
-**Catatan:** hanya 5 kontrak yang ada di `app/Modules/Contracts/`
-(`VisitGate`, `BedGate`, `BillingGate`, `StockGate`, `HospitalConfig`).
-`DispenseService` dan `PrintDocumentService` **tidak** memiliki kontrak
-lintas modul — keduanya dipakai lokal di modulnya masing-masing.
+Service lain yang dilindungi lokal (tanpa kontrak lintas modul):
+`DispenseService` (model `PharmacyDispense`), `PrintDocumentService`
+(model `PrintDocument`), `AuditLogger` (satu pintu tulis `ActivityLog`).
 
 ## 4. Audit Trail — Cakupan Aktual
 
-Ada dua mekanisme yang menulis ke `Modules\AuditActivityLog\Models\ActivityLog`:
+Ada tiga mekanisme penulisan jejak:
 
 1. **Trait `Auditable`** (`Modules\AuditActivityLog\Support\Auditable`) —
-   ditempel ke model, mencatat otomatis setiap `created`/`updated`/`deleted`.
-   Dipakai oleh **3 model**: `Modules\GeneralBed\Models\Bed`,
-   `Modules\PembayaranInvoice\Models\Invoice`,
-   `Modules\PendaftaranVisit\Models\Visit`.
+   otomatis mencatat `created`/`updated`/`deleted`. Model pemakai saat ini:
+   `Visit`, `Bed`, `Invoice`, `Payment` (`PembayaranPayment`),
+   `WardStockTransaction`, `PrintDocument` (payload dikecualikan — lihat
+   catatan tabel), plus model-model baru `AuditInfectionSurveillance`
+   (DeviceDay, InfectionCase) dan `AuditQualityIndicator`
+   (QualityIndicator, QualityIndicatorRecord). Trait menyediakan hook
+   `auditHidden()` untuk kolom yang dilarang tersalin ke audit log
+   (snapshot PHI/PII); perubahan pada kolom itu tetap tercatat sebagai
+   peristiwa dengan isi di-mask `'[hidden]'`, bukan lenyap dari jejak.
 2. **`DomainEventAuditListener`** — mendengarkan 5 event domain
    (`VisitAdmitted`, `VisitTransferred`, `VisitDischarged`, `InvoiceLocked`,
-   `PrescriptionDispensed`) yang di-dispatch dari
-   `VisitService`, `InvoiceService`, dan `DispenseService`, lalu mencatat
-   baris semantik `action='event'`.
+   `PrescriptionDispensed`) dan mencatat baris semantik `action='event'`.
+3. **`LogApiRequests`** (`AuditRequestLog`, middleware global) — kini sudah
+   **berbasis allowlist** (bukan blacklist lagi): hanya field referensi aman
+   (`id`, `uuid`, `code`, `ref_id`, `external_id`, dst.), maks 20 field,
+   maks 255 karakter per nilai, URL tanpa query string, hanya status response
+   yang dicatat, bisa dimatikan per-instance via
+   `HospitalConfig` key `audit.request_log_enabled`. Ini menutup temuan lama
+   "audit log berisiko jadi shadow PHI store".
 
-**Temuan penting (deviasi dari asumsi awal):** cakupan audit write-path
-**bukan** 6 entitas rata. Berdasarkan kode aktual:
+Cakupan audit write-path per entitas inti:
 
 | Entitas | Auditable trait? | Event domain ke audit listener? | Status |
 |---|---|---|---|
 | Visit | Ya | Ya (admit/transfer/discharge) | Teraudit penuh |
 | Bed | Ya | Tidak ada event khusus | Teraudit (create/update/delete generik) |
 | Invoice | Ya | Ya (`InvoiceLocked`) | Teraudit penuh |
-| PharmacyDispense | Tidak | Ya (`PrescriptionDispensed`) | Teraudit lewat event saja, bukan trait |
-| WardStockTransaction | **Tidak** | **Tidak** | **Belum teraudit** |
-| PrintDocument | **Tidak** | **Tidak** | **Belum teraudit** |
+| Payment | Ya | Tidak ada event khusus | Teraudit (generik) |
+| PharmacyDispense | Tidak | Ya (`PrescriptionDispensed`) | Teraudit lewat event saja |
+| WardStockTransaction | Ya (sejak 2026-08-31) | Tidak | Teraudit (generik) |
+| PrintDocument | Ya, `payload` dikecualikan (sejak 2026-08-31) | Tidak | Teraudit (generik; payload berisi snapshot identitas pasien — hanya document_number+ref yang dicatat, perubahan payload tercatat ter-mask `'[hidden]'`) |
 
-Jadi dari 6 entitas yang disebut sebagai cakupan "audit write-path baru",
-hanya **4 yang benar-benar tertulis ke `ActivityLog`** (Visit, Bed, Invoice,
-PharmacyDispense) — `WardStockTransaction` dan `PrintDocument` model-nya
-tidak memakai trait `Auditable` maupun men-dispatch event yang didengar
-`DomainEventAuditListener`. Ini dicatat sebagai gap di Section 5.
+## 4b. Least-Privilege per Ward — Status per 2026-08-30
 
-## 4b. Least-Privilege per Ward (#3) — Status per 2026-08-25
-
-Ditambahkan `App\Modules\Contracts\WardScope` (impl. `App\Support\WardAccessResolver`):
-rantai `User -> Employee.user_id -> StaffMember/Doctor/Nurse.employee_id ->
+Tidak berubah sejak 2026-08-25. `App\Modules\Contracts\WardScope`
+(impl. `App\Support\WardAccessResolver`): rantai
+`User -> Employee.user_id -> StaffMember/Doctor/Nurse.employee_id ->
 *WardAssignment.ward_id`. `admin` selalu lolos; `petugas` yang PUNYA minimal
 1 ward assignment dibatasi hanya ke ward itu; `petugas` TANPA assignment
-sama sekali default masih akses penuh (rollout bertahap — lihat catatan di
-`WardAccessResolver::canAccessWard()`).
+sama sekali default masih akses penuh (rollout bertahap — lihat komentar di
+`WardAccessResolver::canAccessWard()`). `applyReadScope()` juga tersedia untuk
+membatasi query baca per ward.
 
 Diterapkan ke 3 entitas yang benar-benar "milik" satu ward:
 
@@ -187,57 +180,54 @@ Diterapkan ke 3 entitas yang benar-benar "milik" satu ward:
 
 **Sengaja TIDAK di-gate** (keputusan eksplisit, bukan lupa): `Invoice`
 (billing/kasir) dan `PharmacyDispense` (farmasi) — keduanya fungsi
-lintas-ward di operasional RS nyata (satu loket kasir/apotek melayani semua
-ward), bukan milik satu ward. Ward-scope di situ akan salah mengunci staf
-yang justru harus lintas-ward. `StockGate`/`BedGate` yang dipanggil
-INTERNAL dari modul lain (mis. farmasi mengurangi stok ward tujuan lewat
-`StockGate::adjust()`) juga tidak digate — hanya endpoint HTTP langsung ke
-modul pemiliknya yang digate.
+lintas-ward di operasional RS nyata. `StockGate`/`BedGate` yang dipanggil
+INTERNAL dari modul lain juga tidak digate — hanya endpoint HTTP langsung
+ke modul pemiliknya.
 
 ## 5. Belum Dikerjakan / Technical Debt Diketahui
 
-- **Object-level authorization baru sebagian (ward-scope, lihat 4b).** Belum
-  ada scope per fasilitas atau per pasien (mis. "cuma dokter penanggung
-  jawab pasien ini yang boleh ubah rekam mediknya"). Ward-scope Visit/Bed/
-  WardStockTransaction juga masih "default terbuka" untuk user yang belum
-  pernah di-assign ward sama sekali — proteksi baru aktif begitu assignment
-  pertama dibuat.
-- **Konsolidasi modul granular (579 modul) belum dilakukan.** Struktur
-  modular saat ini memecah domain menjadi banyak modul kecil (1
-  referensi/tabel legacy ≈ 1 modul); belum ada langkah konsolidasi ke modul
-  yang lebih kasar/domain-oriented.
-- **Audit write-path baru mencakup 4 dari 6 entitas yang dimaksud**, bukan
-  6 penuh: `Visit`, `Bed`, `Invoice`, `PharmacyDispense` sudah tertulis ke
-  `ActivityLog`; `WardStockTransaction` dan `PrintDocument` **belum**
-  memakai trait `Auditable` maupun event yang didengar audit listener —
-  mutasi stok ruangan dan penerbitan dokumen cetak saat ini tidak
-  meninggalkan jejak audit otomatis. Entitas lain di luar 6 ini juga belum
-  diaudit sistematis (audit masih daftar putih per entitas, bukan
-  default-on).
-- **Tidak ada `Permission` granular** di spatie/laravel-permission — hanya
-  role. Middleware `role:petugas|admin` yang dipakai berulang di banyak
-  modul pada praktiknya berarti "petugas dan admin setara" untuk sebagian
-  besar aksi tulis; belum ada pemisahan hak yang lebih halus antar kedua
-  role tsb.
+- **Pengetatan tier `authenticated_any` belum dilakukan.** 1.175 aksi rute
+  masih "login saja boleh" — nama permission-nya sudah tercatat di fixture,
+  jadi menaikkan tier ke `petugas_admin`/`admin_only` cukup ubah fixture +
+  re-seed, tapi keputusan per-route-nya belum pernah dibuat.
+- **Pemetaan role→permission masih baseline 2-role.** Permission granular ada
+  sebagai infrastruktur, tetapi belum ada role per-job-function (kasir,
+  perawat, apoteker, DPJP, dst.) dengan grant berbeda — semua petugas masih
+  setara untuk semua aksi tier `petugas_admin`.
+- **Object-level authorization masih parsial.** Ward-scope hanya menyentuh
+  Visit/Bed/WardStockTransaction (write) dengan rollout default-terbuka untuk
+  user tanpa assignment. Belum ada scope per fasilitas atau per pasien
+  (mis. "cuma DPJP pasien ini yang boleh ubah rekam mediknya").
+- **Audit write-path 6 entitas inti sudah tertutup penuh** (sejak 2026-08-31,
+  `WardStockTransaction` dan `PrintDocument` kini memakai trait `Auditable`).
+  Yang tersisa bersifat struktural: audit masih daftar putih per entitas,
+  bukan default-on — entitas di luar 6 inti (+Payment, device-day/infection,
+  quality indicator) belum diaudit sistematis.
+- **Konsolidasi modul granular (603 modul) belum dilakukan.** Struktur
+  modular memecah domain menjadi banyak modul kecil (1 referensi/tabel legacy
+  ≈ 1 modul); belum ada langkah konsolidasi ke bounded context yang lebih kasar.
+- **Secret/deploy hygiene tetap catatan deploy:** `GRUP_HUB_TOKEN`,
+  `GRUP_HUB_HMAC_SECRET`, `GRUP_INSTANCE_ID`, kredensial Reverb harus
+  diprovision dari alur penerbitan lisensi hub; listener realtime + scheduler
+  harus dijalankan Supervisor/systemd (lihat `docs/grup-status.md`).
 
-## Lampiran — Sumber yang Dibaca
+## Lampiran — Sumber yang Dibaca (revisi 2026-08-30)
 
+- `bootstrap/app.php` (registrasi middleware global `LogApiRequests` +
+  `RoutePermissionGate`)
+- `Modules/Authorization/app/Http/Middleware/RoutePermissionGate.php`
+- `Modules/Authorization/app/Support/RoutePermissionFixture.php`
+- `Modules/Authorization/app/Http/Controllers/MyAccessController.php`
+- `Modules/Authorization/app/Models/RoutePermission.php`,
+  `app/Console/Commands/SyncRoutePermissionsCommand.php`
+- `database/seeders/data/route_permissions.php` (2.958 baris entri)
 - `database/seeders/RoleAndPermissionSeeder.php`
-- `Modules/GeneralAbsenceType/routes/api.php`
-- `Modules/PendaftaranVisit/routes/api.php`
-- `Modules/BpjsVClaim/routes/api.php`
-- `Modules/BpjsAntreanRs/routes/api.php`
-- `Modules/Auth/routes/api.php`
-- `Modules/Bpjs/routes/api.php`, `Modules/BpjsSmartClaim/routes/api.php`,
-  `Modules/SatuSehat/routes/api.php`
-- `Modules/SystemLicenseGuard/app/Http/Controllers/LicenseController.php`
-- `app/Modules/Contracts/{VisitGate,BedGate,BillingGate,StockGate,HospitalConfig}.php`
+- `Modules/AuditRequestLog/app/Http/Middleware/LogApiRequests.php`
+- `Modules/AuditActivityLog/app/Listeners/DomainEventAuditListener.php`,
+  `app/Support/{AuditLogger,Auditable}.php`
+- `app/Support/WardAccessResolver.php`, `app/Modules/Contracts/*.php`
 - `app/Providers/AppServiceProvider.php`
-- `Modules/AuditActivityLog/app/Support/{AuditLogger,Auditable}.php`
-- `Modules/AuditActivityLog/app/Listeners/DomainEventAuditListener.php`
-- `Modules/GeneralBed/app/Models/Bed.php`,
-  `Modules/PembayaranInvoice/app/Models/Invoice.php`,
-  `Modules/PendaftaranVisit/app/Models/Visit.php`
-- `Modules/InventoryWardStockTransaction/app/Models/WardStockTransaction.php`
-- `Modules/CetakanPrintDocument/app/Models/PrintDocument.php`
-- `modules_statuses.json` (579 modul terdaftar)
+- `modules_statuses.json` (603 modul aktif)
+- `docs/grup-status.md`
+- git log: `aee12555`, `263a28d5`, `3d2d62ab`, `a36659d4`, `18c20349`,
+  `46651284`, `8ae4a777`

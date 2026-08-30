@@ -20,7 +20,7 @@ trait Auditable
                 $model->auditObject(),
                 (string) $model->getKey(),
                 null,
-                $model->getAttributes(),
+                Arr::except($model->getAttributes(), $model->auditHidden()),
             );
         });
 
@@ -31,12 +31,20 @@ trait Auditable
                 return;
             }
 
+            // Kolom tersembunyi tetap menghasilkan baris audit (peristiwanya
+            // sah untuk dicatat), tapi isinya di-mask, bukan dibuang — kalau
+            // dibuang, update yang HANYA menyentuh kolom itu (mis. segarkan
+            // payload karcis) lenyap dari jejak audit sama sekali.
+            $mask = fn (array $values) => collect($values)
+                ->map(fn ($value, $key) => in_array($key, $model->auditHidden(), true) ? '[hidden]' : $value)
+                ->all();
+
             app(AuditLogger::class)->log(
                 ActivityLog::ACTION_UPDATED,
                 $model->auditObject(),
                 (string) $model->getKey(),
-                Arr::only($model->getOriginal(), array_keys($changes)),
-                $changes,
+                $mask(Arr::only($model->getOriginal(), array_keys($changes))),
+                $mask($changes),
             );
         });
 
@@ -45,7 +53,7 @@ trait Auditable
                 ActivityLog::ACTION_DELETED,
                 $model->auditObject(),
                 (string) $model->getKey(),
-                $model->getAttributes(),
+                Arr::except($model->getAttributes(), $model->auditHidden()),
                 null,
             );
         });
@@ -55,5 +63,17 @@ trait Auditable
     public function auditObject(): string
     {
         return (new static)->getTable();
+    }
+
+    /**
+     * Kolom yang DILARANG masuk jejak audit — untuk snapshot PHI/PII yang
+     * duplikat-data (mis. payload karcis berisi identitas pasien): audit cukup
+     * mencatat identifier (document_number/ref_id), bukan menyalin isinya.
+     *
+     * @return array<int, string>
+     */
+    public function auditHidden(): array
+    {
+        return [];
     }
 }

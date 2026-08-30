@@ -5,6 +5,7 @@ namespace Modules\CetakanPrintDocument\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\Auth\Models\User;
 use Modules\CetakanPrintDocument\Database\Factories\PrintDocumentFactory;
 
@@ -13,7 +14,7 @@ use Modules\CetakanPrintDocument\Database\Factories\PrintDocumentFactory;
  */
 class PrintDocument extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     public const TYPE_RECEIPT = 'receipt';
 
@@ -54,6 +55,18 @@ class PrintDocument extends Model
     public function issuedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'issued_by');
+    }
+
+    /**
+     * Payload = snapshot identitas pasien (karcis/kwitansi/gelang) — dilarang
+     * tersalin ke activity_logs; jejak audit cukup document_number + ref.
+     * Perubahan payload tetap tercatat sebagai peristiwa, isinya di-mask.
+     *
+     * @return array<int, string>
+     */
+    public function auditHidden(): array
+    {
+        return ['payload'];
     }
 
     /**

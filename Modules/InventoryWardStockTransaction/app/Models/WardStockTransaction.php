@@ -5,6 +5,7 @@ namespace Modules\InventoryWardStockTransaction\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\Auth\Models\User;
 use Modules\GeneralWard\Models\Ward;
 use Modules\InventoryItem\Models\Item;
@@ -12,7 +13,7 @@ use Modules\InventoryWardStockTransaction\Database\Factories\WardStockTransactio
 
 class WardStockTransaction extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $fillable = [
         'ward_id',

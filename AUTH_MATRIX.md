@@ -127,10 +127,12 @@ Service lain yang dilindungi lokal (tanpa kontrak lintas modul):
 Ada tiga mekanisme penulisan jejak:
 
 1. **Trait `Auditable`** (`Modules\AuditActivityLog\Support\Auditable`) —
-   otomatis mencatat `created`/`updated`/`deleted`. Model pemakai saat ini:
-   `Visit`, `Bed`, `Invoice`, `Payment` (`PembayaranPayment`),
-   `WardStockTransaction`, `PrintDocument` (payload dikecualikan — lihat
-   catatan tabel), plus model-model baru `AuditInfectionSurveillance`
+   otomatis mencatat `created`/`updated`/`deleted`. Model pemakai saat ini
+   (18): `Visit`, `Bed`, `Invoice`, `Payment`, `WardStockTransaction`,
+   `PrintDocument` (payload dikecualikan — lihat catatan tabel), plus
+   8 entitas finansial Pembayaran (`CashierTransaction`, `Deposit`, `Edc`,
+   `Transfer`, `PatientReceivable`, `RegistrationInvoice`, `ClaimInvoice`,
+   `CorporateReceivable`) dan model-model baru `AuditInfectionSurveillance`
    (DeviceDay, InfectionCase) dan `AuditQualityIndicator`
    (QualityIndicator, QualityIndicatorRecord). Trait menyediakan hook
    `auditHidden()` untuk kolom yang dilarang tersalin ke audit log
@@ -198,11 +200,13 @@ ke modul pemiliknya.
   Visit/Bed/WardStockTransaction (write) dengan rollout default-terbuka untuk
   user tanpa assignment. Belum ada scope per fasilitas atau per pasien
   (mis. "cuma DPJP pasien ini yang boleh ubah rekam mediknya").
-- **Audit write-path 6 entitas inti sudah tertutup penuh** (sejak 2026-08-31,
-  `WardStockTransaction` dan `PrintDocument` kini memakai trait `Auditable`).
-  Yang tersisa bersifat struktural: audit masih daftar putih per entitas,
-  bukan default-on — entitas di luar 6 inti (+Payment, device-day/infection,
-  quality indicator) belum diaudit sistematis.
+- **Audit write-path cakupan bertambah tapi belum default-on.** Sejak
+  2026-08-31, 18 model teraudit (6 entitas inti + 8 entitas finansial
+  Pembayaran + DeviceDay/InfectionCase/QualityIndicator/
+  QualityIndicatorRecord). Sisa ~608 model belum diaudit sistematis —
+  prioritas terbesar domain MedicalRecord (178 model, PHI tinggi,
+  keputusan cakupan audit masih terbuka) dan Pendaftaran (28 model).
+  Audit masih daftar putih per-entitas, bukan default-on.
 - **Konsolidasi modul granular (603 modul) belum dilakukan.** Struktur
   modular memecah domain menjadi banyak modul kecil (1 referensi/tabel legacy
   ≈ 1 modul); belum ada langkah konsolidasi ke bounded context yang lebih kasar.

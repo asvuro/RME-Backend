@@ -41,7 +41,7 @@ class ApiAuthenticationCoverageTest extends TestCase
     {
         foreach (self::exposedPrefixes() as $label => $prefix) {
             try {
-                $this->getJson("/api/{$prefix}")->assertStatus(401);
+                $this->getJson("/api/v1/{$prefix}")->assertStatus(401);
             } catch (\PHPUnit\Framework\AssertionFailedError $e) {
                 $this->fail("GET anonim pada {$label} (api/{$prefix}) tidak ditolak 401.");
             }
@@ -52,7 +52,7 @@ class ApiAuthenticationCoverageTest extends TestCase
     {
         foreach (self::exposedPrefixes() as $label => $prefix) {
             try {
-                $this->postJson("/api/{$prefix}", ['name' => 'Penyusup'])->assertStatus(401);
+                $this->postJson("/api/v1/{$prefix}", ['name' => 'Penyusup'])->assertStatus(401);
             } catch (\PHPUnit\Framework\AssertionFailedError $e) {
                 $this->fail("POST anonim pada {$label} (api/{$prefix}) tidak ditolak 401.");
             }
@@ -65,7 +65,7 @@ class ApiAuthenticationCoverageTest extends TestCase
 
         // Cukup satu sampel per kelompok - yang diverifikasi adalah middleware,
         // bukan isi controller (sudah dicover test modul masing-masing).
-        $this->getJson('/api/doctors')->assertOk();
-        $this->getJson('/api/patientfamilyidentitycards')->assertOk();
+        $this->getJson('/api/v1/doctors')->assertOk();
+        $this->getJson('/api/v1/patientfamilyidentitycards')->assertOk();
     }
 }

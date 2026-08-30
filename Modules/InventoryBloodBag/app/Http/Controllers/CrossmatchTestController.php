@@ -21,7 +21,7 @@ class CrossmatchTestController extends Controller
 
     public function index(Request $request)
     {
-        $query = CrossmatchTest::query();
+        $query = CrossmatchTest::query()->with('bloodBag:id,status');
 
         if ($request->filled('blood_bag_id')) {
             $query->where('blood_bag_id', $request->integer('blood_bag_id'));
@@ -36,13 +36,13 @@ class CrossmatchTestController extends Controller
 
     public function show(CrossmatchTest $crossmatch_test): CrossmatchTestResource
     {
-        return new CrossmatchTestResource($crossmatch_test);
+        return new CrossmatchTestResource($crossmatch_test->load('bloodBag:id,status'));
     }
 
     public function release(CrossmatchTest $crossmatch_test)
     {
         $test = $this->bloodBankService->release($crossmatch_test->id);
 
-        return new CrossmatchTestResource($test);
+        return new CrossmatchTestResource($test->load('bloodBag:id,status'));
     }
 }

@@ -59,6 +59,11 @@ class ApiAuthenticationCoverageTest extends TestCase
         }
     }
 
+    public function test_plain_api_request_without_json_accept_header_is_rejected_with_401(): void
+    {
+        $this->get('/api/v1/doctors')->assertStatus(401);
+    }
+
     public function test_authenticated_users_still_reach_the_protected_endpoints(): void
     {
         $this->actingAs(User::factory()->create(), 'sanctum');

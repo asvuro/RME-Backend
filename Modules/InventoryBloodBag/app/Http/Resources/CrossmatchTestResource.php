@@ -20,6 +20,7 @@ class CrossmatchTestResource extends JsonResource
             'tested_by' => $this->tested_by,
             'tested_at' => $this->tested_at?->toIso8601String(),
             'reserved_until' => $this->reserved_until?->toIso8601String(),
+            'blood_bag_status' => $this->whenLoaded('bloodBag', fn () => $this->bloodBag?->status),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

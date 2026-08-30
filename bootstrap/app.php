@@ -45,6 +45,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // API tidak mempunyai route login berbasis HTML. Request anonim harus
+        // tetap menjadi respons 401 JSON meski klien tidak mengirim Accept JSON,
+        // bukan mencoba redirect ke route `login` yang tidak terdaftar.
+        $middleware->redirectGuestsTo(
+            fn (Request $request): ?string => $request->is('api/*') ? null : route('login'),
+        );
+
         // Jejak request API (#12) — port semangat logs.bridge_log simgos2.
         // RoutePermissionGate (RBAC dinamis): gerbang izin per-aksi terpusat,
         // menggantikan middleware role:... yang tersebar di tiap file rute

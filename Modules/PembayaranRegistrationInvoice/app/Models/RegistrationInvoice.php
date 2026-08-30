@@ -5,13 +5,14 @@ namespace Modules\PembayaranRegistrationInvoice\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PembayaranRegistrationInvoice\Database\Factories\RegistrationInvoiceFactory;
 use Modules\PendaftaranRegistration\Models\Registration;
 
 class RegistrationInvoice extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     public const CATEGORIES = ['registration_fee', 'admission_deposit'];
 

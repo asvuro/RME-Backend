@@ -5,13 +5,14 @@ namespace Modules\PembayaranCorporateReceivable\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\PembayaranCorporateReceivable\Database\Factories\CorporateReceivableFactory;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PendaftaranGuarantor\Models\Guarantor;
 
 class CorporateReceivable extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     public const STATUSES = ['outstanding', 'settled', 'written_off'];
 

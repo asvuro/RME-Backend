@@ -5,13 +5,14 @@ namespace Modules\PembayaranDeposit\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\Auth\Models\User;
 use Modules\PembayaranDeposit\Database\Factories\DepositFactory;
 use Modules\PendaftaranVisit\Models\Visit;
 
 class Deposit extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     /**
      * Plafon wajar satu kali setoran deposit tunai per kunjungan. Melampauinya

@@ -5,12 +5,13 @@ namespace Modules\PembayaranTransfer\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\PembayaranPayment\Models\Payment;
 use Modules\PembayaranTransfer\Database\Factories\TransferFactory;
 
 class Transfer extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     protected $table = 'bank_transfers';
 

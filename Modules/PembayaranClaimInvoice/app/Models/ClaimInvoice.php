@@ -5,13 +5,14 @@ namespace Modules\PembayaranClaimInvoice\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\AuditActivityLog\Support\Auditable;
 use Modules\PembayaranClaimInvoice\Database\Factories\ClaimInvoiceFactory;
 use Modules\PembayaranInvoice\Models\Invoice;
 use Modules\PendaftaranGuarantor\Models\Guarantor;
 
 class ClaimInvoice extends Model
 {
-    use HasFactory;
+    use Auditable, HasFactory;
 
     public const STATUSES = ['draft', 'submitted', 'verified', 'paid', 'rejected'];
 

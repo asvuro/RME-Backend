@@ -6,14 +6,24 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\AuditActivityLog\Models\ActivityLog;
 use Modules\CetakanPrintDocument\Models\PrintDocument;
 use Modules\InventoryWardStockTransaction\Models\WardStockTransaction;
+use Modules\PembayaranCashierTransaction\Models\CashierTransaction;
+use Modules\PembayaranClaimInvoice\Models\ClaimInvoice;
+use Modules\PembayaranCorporateReceivable\Models\CorporateReceivable;
+use Modules\PembayaranDeposit\Models\Deposit;
+use Modules\PembayaranEdc\Models\Edc;
+use Modules\PembayaranPatientReceivable\Models\PatientReceivable;
 use Modules\PembayaranPayment\Models\Payment;
+use Modules\PembayaranRegistrationInvoice\Models\RegistrationInvoice;
+use Modules\PembayaranTransfer\Models\Transfer;
 use Modules\PendaftaranVisit\Models\Visit;
 use Tests\TestCase;
 
 /**
  * Trait Auditable pada model mesin state (#7–#11): Visit, Invoice, Bed, Payment.
  * Ditambah WardStockTransaction + PrintDocument (menutup gap audit write-path
- * yang tercatat di AUTH_MATRIX Section 5).
+ * yang tercatat di AUTH_MATRIX Section 5) dan entitas finansial Pembayaran:
+ * CashierTransaction, Deposit, Edc, Transfer, PatientReceivable,
+ * RegistrationInvoice, ClaimInvoice, CorporateReceivable.
  */
 class AuditableTraitTest extends TestCase
 {
@@ -122,5 +132,40 @@ class AuditableTraitTest extends TestCase
         $this->assertSame(ActivityLog::ACTION_UPDATED, $row->action);
         $this->assertSame('[hidden]', $row->after['payload']);
         $this->assertSame('[hidden]', $row->before['payload']);
+    }
+
+    /**
+     * Entitas finansial di domain Pembayaran: setiap create/delete wajib
+     * meninggalkan jejak audit (aliran uang). Sampel di bawah mewakili
+     * kedelapan model yang dipasang trait; polanya identik, cukup verifikasi
+     * satu per kategori (transaksi kasir, deposit, transfer bank, piutang,
+     * klaim, penerimaan korporat, tagihan registrasi, EDC).
+     */
+    public function test_entitas_finansial_pembayaran_tercatat_create_dan_delete(): void
+    {
+        $cases = [
+            [CashierTransaction::class, 'cashier_transactions', ['amount' => '50000.00', 'transaction_type' => 'in']],
+            [Deposit::class, 'deposits', ['amount' => '100000.00', 'status' => 'active']],
+            [Transfer::class, 'bank_transfers', ['amount' => '75000.00', 'status' => 'pending']],
+            [PatientReceivable::class, 'patient_receivables', ['amount' => '200000.00', 'status' => 'outstanding']],
+            [RegistrationInvoice::class, 'registration_invoices', ['amount' => '30000.00']],
+            [ClaimInvoice::class, 'claim_invoices', ['claim_amount' => '150000.00', 'status' => 'draft']],
+            [CorporateReceivable::class, 'corporate_receivables', ['amount' => '500000.00', 'status' => 'outstanding']],
+            [Edc::class, 'edc_transactions', ['amount' => '60000.00', 'card_last_four' => '4242']],
+        ];
+
+        foreach ($cases as [$class, $object, $overrides]) {
+            ActivityLog::query()->delete();
+
+            $model = $class::factory()->create($overrides);
+
+            $created = ActivityLog::query()->where('object', $object)->where('action', ActivityLog::ACTION_CREATED)->firstOrFail();
+            $this->assertSame((string) $model->getKey(), $created->ref, "create {$class} tidak tercatat di {$object}");
+
+            $model->delete();
+
+            $deleted = ActivityLog::query()->where('object', $object)->where('action', ActivityLog::ACTION_DELETED)->firstOrFail();
+            $this->assertSame((string) $model->getKey(), $deleted->ref, "delete {$class} tidak tercatat di {$object}");
+        }
     }
 }
